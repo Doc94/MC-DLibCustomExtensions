@@ -1,0 +1,191 @@
+plugins {
+    id('java-library')
+    id('maven-publish')
+    id('signing')
+    id('io.freefair.lombok') version "8.11"
+    id('com.gradleup.shadow') version '8.3.5'
+    id('org.jreleaser') version '1.17.0'
+}
+
+group = 'me.mrdoc.minecraft'
+version = '1.0.0-SNAPSHOT'
+
+ext {
+    projectArtifactName = rootProject.name.toLowerCase()
+    isRelease = !version.toString().endsWith('-SNAPSHOT')
+    projectVersion = version.toString()
+    projectGroup = group.toString()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.incremental = false
+}
+
+tasks.register('downloadDependencies') {
+    description 'Download all dependencies to the Gradle cache'
+    doLast {
+        configurations.findAll { it.canBeResolved }.files
+    }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+shadowJar {
+    relocate("org.incendo.cloud", "me.mrdoc.minecraft.dlce.libs.org.incendo.cloud")
+    archiveClassifier.set('')
+}
+build.dependsOn shadowJar
+
+tasks.withType(Javadoc).configureEach {
+    title = "${projectArtifactName} ${projectVersion} API"
+    options.windowTitle = "${projectArtifactName} ($projectVersion)"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "${projectGroup}"
+            version = "${projectVersion}"
+            artifactId = "${projectArtifactName}"
+
+            from components.java
+
+            println "Publicando versión: ${version}"
+
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+
+            pom {
+                name = projectArtifactName
+                description = 'A library for custom things'
+                url = 'https://mrdoc.me/'
+
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://spdx.org/licenses/MIT.html'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'doc'
+                        name = 'Pedro'
+                        email = 'nachito94@msn.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/Doc94/MC-DLibCustomExtensions.git'
+                    developerConnection = 'scm:git:ssh://github.com/Doc94/MC-DLibCustomExtensions.git'
+                    url = 'https://github.com/Doc94/MC-DLibCustomExtensions'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            if (isRelease) {
+                url = layout.buildDirectory.dir('staging-deploy/release')
+            } else {
+                credentials {
+                    username mavenCentralUsername
+                    password mavenCentralPassword
+                }
+                url = 'https://central.sonatype.com/repository/maven-snapshots/'
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly(libs.paper)
+    compileOnly(libs.configurate)
+    compileOnly(libs.google.autoservice)
+
+    implementation(libs.bundles.incendocloud)
+
+    annotationProcessor(libs.google.autoservice)
+    annotationProcessor(libs.incendo.cloud.annotations)
+}
+
+tasks {
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+    javadoc {
+        options.encoding = "UTF-8"
+    }
+}
+
+tasks.register("publishJar") {
+    dependsOn "publish"
+    if (isRelease) {
+        shouldRunAfter(publish)
+        dependsOn "jreleaserFullRelease"
+    }
+}
+
+jreleaser {
+    if (isRelease) {
+        signing {
+            active = 'ALWAYS'
+            armored = true
+        }
+    }
+    release {
+        github {
+            changelog {
+                enabled = false
+            }
+            skipTag = true
+            skipRelease = true
+            sign = false
+            uploadAssets = 'NEVER'
+        }
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'RELEASE'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    namespace = "${projectGroup}"
+                    snapshotSupported = true
+                    if (isRelease) {
+                        applyMavenCentralRules = true
+                        stagingRepository('build/staging-deploy/release')
+                    } else {
+                        sign = false
+                        stagingRepository('build/staging-deploy/snapshot')
+                    }
+                }
+            }
+        }
+    }
+}
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}
