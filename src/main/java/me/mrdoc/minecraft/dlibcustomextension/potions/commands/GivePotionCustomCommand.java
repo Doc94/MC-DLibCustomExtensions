@@ -1,10 +1,12 @@
 package me.mrdoc.minecraft.dlibcustomextension.potions.commands;
 
+import java.util.Collection;
 import java.util.List;
 import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtension;
 import me.mrdoc.minecraft.dlibcustomextension.commands.BaseCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
@@ -30,20 +32,21 @@ public class GivePotionCustomCommand extends BaseCommand {
         int amount = (size != null) ? size : 1;
         itemStack.setAmount(amount);
 
-        if (playerTargetsArgument.values().isEmpty()) {
-            sourceSender.source().sendMessage(Component.text("No hay target para entregar items.", NamedTextColor.RED));
+        final Collection<Player> playersTargets = playerTargetsArgument.values();
+        if (playersTargets.isEmpty()) {
+            sourceSender.source().sendMessage(Component.translatable("argument.entity.notfound.player", NamedTextColor.RED));
             return;
         }
 
-        playerTargetsArgument.values().forEach(player -> player.getInventory().addItem(itemStack));
+        playersTargets.forEach(player -> player.getInventory().addItem(itemStack));
 
-        Component targetComponentResponse = playerTargetsArgument.values().size() == 1 ? playerTargetsArgument.values().stream().findFirst().map(player -> player.teamDisplayName().hoverEvent(player)).orElse(Component.empty()) : Component.text(playerTargetsArgument.values().size());
+        Component componentMessage;
+        if (playersTargets.size() > 1) {
+            componentMessage = Component.translatable("commands.give.success.multiple", Component.text(amount), itemStack.displayName(), playersTargets.iterator().next().teamDisplayName());
+        } else {
+            componentMessage = Component.translatable("commands.give.success.single", Component.text(amount), itemStack.displayName(), Component.text(playersTargets.size()));
+        }
 
-        Component componentMessage = Component.text("Entregado " + amount)
-                .append(Component.space())
-                .append(itemStack.displayName().hoverEvent(itemStack))
-                .append(Component.space())
-                .append(Component.text("a").append(Component.space()).append(targetComponentResponse));
         sourceSender.source().sendMessage(componentMessage);
     }
 
