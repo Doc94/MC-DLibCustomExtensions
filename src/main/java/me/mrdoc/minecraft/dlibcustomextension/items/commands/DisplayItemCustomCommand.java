@@ -21,7 +21,6 @@ import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Permission;
 import org.incendo.cloud.annotations.parser.Parser;
-import org.incendo.cloud.annotations.processing.CommandContainer;
 import org.incendo.cloud.annotations.suggestion.Suggestions;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
@@ -43,19 +42,19 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
     public void executeDisplayItemCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itemcustom") ItemStack itemStack) {
         Player senderPlayer = playerSourceSender.source();
         CustomItemsManager.getCustomItem(CustomItemsManager.getInternalName(itemStack)).ifPresentOrElse(baseItem -> {
+            if (baseItem.getRecipe() == null) {
+                senderPlayer.sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.recipe_not_found", baseItem.getItem().displayName()).color(NamedTextColor.RED));
+                return;
+            }
             InventoryView baseItemInventoryView = baseItem.createDisplayCraft(senderPlayer);
             if (baseItemInventoryView != null) {
                 senderPlayer.getScoreboardTags().add(TAG_INVENTORY_PREVIEW);
                 senderPlayer.openInventory(baseItemInventoryView);
             } else {
-                if (baseItem.getRecipe() == null) {
-                    senderPlayer.sendMessage(Component.text("El item " + baseItem.getInternalName() + " no tiene receta.", NamedTextColor.RED));
-                } else {
-                    senderPlayer.sendMessage(Component.text("El item " + baseItem.getInternalName() + " tiene una receta no valida.", NamedTextColor.RED));
-                }
+                senderPlayer.sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.craft_inventory_invalid", baseItem.getItem().displayName()).color(NamedTextColor.RED));
             }
 
-        }, () -> senderPlayer.sendMessage(Component.text("El item " + CustomItemsManager.getInternalName(itemStack) + " no existe.", NamedTextColor.RED)));
+        }, () -> senderPlayer.sendMessage(Component.translatable("dlce.argument.item.notfound")));
     }
 
     @Suggestions("suggest_itemcustom")
