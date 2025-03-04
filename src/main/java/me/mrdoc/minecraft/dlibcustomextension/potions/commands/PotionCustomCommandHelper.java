@@ -26,6 +26,6 @@ public class PotionCustomCommandHelper {
     static ItemStack parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
         final String input = commandInput.readString();
 
-        return CustomPotionsManager.getItem(input.toUpperCase()).orElseThrow(() -> new IllegalArgumentException("El item potion con ID \"%s\" no es valido.".formatted(input)));
+        return CustomPotionsManager.getItem(input.toUpperCase()).orElseThrow(() -> new IllegalArgumentException("Item Potion ID \"%s\" invalid.".formatted(input)));
     }
 }
