@@ -103,10 +103,10 @@ public class CustomPotionsManager {
                 CUSTOM_POTIONS.add(baseItem);
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                      InvocationTargetException e) {
-                LoggerUtils.warn("No se pudo cargar " + aClass.getSimpleName() + " como pocion custom. Detalles: " + e.getMessage(), e);
+                LoggerUtils.warn("Cannot load the custom potion " + aClass.getSimpleName() + ". Details: " + e.getMessage(), e);
             }
         });
-        LoggerUtils.info("Se cargaron " + CustomPotionsManager.CUSTOM_POTIONS.size() + " pociones custom.");
+        LoggerUtils.info("Loaded " + CustomPotionsManager.CUSTOM_POTIONS.size() + " custom potions.");
     }
 
     public static void registerAllRecipes() {
@@ -114,7 +114,7 @@ public class CustomPotionsManager {
             try {
                 Bukkit.getPotionBrewer().addPotionMix(basePotion.getPotionMix());
             } catch (IllegalStateException | IllegalArgumentException ex) {
-                LoggerUtils.warn("Error creando receta de pocion [" + basePotion.getPotionNamespace().getKey() + "]: " + ex.getMessage());
+                LoggerUtils.warn("Cannot create potion recipe [" + basePotion.getPotionNamespace().getKey() + "]: " + ex.getMessage());
             }
         }
     }
@@ -130,13 +130,23 @@ public class CustomPotionsManager {
     }
 
     /**
-     * Obtiene la clase que genera el potion custom
+     * Gets the instance for the custom potion.
      *
-     * @param internalName Nombre interno
-     * @return Optional del potion custom (puede ser casteado)
+     * @param internalName Internal name
+     * @return an Optional
      */
-    public static Optional<AbstractCustomPotion> getCustomItem(String internalName) {
+    public static Optional<AbstractCustomPotion> getCustomPotion(String internalName) {
         return CUSTOM_POTIONS.stream().filter(basePotion -> basePotion.getPotionNamespace().getKey().equalsIgnoreCase(internalName)).findFirst();
+    }
+
+    /**
+     * Gets the instance for the custom potion.
+     *
+     * @param baseItemClass the class of custom potion
+     * @return an Optional
+     */
+    public static <T extends AbstractCustomPotion> Optional<T> getCustomPotion(Class<T> baseItemClass) {
+        return CUSTOM_POTIONS.stream().filter(baseItem -> baseItem.getClass().equals(baseItemClass)).map(baseItemClass::cast).findFirst();
     }
 
     public static boolean isItemEnable(String internalName) {
@@ -151,10 +161,10 @@ public class CustomPotionsManager {
     }
 
     /**
-     * Obtiene el nombre interno de un item custom si es valido
+     * Gets the internal potion name of this item if is valid.
      *
      * @param item ItemStack
-     * @return Nombre interno del item custom o vacio si no es valido.
+     * @return the internal name or empty
      */
     public static String getInternalName(ItemStack item) {
         if (item == null) {
@@ -168,10 +178,20 @@ public class CustomPotionsManager {
     }
 
     /**
-     * Obtiene un item para entregar a jugadores
+     * Gets the item to give for players.
      *
-     * @param internalName Nombre interno del item custom
-     * @return ItemStack para el jugador si el item existe.
+     * @param baseItemClass custom potion instance
+     * @return an Optional
+     */
+    public static <T extends AbstractCustomPotion> Optional<ItemStack> getItem(Class<T> baseItemClass) {
+        return CustomPotionsManager.getCustomPotion(baseItemClass).map(AbstractBaseCustomPotion::getItemForPlayer).map(ItemStack::clone);
+    }
+
+    /**
+     * Gets the item to give for players.
+     *
+     * @param internalName custom potion internal name
+     * @return an Optional
      */
     public static Optional<ItemStack> getItem(String internalName) {
         return CUSTOM_POTIONS.stream().filter(baseItem -> baseItem.getPotionNamespace().getKey().equalsIgnoreCase(internalName)).map(AbstractBaseCustomPotion::getItemForPlayer).map(ItemStack::clone).findAny();
