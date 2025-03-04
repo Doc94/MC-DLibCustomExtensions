@@ -1,6 +1,7 @@
 package me.mrdoc.minecraft.dlibcustomextension;
 
 import me.mrdoc.minecraft.dlibcustomextension.commands.CommandManager;
+import me.mrdoc.minecraft.dlibcustomextension.i18n.TranslatesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DLibCustomExtension {
@@ -33,6 +34,7 @@ public class DLibCustomExtension {
             throw new RuntimeException("Plugin is already set!");
         }
         PLUGIN_INSTANCE = pluginInstance;
+        TranslatesManager.load();
         CommandManager.load(pluginInstance);
     }
 
