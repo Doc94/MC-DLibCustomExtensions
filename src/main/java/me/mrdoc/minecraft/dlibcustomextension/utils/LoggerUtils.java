@@ -22,7 +22,7 @@ public class LoggerUtils {
 
     public static void setDebug(boolean status) {
         DEBUG = status;
-        debug("Cambiado modo debug a %s".formatted(status));
+        debug("Set debug mode to %s".formatted(status));
     }
 
     public static boolean isDebugEnabled() {
