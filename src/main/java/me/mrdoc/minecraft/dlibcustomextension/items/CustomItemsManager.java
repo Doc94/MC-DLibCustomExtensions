@@ -125,7 +125,7 @@ public class CustomItemsManager {
                         iterator.remove();
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                              InvocationTargetException e) {
-                        LoggerUtils.warn("No se pudo cargar [%s] como item custom".formatted(itemClass.getSimpleName()), e);
+                        LoggerUtils.warn("Cannot load [%s] item custom".formatted(itemClass.getSimpleName()), e);
                         failedClasses.add(itemClass);
                         iterator.remove();
                     }
@@ -133,7 +133,7 @@ public class CustomItemsManager {
             }
         }
 
-        LoggerUtils.info("Se cargaron " + CustomItemsManager.CUSTOM_ITEMS.size() + " items custom.");
+        LoggerUtils.info("Loaded " + CustomItemsManager.CUSTOM_ITEMS.size() + " custom items.");
     }
 
     /**
@@ -158,7 +158,7 @@ public class CustomItemsManager {
             return Optional.empty();
         }
 
-        return getCustomItem(getInternalName(itemStack));
+        return CustomItemsManager.getCustomItem(getInternalName(itemStack));
     }
 
     public static boolean isItemEnable(String internalName) {
@@ -169,14 +169,14 @@ public class CustomItemsManager {
     }
 
     public static boolean isCustomItem(ItemStack item) {
-        return !getInternalName(item).isEmpty();
+        return !CustomItemsManager.getInternalName(item).isEmpty();
     }
 
     /**
-     * Obtiene el nombre interno de un item custom si es valido
+     * Gets the internal name if is valid.
      *
      * @param item ItemStack
-     * @return Nombre interno del item custom o vacio si no es valido.
+     * @return the internal name or empty
      */
     public static String getInternalName(ItemStack item) {
         if (item == null) {
@@ -189,18 +189,24 @@ public class CustomItemsManager {
         return CUSTOM_ITEMS.stream().map(AbstractCustomItem::getRecipeNamespace).collect(Collectors.toCollection(HashSet::new));
     }
 
-    public static Optional<ItemStack> getItem(Class<? extends AbstractCustomItem> baseItemClass) {
-        return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getClass().equals(baseItemClass)).map(AbstractCustomItem::getItemForPlayer).map(ItemStack::clone).findAny();
-    }
-
     /**
-     * Obtiene un item para entregar a jugadores
+     * Gets the item to give for players.
      *
-     * @param internalName Nombre interno del item custom
-     * @return ItemStack para el jugador si el item existe.
+     * @param internalName custom item name
+     * @return an Optional
      */
     public static Optional<ItemStack> getItem(String internalName) {
         return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getRecipeNamespace().getKey().equalsIgnoreCase(internalName)).map(AbstractCustomItem::getItemForPlayer).map(ItemStack::clone).findAny();
+    }
+
+    /**
+     * Gets the item to give for players.
+     *
+     * @param baseItemClass custom item instance
+     * @return an Optional
+     */
+    public static <T extends AbstractCustomItem> Optional<ItemStack> getItem(Class<T> baseItemClass) {
+        return CustomItemsManager.getCustomItem(baseItemClass).map(AbstractCustomItem::getItemForPlayer).map(ItemStack::clone);
     }
 
     public static boolean isRegisterRecipe(Recipe recipe) {

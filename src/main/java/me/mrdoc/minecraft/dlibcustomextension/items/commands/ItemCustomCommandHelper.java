@@ -30,7 +30,7 @@ public class ItemCustomCommandHelper {
 
         Optional<ItemStack> optionalItemStack = CustomItemsManager.getItem(input.toUpperCase());
 
-        return optionalItemStack.orElseThrow(() -> new IllegalArgumentException("El item con ID \"%s\" no es valido.".formatted(input)));
+        return optionalItemStack.orElseThrow(() -> new IllegalArgumentException("Custom Item ID \"%s\" invalid.".formatted(input)));
     }
 
 
