@@ -82,7 +82,7 @@ public class CustomItemsListener implements Listener {
                 return;
             }
             if (!customItem.getInventoryTypes().contains(event.getInventory().getType())) {
-                humanWhoClicked.sendMessage(Component.text("Este crafteo es invalido para el tipo de inventario (Podria ser un bug)", NamedTextColor.RED));
+                humanWhoClicked.sendMessage(Component.translatable("dlce.items.craftitem.failed.crafting_in_invalid_inventory", NamedTextColor.RED));
                 event.setCancelled(true);
                 return;
             }
@@ -90,7 +90,7 @@ public class CustomItemsListener implements Listener {
             final CraftingRecipe craftingRecipe = ((CraftingRecipe) customItem.getRecipe());
 
             if (!CustomItemRecipeHelper.validateRecipeIngredients(customItem, event.getInventory().getMatrix())) {
-                humanWhoClicked.sendMessage(Component.text("Este crafteo no es valido segun su receta (Podria ser un bug)", NamedTextColor.RED));
+                humanWhoClicked.sendMessage(Component.translatable("dlce.items.craftitem.failed.crafting_invalid_for_recipe", NamedTextColor.RED));
                 event.setCancelled(true);
                 return;
             }
@@ -134,30 +134,30 @@ public class CustomItemsListener implements Listener {
             final CraftingRecipe craftingRecipe = ((CraftingRecipe) customItem.getRecipe());
 
             if (!customItem.isEnabled()) {
-                event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.text().append(Component.text("El pre-crafteo [", NamedTextColor.RED)).append(customItem.getItem().displayName()).append(Component.text("] no esta activado", NamedTextColor.RED))));
+                event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.translatable("dlce.items.precraftitem.failed.crafting_disabled", customItem.getItem().displayName()).color(NamedTextColor.RED)));
                 event.getInventory().setResult(new ItemStack(Material.AIR));
                 return;
             }
             if (!customItem.getInventoryTypes().contains(event.getInventory().getType())) {
-                event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.text().append(Component.text("El pre-crafteo [", NamedTextColor.RED)).append(customItem.getItem().displayName()).append(Component.text("] esta siendo procesado en (" + event.getInventory().getType() + ") cuando deberia ser: " + customItem.getInventoryTypes().stream().map(Objects::toString).collect(Collectors.joining(", ")), NamedTextColor.RED))));
+                event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.translatable("dlce.items.precraftitem.failed.crafting_in_invalid_inventory", customItem.getItem().displayName(), Component.text(event.getInventory().getType().name()), Component.text(customItem.getInventoryTypes().stream().map(Objects::toString).collect(Collectors.joining(", ")))).color(NamedTextColor.RED)));
                 event.getInventory().setResult(new ItemStack(Material.AIR));
                 return;
             }
             if (!CustomItemRecipeHelper.validateRecipeIngredients(customItem, event.getInventory().getMatrix())) {
-                event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.text().append(Component.text("El pre-crafteo [", NamedTextColor.RED)).append(customItem.getItem().displayName()).append(Component.text("] no es valido segun su receta (Podria ser un bug)", NamedTextColor.RED))));
+                event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.translatable("dlce.items.precraftitem.failed.crafting_invalid_for_recipe", customItem.getItem().displayName()).color(NamedTextColor.RED)));
                 event.getInventory().setResult(new ItemStack(Material.AIR));
                 return;
             }
 
             Pair<ItemStack[], Integer> resultCraft = CustomItemRecipeHelper.reduceMatrix(craftingRecipe, event.getInventory().getMatrix(), true);
-            Component messagePossibleCraftsComponent = Component.text().append(Component.text("Cantidad Posible a Craftear:", TextColor.fromHexString("#ff9a1c"))).appendSpace().append(Component.text(resultCraft.getRight(), TextColor.fromHexString("#69b5ff"))).build();
+            Component messagePossibleCraftsComponent = Component.translatable("dlce.items.precraftitem.message.crafting_size_result", Component.text(resultCraft.getRight(), TextColor.fromHexString("#69b5ff"))).color(TextColor.fromHexString("#ff9a1c"));
             event.getViewers().forEach(viewer -> viewer.sendActionBar(messagePossibleCraftsComponent));
         } else {
             // Bloquear crafteo si algún ingrediente es un item custom no permitido
             if (Arrays.stream(event.getInventory().getMatrix()).anyMatch(itemStack ->
                     CustomItemsManager.getCustomItem(itemStack).isPresent())) {
                 if (!CustomItemRecipeHelper.validateRecipeIngredients(event.getRecipe(), event.getInventory().getMatrix())) {
-                    event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.text("Este pre-crafteo contiene un item custom y no deberias usarlo aqui", NamedTextColor.RED)));
+                    event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.translatable("dlce.items.precraftitem.failed.crafting_contains_unsupported_custom_item", NamedTextColor.RED)));
                     event.getInventory().setResult(new ItemStack(Material.AIR));
                 }
             }
@@ -185,7 +185,7 @@ public class CustomItemsListener implements Listener {
                     !CustomItemRecipeHelper.validateRecipeIngredients(customItem, inventory.getContents())) {
                 inventory.setItem(9, new ItemStack(Material.AIR));
                 inventory.getViewers().forEach(viewer ->
-                        viewer.sendActionBar(Component.text("Esta receta es incompleta o inválida.", NamedTextColor.RED)));
+                        viewer.sendActionBar(Component.translatable("dlce.items.crafter.failed.crafting_invalid_for_recipe", NamedTextColor.RED)));
             }
         }
     }
