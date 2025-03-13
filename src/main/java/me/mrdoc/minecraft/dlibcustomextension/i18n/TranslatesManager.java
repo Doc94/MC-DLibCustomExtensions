@@ -25,17 +25,19 @@ public class TranslatesManager {
         return INSTANCE;
     }
 
+    private final TranslationRegistry registry;
+
     private TranslatesManager() {
         final Set<Locale> locales = Set.of(Locale.US, Locale.of("es"));
 
-        TranslationRegistry registry = TranslationRegistry.create(Key.key("dlibcustomextensions:translates"));
+        this.registry = TranslationRegistry.create(Key.key("dlibcustomextensions:translates"));
 
         locales.forEach(locale -> {
             ResourceBundle bundle = ResourceBundle.getBundle("dlibcustomextensions.lang.LangBundle", locale, UTF8ResourceBundleControl.get());
-            registry.registerAll(locale, bundle, true);
+            this.registry.registerAll(locale, bundle, true);
         });
 
-        GlobalTranslator.translator().addSource(registry);
+        GlobalTranslator.translator().addSource(this.registry);
     }
 
 }
