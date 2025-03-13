@@ -1,7 +1,7 @@
 package me.mrdoc.minecraft.dlibcustomextension.items.commands;
 
 import java.util.List;
-import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtension;
+import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import me.mrdoc.minecraft.dlibcustomextension.commands.BaseCommand;
 import me.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import net.kyori.adventure.text.Component;
@@ -32,8 +32,8 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
     private final String TAG_INVENTORY_PREVIEW = "INVENTORY_PREVIEW";
 
     public DisplayItemCustomCommand() {
-        super(DLibCustomExtension.getPluginInstance());
-        Bukkit.getPluginManager().registerEvents(this, DLibCustomExtension.getPluginInstance());
+        super(DLibCustomExtensionManager.getPluginInstance());
+        Bukkit.getPluginManager().registerEvents(this, DLibCustomExtensionManager.getPluginInstance());
     }
 
     @Command("displayitemcustom <item>")

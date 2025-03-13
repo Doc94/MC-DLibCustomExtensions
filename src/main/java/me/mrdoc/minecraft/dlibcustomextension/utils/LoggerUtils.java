@@ -1,7 +1,6 @@
 package me.mrdoc.minecraft.dlibcustomextension.utils;
 
 import java.util.Optional;
-import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtension;
 import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
@@ -14,10 +13,7 @@ public class LoggerUtils {
     private static boolean DEBUG = false;
 
     public static Logger getLogger() {
-        if (DLibCustomExtension.getPluginInstance() == null) {
-            return LoggerFactory.getLogger("DLibCustomExtensionLogger");
-        }
-        return DLibCustomExtension.getPluginInstance().getSLF4JLogger();
+        return LoggerFactory.getLogger("DLibCustomExtensionLogger");
     }
 
     public static void setDebug(boolean status) {

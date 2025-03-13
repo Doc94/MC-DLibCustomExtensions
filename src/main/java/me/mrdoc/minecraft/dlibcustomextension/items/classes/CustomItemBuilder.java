@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
-import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtension;
+import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
 public class CustomItemBuilder {
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     private final String internalName;
     private final Component displayName;
     private CustomItemRarity rarity = CustomItemRarity.NONE;
@@ -22,10 +23,10 @@ public class CustomItemBuilder {
     private List<Component> descriptions = new ArrayList<>();
 
     private CustomItemBuilder(String internalName, Component displayName) {
-        this(DLibCustomExtension.getPluginInstance(), internalName, displayName);
+        this(DLibCustomExtensionManager.getPluginInstance(), internalName, displayName);
     }
 
-    private CustomItemBuilder(JavaPlugin plugin, String internalName, Component displayName) {
+    private CustomItemBuilder(Plugin plugin, String internalName, Component displayName) {
         this.plugin = plugin;
         this.internalName = internalName;
         this.displayName = displayName;

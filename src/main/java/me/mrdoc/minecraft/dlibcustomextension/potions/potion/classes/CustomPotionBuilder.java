@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
-import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtension;
+import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import net.kyori.adventure.text.Component;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 @Getter
 public class CustomPotionBuilder {
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     private final String internalName;
     private final Component displayName;
     private List<Component> descriptions = new ArrayList<>();
 
     private CustomPotionBuilder(String internalName, Component displayName) {
-        this(DLibCustomExtension.getPluginInstance(), internalName, displayName);
+        this(DLibCustomExtensionManager.getPluginInstance(), internalName, displayName);
     }
 
-    private CustomPotionBuilder(JavaPlugin plugin, String internalName, Component displayName) {
+    private CustomPotionBuilder(Plugin plugin, String internalName, Component displayName) {
         this.plugin = plugin;
         this.internalName = internalName;
         this.displayName = displayName;
@@ -50,7 +50,7 @@ public class CustomPotionBuilder {
      * @param displayName the name to display
      * @return the builder
      */
-    public static CustomPotionBuilder create(JavaPlugin plugin, String internalName, Component displayName) {
+    public static CustomPotionBuilder create(Plugin plugin, String internalName, Component displayName) {
         return new CustomPotionBuilder(plugin, internalName, displayName);
     }
 }

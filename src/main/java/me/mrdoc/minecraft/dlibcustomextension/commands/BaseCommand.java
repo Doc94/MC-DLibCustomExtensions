@@ -2,7 +2,7 @@ package me.mrdoc.minecraft.dlibcustomextension.commands;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.incendo.cloud.annotations.processing.CommandContainer;
 
 /**
@@ -11,12 +11,12 @@ import org.incendo.cloud.annotations.processing.CommandContainer;
 @Getter
 public class BaseCommand {
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
 
     @SneakyThrows
-    public BaseCommand(JavaPlugin javaPlugin) {
-        this.plugin = javaPlugin;
-        CommandManager.load(javaPlugin);
+    public BaseCommand(Plugin Plugin) {
+        this.plugin = Plugin;
+        CommandManager.load(Plugin);
         if (!this.getClass().isAnnotationPresent(CommandContainer.class)) {
             CommandManager.getInstance().getAnnotationParser().parse(this);
         }

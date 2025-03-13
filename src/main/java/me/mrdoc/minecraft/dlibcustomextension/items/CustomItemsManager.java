@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
-import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtension;
+import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import me.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemContainer;
 import me.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemContainerProcessor;
 import me.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
@@ -24,14 +24,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 public class CustomItemsManager {
 
-    private static JavaPlugin PLUGIN_INSTANCE;
+    private static Plugin PLUGIN_INSTANCE;
     private static NamespacedKey NAMESPACED_CUSTOM_ITEM;
     private static final HashSet<AbstractCustomItem> CUSTOM_ITEMS = new HashSet<>();
 
@@ -43,7 +43,7 @@ public class CustomItemsManager {
 
 
     public static void load() {
-        PLUGIN_INSTANCE = DLibCustomExtension.getPluginInstance();
+        PLUGIN_INSTANCE = DLibCustomExtensionManager.getPluginInstance();
         NAMESPACED_CUSTOM_ITEM = new NamespacedKey(PLUGIN_INSTANCE, "custom_item");
         loadConfig();
         loadAllCustomItems();
@@ -76,7 +76,7 @@ public class CustomItemsManager {
     @SneakyThrows
     public static void reloadConfig() {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
-                .path(new File(DLibCustomExtension.getPluginInstance().getDataFolder(), CONFIG_FILE_NAME).toPath())
+                .path(new File(DLibCustomExtensionManager.getPluginInstance().getDataFolder(), CONFIG_FILE_NAME).toPath())
                 .build();
 
         CONFIG_NODE = CONFIG_LOADER.load(); // Load from file
@@ -101,7 +101,7 @@ public class CustomItemsManager {
     }
 
     public static void loadAllCustomItems() {
-        Set<Class<? extends AbstractCustomItem>> reflectionCustomItems = getClasses(DLibCustomExtension.getClassLoader());
+        Set<Class<? extends AbstractCustomItem>> reflectionCustomItems = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
 
         Set<Class<? extends AbstractCustomItem>> loadedClasses = new HashSet<>();
         Set<Class<? extends AbstractCustomItem>> failedClasses = new HashSet<>();

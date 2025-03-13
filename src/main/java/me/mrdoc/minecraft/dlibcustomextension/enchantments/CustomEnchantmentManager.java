@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
-import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtension;
+import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import me.mrdoc.minecraft.dlibcustomextension.enchantments.annotations.CustomEnchantmentContainerProcessor;
 import me.mrdoc.minecraft.dlibcustomextension.enchantments.classes.AbstractCustomEnchantment;
 import me.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
@@ -26,7 +26,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -68,7 +68,7 @@ public class CustomEnchantmentManager {
     @SneakyThrows
     public static void reloadConfig() {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
-                .path(new File(DLibCustomExtension.getPluginInstance().getDataFolder(), CONFIG_FILE_NAME).toPath())
+                .path(new File(DLibCustomExtensionManager.getPluginInstance().getDataFolder(), CONFIG_FILE_NAME).toPath())
                 .build();
 
         CONFIG_NODE = CONFIG_LOADER.load(); // Load from file
@@ -94,7 +94,7 @@ public class CustomEnchantmentManager {
 
     private static void loadAllCustomEnchantments(@NotNull BootstrapContext context) {
         ENCHANTMENT_PREFIX = ENCHANTMENT_PREFIX.replace("KEY", context.getConfiguration().getName().toLowerCase());
-        Set<Class<? extends AbstractCustomEnchantment>> reflectionCustomEnchantments = getClasses(DLibCustomExtension.getClassLoader());
+        Set<Class<? extends AbstractCustomEnchantment>> reflectionCustomEnchantments = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
 
         reflectionCustomEnchantments.forEach(aClass -> {
             try {
@@ -139,12 +139,8 @@ public class CustomEnchantmentManager {
         LoggerUtils.info("Loaded " + CustomEnchantmentManager.CUSTOM_ENCHANTMENTS.size() + " Custom Enchantments.");
     }
 
-    public static void postLoadAllEnchantments() {
-        CUSTOM_ENCHANTMENTS.forEach((key, abstractCustomEnchantment) -> abstractCustomEnchantment.registerListener(DLibCustomExtension.getPluginInstance()));
-    }
-
-    public static void postLoadAllEnchantments(JavaPlugin javaPlugin) {
-        CUSTOM_ENCHANTMENTS.forEach((key, abstractCustomEnchantment) -> abstractCustomEnchantment.registerListener(javaPlugin));
+    public static void onEnable(Plugin plugin) {
+        CUSTOM_ENCHANTMENTS.forEach((key, abstractCustomEnchantment) -> abstractCustomEnchantment.registerListener(plugin));
     }
 
     public static <T extends AbstractCustomEnchantment> Optional<T> getEnchantmentInstance(Class<T> clazz) {

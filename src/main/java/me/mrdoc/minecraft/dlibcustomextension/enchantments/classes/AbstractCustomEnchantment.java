@@ -13,7 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseCustomEnchantment implements Listener {
 
@@ -21,7 +21,7 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
         super(customEnchantmentBuilder.getInternalName(), customEnchantmentBuilder.getTagSupportedItems(), customEnchantmentBuilder.getTagEnchantments());
     }
 
-    public void registerListener(JavaPlugin plugin) {
+    public void registerListener(Plugin plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 

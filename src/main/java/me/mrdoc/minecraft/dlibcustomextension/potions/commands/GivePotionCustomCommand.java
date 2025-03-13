@@ -2,7 +2,7 @@ package me.mrdoc.minecraft.dlibcustomextension.potions.commands;
 
 import java.util.Collection;
 import java.util.List;
-import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtension;
+import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import me.mrdoc.minecraft.dlibcustomextension.commands.BaseCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,7 +22,7 @@ import org.incendo.cloud.paper.util.sender.Source;
 public class GivePotionCustomCommand extends BaseCommand {
 
     public GivePotionCustomCommand() {
-        super(DLibCustomExtension.getPluginInstance());
+        super(DLibCustomExtensionManager.getPluginInstance());
     }
 
     @Command("givepotion <target> <item> [size]")
