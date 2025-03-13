@@ -112,7 +112,7 @@ public class CustomEnchantmentManager {
 
                     // Registry in Vanilla TAG
                     if (!abstractCustomEnchantment.getTagsEnchantments().isEmpty()) {
-                        LoggerUtils.info("El encantamiento custom " + abstractCustomEnchantment.getName() + " contiene las siguientes tags de encantamientos a las cuales debe ser añadido: " + abstractCustomEnchantment.getTagsEnchantments().stream().map(enchantmentTagKey -> enchantmentTagKey.key().asString()).collect(Collectors.joining(", ")));
+                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " has the following tags to be added: " + abstractCustomEnchantment.getTagsEnchantments().stream().map(enchantmentTagKey -> enchantmentTagKey.key().asString()).collect(Collectors.joining(", ")));
                         context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ENCHANTMENT), event -> {
                             final PreFlattenTagRegistrar<Enchantment> registrar = event.registrar();
                             abstractCustomEnchantment.getTagsEnchantments().forEach(enchantmentTagKey -> registrar.addToTag(enchantmentTagKey, List.of(TagEntry.valueEntry(abstractCustomEnchantment.getTypedKey()))));
@@ -120,23 +120,23 @@ public class CustomEnchantmentManager {
                     }
 
                     // Registry for items valid to be enchanted with abstractCustomEnchantment
-                    LoggerUtils.info("El encantamiento custom " + abstractCustomEnchantment.getName() + " contiene es valido para los siguientes tipos de item: " + abstractCustomEnchantment.getTagsItemTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
+                    LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " has the following ItemType available to be added: " + abstractCustomEnchantment.getTagsItemTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
                     context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
                         final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
                         registrar.addToTag(TagKey.create(RegistryKey.ITEM, abstractCustomEnchantment.getEnchantableKey()), abstractCustomEnchantment.getTagsItemTypes());
                     });
 
-                    LoggerUtils.info("Se cargo " + abstractCustomEnchantment.getName() + " como encantamiento custom.");
+                    LoggerUtils.info("Loaded " + abstractCustomEnchantment.getName() + " for Custom Enchantment.");
                 } else {
-                    LoggerUtils.info("Se ignoro " + abstractCustomEnchantment.getName() + " como encantamiento custom por estar desactivado.");
+                    LoggerUtils.info("Ignored " + abstractCustomEnchantment.getName() + " for Custom Enchant. [DISABLED]");
                 }
 
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                      InvocationTargetException e) {
-                LoggerUtils.warn("No se pudo cargar [%s] como encantamiento custom".formatted(aClass.getSimpleName()), e);
+                LoggerUtils.warn("Cannot load [%s] for Custom Enchantment".formatted(aClass.getSimpleName()), e);
             }
         });
-        LoggerUtils.info("Se cargaron " + CustomEnchantmentManager.CUSTOM_ENCHANTMENTS.size() + " encantamientos custom.");
+        LoggerUtils.info("Loaded " + CustomEnchantmentManager.CUSTOM_ENCHANTMENTS.size() + " Custom Enchantments.");
     }
 
     public static void postLoadAllEnchantments() {

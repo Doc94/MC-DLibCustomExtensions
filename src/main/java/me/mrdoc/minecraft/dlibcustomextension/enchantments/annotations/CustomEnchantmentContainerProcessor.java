@@ -57,7 +57,7 @@ public class CustomEnchantmentContainerProcessor extends AbstractProcessor {
                 continue;
             }
 
-            // Verifica que la clase extienda de AbstractCustomEnchantment
+            // Verify class requirement
             TypeElement baseItemType = this.elements.getTypeElement(AbstractBaseCustomEnchantment.class.getCanonicalName());
             if (!this.types.isSubtype(typeElement.asType(), baseItemType.asType())) {
                 this.messager.printMessage(Diagnostic.Kind.ERROR, String.format("@CustomEnchantmentContainer-annotated class %s need extends from AbstractCustomEnchantment", element));
