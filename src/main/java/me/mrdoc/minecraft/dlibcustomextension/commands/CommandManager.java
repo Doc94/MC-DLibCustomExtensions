@@ -1,5 +1,6 @@
 package me.mrdoc.minecraft.dlibcustomextension.commands;
 
+import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.plugin.Plugin;
@@ -26,8 +27,24 @@ public class CommandManager {
         this.annotationParser.parseContainers();
     }
 
-    public static void load(Plugin plugin) {
+    @SneakyThrows
+    public CommandManager(BootstrapContext bootstrapContext) {
+        this.commandManager = PaperCommandManager.builder(PaperSimpleSenderMapper.simpleSenderMapper())
+                .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
+                .buildBootstrapped(bootstrapContext);
+        this.annotationParser = new AnnotationParser<>(this.commandManager, Source.class);
+        this.annotationParser.parseContainers();
+    }
+
+    public static void load(BootstrapContext bootstrapContext) {
         if (instance != null) {
+            return;
+        }
+        instance = new CommandManager(bootstrapContext);
+    }
+
+    public static void load(Plugin plugin) {
+        if (instance != null || !plugin.isEnabled()) {
             return;
         }
         instance = new CommandManager(plugin);
