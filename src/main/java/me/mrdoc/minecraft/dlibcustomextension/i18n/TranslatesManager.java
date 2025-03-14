@@ -1,5 +1,7 @@
 package me.mrdoc.minecraft.dlibcustomextension.i18n;
 
+import com.github.fracpete.romannumerals4j.RomanNumeralFormat;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -35,9 +37,17 @@ public class TranslatesManager {
         locales.forEach(locale -> {
             ResourceBundle bundle = ResourceBundle.getBundle("dlibcustomextensions.lang.LangBundle", locale, UTF8ResourceBundleControl.get());
             this.registry.registerAll(locale, bundle, true);
+            this.patchEnchantmentLevels(locale);
         });
 
         GlobalTranslator.translator().addSource(this.registry);
+    }
+
+    private void patchEnchantmentLevels(Locale locale) {
+        RomanNumeralFormat romanNumeralFormat = new RomanNumeralFormat();
+        for (int level = 1; level <= 100; level++) {
+            this.registry.register("enchantment.level.".concat(Integer.toString(level)), locale, new MessageFormat(romanNumeralFormat.format(level)));
+        }
     }
 
 }

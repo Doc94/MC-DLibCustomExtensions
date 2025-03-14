@@ -3,6 +3,7 @@ paper = "1.21.4-R0.1-SNAPSHOT"
 incendo-cloud = "2.0.0"
 google-autoservice = "1.1.1"
 configurate = "4.2.0"
+romannumerals4j = "0.0.1"
 
 [libraries]
 paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
@@ -11,6 +12,7 @@ incendo-cloud-core = { module = "org.incendo:cloud-core", version.ref = "incendo
 incendo-cloud-annotations = { module = "org.incendo:cloud-annotations", version.ref = "incendo-cloud" }
 incendo-cloud-paper = { module = "org.incendo:cloud-paper", version = "2.0.0-SNAPSHOT" }
 google-autoservice = { module = "com.google.auto.service:auto-service", version.ref = "google-autoservice" }
+romannumerals4j = { module = "com.github.fracpete:romannumerals4j", version.ref = "romannumerals4j" }
 
 [bundles]
 incendocloud = ["incendo-cloud-core", "incendo-cloud-annotations", "incendo-cloud-paper"]
