@@ -137,10 +137,10 @@ public class CustomItemsManager {
     }
 
     /**
-     * Obtiene la clase que genera el item custom
+     * Gets the class for a custom item.
      *
-     * @param internalName Nombre interno
-     * @return Optional del item custom (puede ser casteado)
+     * @param internalName custom item name
+     * @return an Optional
      */
     public static Optional<AbstractCustomItem> getCustomItem(String internalName) {
         if (internalName == null || internalName.isEmpty()) {
@@ -237,7 +237,7 @@ public class CustomItemsManager {
             try {
                 customItem.registerRecipe();
             } catch (IllegalStateException ex) {
-                LoggerUtils.warn("Error creando receta [%s]".formatted(customItem.getRecipeNamespace().getKey()), ex);
+                LoggerUtils.warn("Cannot register the recipe for [%s]".formatted(customItem.getRecipeNamespace().getKey()), ex);
             }
         }
     }
