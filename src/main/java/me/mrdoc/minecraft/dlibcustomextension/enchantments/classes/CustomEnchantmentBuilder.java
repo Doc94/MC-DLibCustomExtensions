@@ -1,5 +1,6 @@
 package me.mrdoc.minecraft.dlibcustomextension.enchantments.classes;
 
+import io.papermc.paper.registry.data.EnchantmentRegistryEntry;
 import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys;
 import io.papermc.paper.registry.tag.TagKey;
 import io.papermc.paper.tag.TagEntry;
@@ -7,12 +8,17 @@ import java.util.Set;
 import lombok.Getter;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemType;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Getter
 public class CustomEnchantmentBuilder {
 
     private final String internalName;
     private Set<TagEntry<ItemType>> tagSupportedItems = Set.of();
+    @Nullable
+    private Set<TagEntry<ItemType>> tagPrimaryItems = Set.of();
     private Set<TagKey<Enchantment>> tagEnchantments = Set.of();
 
     private CustomEnchantmentBuilder(String internalName) {
@@ -37,6 +43,44 @@ public class CustomEnchantmentBuilder {
      */
     public CustomEnchantmentBuilder supportedItems(Set<TagEntry<ItemType>> itemsValidForEnchantment) {
         this.tagSupportedItems = itemsValidForEnchantment;
+        return this;
+    }
+
+    /**
+     * Set the primary items for this enchantment.
+     * <br>
+     * For make primary items just use the {@link #getTagSupportedItems()} just use {@link #useSupportedItemsInPrimaryItems()}
+     *
+     * @param itemsValidNaturalForEnchantment ItemType tag of items
+     * @return the builder
+     * @see EnchantmentRegistryEntry.Builder#primaryItems()
+     */
+    public CustomEnchantmentBuilder primaryItems(TagEntry<ItemType>... itemsValidNaturalForEnchantment) {
+        return this.primaryItems(Set.of(itemsValidNaturalForEnchantment));
+    }
+
+    /**
+     * Set the primary items for this enchantment.
+     * <br>
+     * For make primary items just use the {@link #getTagSupportedItems()} just use {@link #useSupportedItemsInPrimaryItems()}
+     *
+     * @param itemsValidNaturalForEnchantment ItemType tag of items
+     * @return the builder
+     * @see EnchantmentRegistryEntry.Builder#primaryItems()
+     */
+    public CustomEnchantmentBuilder primaryItems(Set<TagEntry<ItemType>> itemsValidNaturalForEnchantment) {
+        this.tagPrimaryItems = itemsValidNaturalForEnchantment;
+        return this;
+    }
+
+    /**
+     * Set the primary items use {@link #supportedItems(TagEntry[])} for this enchantment.
+     *
+     * @return the builder
+     * @see EnchantmentRegistryEntry.Builder#primaryItems()
+     */
+    public CustomEnchantmentBuilder useSupportedItemsInPrimaryItems() {
+        this.tagPrimaryItems = null;
         return this;
     }
 

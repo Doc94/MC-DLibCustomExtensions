@@ -18,7 +18,7 @@ import org.bukkit.plugin.Plugin;
 public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseCustomEnchantment implements Listener {
 
     public AbstractCustomEnchantment(CustomEnchantmentBuilder customEnchantmentBuilder) {
-        super(customEnchantmentBuilder.getInternalName(), customEnchantmentBuilder.getTagSupportedItems(), customEnchantmentBuilder.getTagEnchantments());
+        super(customEnchantmentBuilder);
     }
 
     public void registerListener(Plugin plugin) {
@@ -27,6 +27,11 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
 
     final public Key getEnchantableKey() {
         String enchantmentKey = CustomEnchantmentManager.ENCHANTMENT_PREFIX.concat("enchantable/").concat(this.getName());
+        return Key.key(enchantmentKey);
+    }
+
+    final public Key getEnchantablePrimaryKey() {
+        String enchantmentKey = CustomEnchantmentManager.ENCHANTMENT_PREFIX.concat("enchantable/primary_").concat(this.getName());
         return Key.key(enchantmentKey);
     }
 

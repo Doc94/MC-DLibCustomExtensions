@@ -106,7 +106,14 @@ public class CustomEnchantmentManager {
                     context.getLifecycleManager().registerEventHandler(RegistryEvents.ENCHANTMENT.freeze().newHandler(registryFreezeEvent -> {
                         registryFreezeEvent.registry().register(
                                 abstractCustomEnchantment.getTypedKey(),
-                                abstractCustomEnchantment.generateConsumerEREB(registryFreezeEvent).andThen(builder -> builder.supportedItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(abstractCustomEnchantment.getEnchantableKey()))))
+                                abstractCustomEnchantment.generateConsumerEREB(registryFreezeEvent).andThen(builder -> {
+                                    builder.supportedItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(abstractCustomEnchantment.getEnchantableKey())));
+                                    if (abstractCustomEnchantment.useSupportedItemsForPrimaryItems()) {
+                                        builder.primaryItems(null);
+                                    } else if(!abstractCustomEnchantment.getTagsItemPrimaryTypes().isEmpty()) {
+                                        builder.primaryItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(abstractCustomEnchantment.getEnchantablePrimaryKey())));
+                                    }
+                                })
                         );
                     }));
 
@@ -120,11 +127,22 @@ public class CustomEnchantmentManager {
                     }
 
                     // Registry for items valid to be enchanted with abstractCustomEnchantment
-                    LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " has the following ItemType available to be added: " + abstractCustomEnchantment.getTagsItemTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
+                    LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " has the following Supported ItemType available to be added: " + abstractCustomEnchantment.getTagsItemTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
+                    if (abstractCustomEnchantment.useSupportedItemsForPrimaryItems()) {
+                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " is going to use the previous list of supported items for Primary ItemType used in natural enchantment");
+                    }
                     context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
                         final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
                         registrar.addToTag(TagKey.create(RegistryKey.ITEM, abstractCustomEnchantment.getEnchantableKey()), abstractCustomEnchantment.getTagsItemTypes());
                     });
+
+                    if (!abstractCustomEnchantment.getTagsItemPrimaryTypes().isEmpty()) {
+                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " has the following Primary ItemType available to be added: " + abstractCustomEnchantment.getTagsItemPrimaryTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
+                        context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
+                            final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
+                            registrar.addToTag(TagKey.create(RegistryKey.ITEM, abstractCustomEnchantment.getEnchantablePrimaryKey()), abstractCustomEnchantment.getTagsItemPrimaryTypes());
+                        });
+                    }
 
                     LoggerUtils.info("Loaded " + abstractCustomEnchantment.getName() + " for Custom Enchantment.");
                 } else {
