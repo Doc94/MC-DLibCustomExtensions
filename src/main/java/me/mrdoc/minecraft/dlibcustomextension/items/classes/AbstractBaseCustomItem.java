@@ -12,7 +12,6 @@ import me.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -42,7 +41,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     @Getter
     private final Recipe recipe;
     /**
-     * El Item base usado para registro de recetas y validaciones.
+     * The base item for recipes and validations.
      */
     @Getter
     private final ItemStack item;
@@ -63,7 +62,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
         recipe_namespace = new NamespacedKey(instance, internalName);
         this.item = this.createItem();
-        Validate.notNull(this.item, "El item creado no puede ser null");
+        Preconditions.checkState(this.item != null, "The item for %s is null", internalName);
 
         this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, recipe_namespace.toString()));
 
