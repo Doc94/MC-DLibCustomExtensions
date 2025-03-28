@@ -13,7 +13,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -28,9 +27,10 @@ import org.bukkit.inventory.SmithingTransformRecipe;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
     @Getter
@@ -38,6 +38,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     @Getter
     private final String internalName;
     private final NamespacedKey recipe_namespace;
+    @Nullable
     @Getter
     private final Recipe recipe;
     /**
@@ -60,7 +61,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
         this.internalName = internalName;
 
-        recipe_namespace = new NamespacedKey(instance, internalName);
+        this.recipe_namespace = new NamespacedKey(instance, internalName);
         this.item = this.createItem();
         Preconditions.checkState(this.item != null, "The item for %s is null", internalName);
 
@@ -106,19 +107,21 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     }
 
     /**
-     * Metodo donde debe definirse el item
+     * The definition of the item.
      *
-     * @return Item a registrar.
+     * @return item to register
      */
     public abstract ItemStack createItem();
 
     /**
-     * Metodo donde debe definirse la receta
+     * The definition of recipe
      *
-     * @return Recipe valida o null para que no sea crafteable
+     * @return recipe to register
      */
+    @Nullable
     public abstract Recipe createRecipe();
 
+    @Nullable
     public InventoryView createDisplayCraft(Player player) {
         Component titleInventoryView = Component.text().append(Component.text("Crafteo de")).appendSpace().append(this.getItem().displayName()).build();
         return switch (this.getRecipe()) {
@@ -163,18 +166,19 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     }
 
     /**
-     * Genera una copia del item para dar a jugadores.
+     * Generate a copy of the item to give to player.
      *
-     * @return Item Custom
+     * @return item to give
      */
     public ItemStack getItemForPlayer() {
         return this.getItem().clone();
     }
 
     /**
-     * Genera una copia del item para dar a jugadores.
+     * Generate a copy of the item to give to player.
      *
-     * @return Item Custom
+     * @param quantity amount of item
+     * @return item to give
      */
     public ItemStack getItemForPlayer(int quantity) {
         ItemStack itemStack = this.getItemForPlayer();
@@ -196,15 +200,15 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
     public void registerRecipe() {
         if (this.recipe != null) {
-            LoggerUtils.info("Adding recipe " + getRecipeNamespace().toString());
+            LoggerUtils.info("Adding recipe " + this.getRecipeNamespace());
             Bukkit.getServer().addRecipe(getRecipe());
         }
     }
 
     public void unRegisterRecipe() {
         if (this.recipe != null) {
-            LoggerUtils.info("Removing recipe " + getRecipeNamespace().toString());
-            Bukkit.removeRecipe(getRecipeNamespace());
+            LoggerUtils.info("Removing recipe " + this.getRecipeNamespace());
+            Bukkit.removeRecipe(this.getRecipeNamespace());
         }
     }
 
@@ -215,46 +219,10 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @return TRUE si corresponde al item custom
      */
     public boolean isItem(ItemStack itemToCheck) {
-        if (itemToCheck == null || itemToCheck.getType().equals(Material.AIR) || itemToCheck.getAmount() <= 0) {
+        if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
             return false;
         }
         String data = itemToCheck.getPersistentDataContainer().getOrDefault(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, "");
         return itemToCheck.getType().equals(getItem().getType()) && data.equals(getRecipeNamespace().toString());
-    }
-
-    /**
-     * Metodo de ayuda para saber si un item esta roto o no luego de aplicar daño.
-     * <br>
-     * <b>Nota:</b> Se considera que estara roto si el daño que recibe hace que supere el maximo de daño del item
-     * @param itemToCheck Item a revisar
-     * @param damage daño a recibir
-     * @return TRUE si esta roto
-     */
-    public boolean isItemBroken(@NotNull ItemStack itemToCheck, int damage) {
-        Preconditions.checkState(!itemToCheck.isEmpty(), "Item cannot be empty");
-        return itemToCheck.hasData(DataComponentTypes.DAMAGE) && (itemToCheck.getData(DataComponentTypes.DAMAGE) + damage >= itemToCheck.getData(DataComponentTypes.MAX_DAMAGE));
-    }
-
-    /**
-     * Metodo de ayuda para saber si un item esta roto o no.
-     * <br>
-     * <b>Nota:</b> Se considera roto si los usos restantes es menor o igual a 1
-     * @param itemToCheck Item a revisar
-     * @return TRUE si esta roto
-     */
-    public boolean isItemBroken(ItemStack itemToCheck) {
-        return (itemToCheck == null || itemToCheck.isEmpty()) || (itemToCheck.hasData(DataComponentTypes.DAMAGE) && (itemToCheck.getData(DataComponentTypes.MAX_DAMAGE) - itemToCheck.getData(DataComponentTypes.DAMAGE) <= 1));
-    }
-
-    /**
-     * Marca este item como roto dejando su daño al maximo
-     * @param itemToBreak item a romper
-     */
-    public void brokeItem(@NotNull ItemStack itemToBreak) {
-        Preconditions.checkState(!itemToBreak.isEmpty(), "Item cannot be empty");
-        if (!itemToBreak.hasData(DataComponentTypes.MAX_DAMAGE)) {
-            return;
-        }
-        itemToBreak.setData(DataComponentTypes.DAMAGE, itemToBreak.getData(DataComponentTypes.MAX_DAMAGE));
     }
 }
