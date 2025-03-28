@@ -6,7 +6,7 @@ import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry;
 import io.papermc.paper.registry.event.RegistryFreezeEvent;
 import java.util.function.Consumer;
-import me.mrdoc.minecraft.dlibcustomextension.enchantments.CustomEnchantmentManager;
+import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -15,6 +15,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Basic class for implementation of custom items
+ */
 public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseCustomEnchantment implements Listener {
 
     public AbstractCustomEnchantment(CustomEnchantmentBuilder customEnchantmentBuilder) {
@@ -26,12 +29,12 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
     }
 
     final public Key getEnchantableKey() {
-        String enchantmentKey = CustomEnchantmentManager.ENCHANTMENT_PREFIX.concat("enchantable/").concat(this.getName());
+        String enchantmentKey = DLibCustomExtensionManager.getPluginNamespace().concat(":enchantable/").concat(this.getName());
         return Key.key(enchantmentKey);
     }
 
     final public Key getEnchantablePrimaryKey() {
-        String enchantmentKey = CustomEnchantmentManager.ENCHANTMENT_PREFIX.concat("enchantable/primary_").concat(this.getName());
+        String enchantmentKey = DLibCustomExtensionManager.getPluginNamespace().concat(":enchantable/primary_").concat(this.getName());
         return Key.key(enchantmentKey);
     }
 

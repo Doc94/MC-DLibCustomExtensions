@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import me.mrdoc.minecraft.dlibcustomextension.enchantments.CustomEnchantmentManager;
+import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import net.kyori.adventure.key.Key;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemType;
@@ -27,7 +27,7 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
 
     @ApiStatus.Internal
     public AbstractBaseCustomEnchantment(CustomEnchantmentBuilder customEnchantmentBuilder) {
-        String keyName = CustomEnchantmentManager.ENCHANTMENT_PREFIX.concat(customEnchantmentBuilder.getInternalName());
+        String keyName = DLibCustomExtensionManager.getPluginNamespace().concat(":").concat(customEnchantmentBuilder.getInternalName());
         this.key = Key.key(keyName);
         this.name = customEnchantmentBuilder.getInternalName();
         this.tagsItemTypes.addAll(customEnchantmentBuilder.getTagSupportedItems());

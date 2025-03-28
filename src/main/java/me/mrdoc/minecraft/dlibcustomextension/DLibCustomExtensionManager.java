@@ -25,6 +25,14 @@ public class DLibCustomExtensionManager {
         return INSTANCE.getPlugin();
     }
 
+    public static String getPluginName() {
+        return INSTANCE.getInstanceName();
+    }
+
+    public static String getPluginNamespace() {
+        return INSTANCE.getInstanceName().toLowerCase();
+    }
+
     public static DLibCustomExtensionManager buildWithBoostrap(ContextBoostrap boostrapContext) {
         INSTANCE = new DLibCustomExtensionManager(boostrapContext);
         return INSTANCE;
@@ -50,6 +58,15 @@ public class DLibCustomExtensionManager {
             return contextPlugin.pluginInstance();
         } else if (this.context instanceof ContextBoostrap contextBootstrap) {
             return Bukkit.getPluginManager().getPlugin(contextBootstrap.bootstrapContext().getPluginMeta().getName());
+        }
+        throw new RuntimeException("No context set!");
+    }
+
+    public String getInstanceName() {
+        if (this.context instanceof ContextPlugin contextPlugin) {
+            return contextPlugin.pluginInstance().getPluginMeta().getName();
+        } else if (this.context instanceof ContextBoostrap contextBootstrap) {
+            return contextBootstrap.bootstrapContext().getPluginMeta().getName();
         }
         throw new RuntimeException("No context set!");
     }

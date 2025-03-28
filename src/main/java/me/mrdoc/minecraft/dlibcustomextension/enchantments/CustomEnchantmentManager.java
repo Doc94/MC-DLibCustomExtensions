@@ -33,8 +33,6 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 public class CustomEnchantmentManager {
-
-    public static String ENCHANTMENT_PREFIX = "KEY:";
     public static HashMap<Key, AbstractCustomEnchantment> CUSTOM_ENCHANTMENTS = new HashMap<>();
 
     // Config
@@ -93,7 +91,6 @@ public class CustomEnchantmentManager {
     }
 
     private static void loadAllCustomEnchantments(@NotNull BootstrapContext context) {
-        ENCHANTMENT_PREFIX = ENCHANTMENT_PREFIX.replace("KEY", context.getConfiguration().getName().toLowerCase());
         Set<Class<? extends AbstractCustomEnchantment>> reflectionCustomEnchantments = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
 
         reflectionCustomEnchantments.forEach(aClass -> {
@@ -119,7 +116,7 @@ public class CustomEnchantmentManager {
 
                     // Registry in Vanilla TAG
                     if (!abstractCustomEnchantment.getTagsEnchantments().isEmpty()) {
-                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " has the following tags to be added: " + abstractCustomEnchantment.getTagsEnchantments().stream().map(enchantmentTagKey -> enchantmentTagKey.key().asString()).collect(Collectors.joining(", ")));
+                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getKey().asString() + " has the following tags to be added: " + abstractCustomEnchantment.getTagsEnchantments().stream().map(enchantmentTagKey -> enchantmentTagKey.key().asString()).collect(Collectors.joining(", ")));
                         context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ENCHANTMENT), event -> {
                             final PreFlattenTagRegistrar<Enchantment> registrar = event.registrar();
                             abstractCustomEnchantment.getTagsEnchantments().forEach(enchantmentTagKey -> registrar.addToTag(enchantmentTagKey, List.of(TagEntry.valueEntry(abstractCustomEnchantment.getTypedKey()))));
@@ -127,9 +124,9 @@ public class CustomEnchantmentManager {
                     }
 
                     // Registry for items valid to be enchanted with abstractCustomEnchantment
-                    LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " has the following Supported ItemType available to be added: " + abstractCustomEnchantment.getTagsItemTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
+                    LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getKey().asString() + " has the following Supported ItemType available to be added: " + abstractCustomEnchantment.getTagsItemTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
                     if (abstractCustomEnchantment.useSupportedItemsForPrimaryItems()) {
-                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " is going to use the previous list of supported items for Primary ItemType used in natural enchantment");
+                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getKey().asString() + " is going to use the previous list of supported items for Primary ItemType used in natural enchantment");
                     }
                     context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
                         final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
@@ -137,16 +134,16 @@ public class CustomEnchantmentManager {
                     });
 
                     if (!abstractCustomEnchantment.getTagsItemPrimaryTypes().isEmpty()) {
-                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getName() + " has the following Primary ItemType available to be added: " + abstractCustomEnchantment.getTagsItemPrimaryTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
+                        LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getKey().asString() + " has the following Primary ItemType available to be added: " + abstractCustomEnchantment.getTagsItemPrimaryTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
                         context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
                             final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
                             registrar.addToTag(TagKey.create(RegistryKey.ITEM, abstractCustomEnchantment.getEnchantablePrimaryKey()), abstractCustomEnchantment.getTagsItemPrimaryTypes());
                         });
                     }
 
-                    LoggerUtils.info("Loaded " + abstractCustomEnchantment.getName() + " for Custom Enchantment.");
+                    LoggerUtils.info("Loaded " + abstractCustomEnchantment.getKey().asString() + " for Custom Enchantment.");
                 } else {
-                    LoggerUtils.info("Ignored " + abstractCustomEnchantment.getName() + " for Custom Enchant. [DISABLED]");
+                    LoggerUtils.info("Ignored " + abstractCustomEnchantment.getKey().asString() + " for Custom Enchant. [DISABLED]");
                 }
 
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |

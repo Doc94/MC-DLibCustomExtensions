@@ -11,6 +11,9 @@ import org.bukkit.inventory.ItemType;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Builder class
+ */
 @NullMarked
 @Getter
 public class CustomEnchantmentBuilder {
