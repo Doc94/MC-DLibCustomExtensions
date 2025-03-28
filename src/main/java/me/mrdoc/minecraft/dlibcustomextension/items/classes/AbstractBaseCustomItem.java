@@ -48,13 +48,14 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     private final ItemStack item;
     @Getter
     private boolean special;
+    @Nullable
     @Getter
-    private CustomItemRarity rarity;
+    private final CustomItemRarity rarity;
     @Getter
     private final HashSet<InventoryType> inventoryTypes = new HashSet<>();
 
     @ApiStatus.Internal
-    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, CustomItemRarity rarity, boolean isSpecial, @Nullable final String modelName, List<InventoryType> inventoryTypes, List<Component> descriptions) {
+    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, @Nullable final String modelName, List<InventoryType> inventoryTypes, List<Component> descriptions) {
         this.inventoryTypes.addAll(inventoryTypes);
 
         this.instance = instance;
@@ -67,7 +68,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
         this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, recipe_namespace.toString()));
 
-        if (displayName != null && !Component.empty().equals(displayName)) {
+        if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
         }
         if (modelName != null && !modelName.isBlank()) {
@@ -79,12 +80,15 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
         if (isSpecial) {
             this.special = true;
-            loreComponents.add(Component.text("Item Especial", TextColor.fromHexString("#ac3fff")).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
+            loreComponents.add(Component.text("✦ ✦ ✦ ✦ ✦", TextColor.fromHexString("#ac3fff")).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
         }
 
-        if (!rarity.equals(CustomItemRarity.NONE)) {
-            this.rarity = rarity;
+        this.rarity = rarity;
+        if (this.rarity != null) {
             loreComponents.add(this.rarity.generateTag());
+            if (this.rarity.vanillaRarity() != null) {
+                this.item.setData(DataComponentTypes.RARITY, this.rarity.vanillaRarity());
+            }
         }
 
         if (!descriptions.isEmpty()) {

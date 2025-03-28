@@ -19,7 +19,8 @@ public class CustomItemBuilder {
     private final Plugin plugin;
     private final String internalName;
     private final Component displayName;
-    private CustomItemRarity rarity = CustomItemRarity.NONE;
+    @Nullable
+    private CustomItemRarity rarity = null;
     private boolean isSpecial = false;
     @Nullable
     private String itemModel = null;
