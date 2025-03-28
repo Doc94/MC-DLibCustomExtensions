@@ -9,7 +9,10 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Getter
 public class CustomItemBuilder {
 
@@ -18,6 +21,7 @@ public class CustomItemBuilder {
     private final Component displayName;
     private CustomItemRarity rarity = CustomItemRarity.NONE;
     private boolean isSpecial = false;
+    @Nullable
     private String itemModel = null;
     private List<InventoryType> inventoryTypes = new ArrayList<>();
     private List<Component> descriptions = new ArrayList<>();

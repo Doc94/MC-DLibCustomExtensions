@@ -15,13 +15,15 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomItem implements Listener {
 
     public AbstractCustomItem(CustomItemBuilder customItemBuilder) {
         super(customItemBuilder.getPlugin(), customItemBuilder.getInternalName(), customItemBuilder.getDisplayName(), customItemBuilder.getRarity(), customItemBuilder.isSpecial(), customItemBuilder.getItemModel(), customItemBuilder.getInventoryTypes(), customItemBuilder.getDescriptions());
         Bukkit.getServer().getPluginManager().registerEvents(this, customItemBuilder.getPlugin());
-        LoggerUtils.info("Item registered " + this.getRecipeNamespace().toString());
+        LoggerUtils.info("Item registered " + this.getRecipeNamespace());
     }
 
     @Override
