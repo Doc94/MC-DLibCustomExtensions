@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
@@ -23,7 +24,7 @@ public class CustomItemBuilder {
     private CustomItemRarity rarity = null;
     private boolean isSpecial = false;
     @Nullable
-    private String itemModel = null;
+    private Key itemModel = null;
     private List<InventoryType> inventoryTypes = new ArrayList<>();
     private List<Component> descriptions = new ArrayList<>();
 
@@ -51,8 +52,26 @@ public class CustomItemBuilder {
         return this;
     }
 
-    public CustomItemBuilder itemModel(String itemModel) {
-        this.itemModel = itemModel;
+    /**
+     * Sets the item model using key.
+     * <br>
+     * <b>Note:</b> the namespace is get from the instance using this lib.
+     *
+     * @param itemModelKey the key
+     * @return the builder
+     */
+    public CustomItemBuilder itemModel(String itemModelKey) {
+        return this.itemModel(Key.key(DLibCustomExtensionManager.getPluginNamespace(), itemModelKey));
+    }
+
+    /**
+     * Sets the item model using key.
+     *
+     * @param itemModelKey the key
+     * @return the builder
+     */
+    public CustomItemBuilder itemModel(Key itemModelKey) {
+        this.itemModel = itemModelKey;
         return this;
     }
 

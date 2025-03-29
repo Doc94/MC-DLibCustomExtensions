@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.Getter;
 import me.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import me.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -55,7 +56,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     private final HashSet<InventoryType> inventoryTypes = new HashSet<>();
 
     @ApiStatus.Internal
-    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, @Nullable final String modelName, List<InventoryType> inventoryTypes, List<Component> descriptions) {
+    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions) {
         this.inventoryTypes.addAll(inventoryTypes);
 
         this.instance = instance;
@@ -71,9 +72,8 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
         if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
         }
-        if (modelName != null && !modelName.isBlank()) {
-            NamespacedKey namespacedModel = new NamespacedKey(instance, modelName);
-            this.item.setData(DataComponentTypes.ITEM_MODEL, namespacedModel);
+        if (modelNameKey != null) {
+            this.item.setData(DataComponentTypes.ITEM_MODEL, modelNameKey);
         }
 
         ArrayList<Component> loreComponents = new ArrayList<>();
