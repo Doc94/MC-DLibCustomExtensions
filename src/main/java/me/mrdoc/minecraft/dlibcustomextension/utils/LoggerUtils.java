@@ -4,9 +4,12 @@ import java.util.Optional;
 import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@NullMarked
 @ApiStatus.Internal
 public class LoggerUtils {
 
@@ -60,6 +63,7 @@ public class LoggerUtils {
         getLogger().error("[%s] %s".formatted(getCallerClass().getSimpleName(), message), throwable);
     }
 
+    @Nullable
     public static Class<?> getCallerClass() {
         StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
         Optional<Class<?>> callerClass = walker.walk(stream ->

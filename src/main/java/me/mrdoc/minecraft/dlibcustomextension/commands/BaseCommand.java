@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.plugin.Plugin;
 import org.incendo.cloud.annotations.processing.CommandContainer;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Base Command with the basic register thing
  */
+@NullMarked
 @Getter
 public class BaseCommand {
 

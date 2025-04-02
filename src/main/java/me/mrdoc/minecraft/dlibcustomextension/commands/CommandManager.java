@@ -9,10 +9,14 @@ import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.paper.util.sender.PaperSimpleSenderMapper;
 import org.incendo.cloud.paper.util.sender.Source;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Getter
 public class CommandManager {
 
+    @Nullable
     @Getter
     public static CommandManager instance;
     private final AnnotationParser<Source> annotationParser;

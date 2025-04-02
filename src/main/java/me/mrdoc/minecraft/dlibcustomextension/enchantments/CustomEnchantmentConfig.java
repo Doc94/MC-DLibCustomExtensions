@@ -10,10 +10,10 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @ConfigSerializable
 public class CustomEnchantmentConfig {
 
-    @Comment("If enchantments only can be enabled by this file, false for enable all enchantments. (Change this require restart server)")
+    @Comment(value = "If enchantments only can be enabled by this file, false for enable all enchantments. (Change this require restart server)", override = true)
     private boolean enabled = false;
 
-    @Comment("Enchantments enabled")
+    @Comment(value = "Enchantments enabled", override = true)
     private List<String> nameEnchantments = new ArrayList<>();
 
 
