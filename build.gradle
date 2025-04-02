@@ -100,9 +100,9 @@ tasks.register("publishJar") {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = "${projectGroup}" as Publication
-            version = "${projectVersion}" as Publication
-            artifactId = "${projectArtifactName}" as Publication
+            groupId = "${projectGroup}"
+            version = "${projectVersion}"
+            artifactId = "${projectArtifactName}"
 
             from components.java
 
@@ -117,20 +117,20 @@ publishing {
 
             pom {
                 name = projectArtifactName
-                description = 'A library for custom things' as Publication
-                url = 'https://mrdoc.me/' as Publication
+                description = 'A library for custom things'
+                url = 'https://mrdoc.me/'
 
                 licenses {
                     license {
-                        name = 'MIT' as Publication
-                        url = 'https://spdx.org/licenses/MIT.html' as Publication
+                        name = 'MIT'
+                        url = 'https://spdx.org/licenses/MIT.html'
                     }
                 }
                 developers {
                     developer {
-                        id = 'doc' as Publication
-                        name = 'Pedro' as Publication
-                        email = 'nachito94@msn.com' as Publication
+                        id = 'doc'
+                        name = 'Pedro'
+                        email = 'nachito94@msn.com'
                     }
                 }
                 scm {
