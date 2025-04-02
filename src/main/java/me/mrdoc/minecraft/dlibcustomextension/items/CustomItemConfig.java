@@ -10,10 +10,10 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @ConfigSerializable
 public class CustomItemConfig {
 
-    @Comment("If items only can be enabled by this file, false for enable all items. (Change this require restart server)")
+    @Comment(value = "If items only can be enabled by this file, false for enable all items. (Change this require restart server)", override = true)
     private boolean enabled = false;
 
-    @Comment("Items enabled")
+    @Comment(value = "Items enabled", override = true)
     private List<String> nameItems = new ArrayList<>();
 
 
