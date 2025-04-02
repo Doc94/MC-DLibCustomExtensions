@@ -7,6 +7,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import me.mrdoc.minecraft.dlibcustomextension.enchantments.CustomEnchantmentManager;
 import net.kyori.adventure.key.Key;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemType;
@@ -36,6 +37,19 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
             this.tagsItemPrimaryTypes.addAll(customEnchantmentBuilder.getTagPrimaryItems());
         }
         this.tagsEnchantments.addAll(customEnchantmentBuilder.getTagEnchantments());
+    }
+
+    /**
+     * Gets if this item is enabled by config.
+     * <br>
+     * Only apply if config is enabled for use.
+     * <br>
+     * <b>Note: </b> this not avoid register for avoid minecraft remove this enchantment for not load
+     *
+     * @return if is enabled
+     */
+    public boolean isEnabled() {
+        return CustomEnchantmentManager.isEnchantmentEnabled(this.getName());
     }
 
 }
