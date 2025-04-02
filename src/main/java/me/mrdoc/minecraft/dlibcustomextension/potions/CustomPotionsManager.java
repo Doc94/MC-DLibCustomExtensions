@@ -41,6 +41,7 @@ public class CustomPotionsManager {
     public static void load() {
         PLUGIN_INSTANCE = DLibCustomExtensionManager.getPluginInstance();
         NAMESPACED_CUSTOM_POTION = new NamespacedKey(PLUGIN_INSTANCE, "custom_potion");
+        loadConfig();
         loadAllCustomPotions();
         registerAllRecipes();
         registerCommands();
