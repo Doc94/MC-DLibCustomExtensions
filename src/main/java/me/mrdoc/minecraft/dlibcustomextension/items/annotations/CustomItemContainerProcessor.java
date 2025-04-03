@@ -54,7 +54,7 @@ public class CustomItemContainerProcessor extends AbstractProcessor {
                 continue;
             }
 
-            // Verifica que la clase extienda de BaseItem
+            // Verify class requirement
             TypeElement baseItemType = this.elements.getTypeElement(AbstractBaseCustomItem.class.getCanonicalName());
             if (!this.types.isSubtype(typeElement.asType(), baseItemType.asType())) {
                 this.messager.printMessage(Diagnostic.Kind.ERROR, String.format("@CustomItemContainer-annotated class %s need extends from BaseItem", element));

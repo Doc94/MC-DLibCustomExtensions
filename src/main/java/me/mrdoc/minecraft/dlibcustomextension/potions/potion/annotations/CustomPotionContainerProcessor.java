@@ -24,7 +24,7 @@ import me.mrdoc.minecraft.dlibcustomextension.potions.potion.classes.AbstractBas
 import org.jspecify.annotations.NonNull;
 
 /**
- * {@inheritDoc}
+ * An abstract annotation processor
  */
 @AutoService(Processor.class)
 @SupportedAnnotationTypes(CustomPotionContainer.ANNOTATION_PATH)
@@ -60,7 +60,7 @@ public class CustomPotionContainerProcessor extends AbstractProcessor {
                 continue;
             }
 
-            // Verifica que la clase extienda de BaseItem
+            // Verify class requirement
             TypeElement baseItemType = this.elements.getTypeElement(AbstractBaseCustomPotion.class.getCanonicalName());
             if (!this.types.isSubtype(typeElement.asType(), baseItemType.asType())) {
                 this.messager.printMessage(Diagnostic.Kind.ERROR, String.format("@CustomPotionContainer-annotated class %s need extends from AbstractCustomPotion", element));

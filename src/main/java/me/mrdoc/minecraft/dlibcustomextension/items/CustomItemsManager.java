@@ -41,7 +41,9 @@ public class CustomItemsManager {
     private static CommentedConfigurationNode CONFIG_NODE;
     private static CustomItemConfig CONFIG;
 
-
+    /**
+     * Load the manager
+     */
     public static void load() {
         PLUGIN_INSTANCE = DLibCustomExtensionManager.getPluginInstance();
         NAMESPACED_CUSTOM_ITEM = new NamespacedKey(PLUGIN_INSTANCE, "custom_item");
@@ -52,16 +54,27 @@ public class CustomItemsManager {
         Bukkit.getPluginManager().registerEvents(new CustomItemsListener(), PLUGIN_INSTANCE);
     }
 
+    /**
+     * Gets the namespace key used for register the item name in custom class.
+     *
+     * @return the key
+     */
     public static NamespacedKey getNamespacedKey() {
         return NAMESPACED_CUSTOM_ITEM;
     }
 
+    /**
+     * Save the config
+     */
     @SneakyThrows
     public static void saveConfig() {
         CONFIG_NODE.set(CustomItemConfig.class, CONFIG); // Update the backing node
         CONFIG_LOADER.save(CONFIG_NODE); // Write to the original file
     }
 
+    /**
+     * Load the config
+     */
     @SneakyThrows
     private static void loadConfig() {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
@@ -73,6 +86,9 @@ public class CustomItemsManager {
         saveConfig(); // force a save
     }
 
+    /**
+     * Reload the config
+     */
     @SneakyThrows
     public static void reloadConfig() {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
@@ -106,6 +122,9 @@ public class CustomItemsManager {
         return classes;
     }
 
+    /**
+     * Load all custom items
+     */
     public static void loadAllCustomItems() {
         Set<Class<? extends AbstractCustomItem>> reflectionCustomItems = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
 
@@ -155,10 +174,23 @@ public class CustomItemsManager {
         return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getRecipeNamespace().getKey().equalsIgnoreCase(internalName) || baseItem.getRecipeNamespace().toString().equalsIgnoreCase(internalName)).findFirst();
     }
 
+    /**
+     * Get the custom item class instance.
+     *
+     * @param baseItemClass the class
+     * @return an optional with the instance
+     * @param <T> class type
+     */
     public static <T extends AbstractCustomItem> Optional<T> getCustomItem(Class<T> baseItemClass) {
         return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getClass().equals(baseItemClass)).map(baseItemClass::cast).findFirst();
     }
 
+    /**
+     * Get the custom item class from an item if is available.
+     *
+     * @param itemStack the itemstack
+     * @return an optional with the class
+     */
     public static Optional<AbstractCustomItem> getCustomItem(ItemStack itemStack) {
         if (itemStack == null || itemStack.isEmpty()) {
             return Optional.empty();
@@ -167,6 +199,12 @@ public class CustomItemsManager {
         return CustomItemsManager.getCustomItem(getInternalName(itemStack));
     }
 
+    /**
+     * Returns if name is part of an enabled item custom.
+     *
+     * @param internalName the internal name
+     * @return {@code true} if item with this name is enabled
+     */
     public static boolean isItemEnable(String internalName) {
         if (!CONFIG.isEnabled()) {
             return true;
@@ -174,6 +212,12 @@ public class CustomItemsManager {
         return CONFIG.getNameItems().stream().anyMatch(internalName::equalsIgnoreCase);
     }
 
+    /**
+     * Returns if an item is a custom item.
+     *
+     * @param item the itemstack
+     * @return {@code true} if item is custom
+     */
     public static boolean isCustomItem(ItemStack item) {
         return !CustomItemsManager.getInternalName(item).isEmpty();
     }
@@ -191,6 +235,11 @@ public class CustomItemsManager {
         return item.getPersistentDataContainer().getOrDefault(CustomItemsManager.NAMESPACED_CUSTOM_ITEM, PersistentDataType.STRING, "");
     }
 
+    /**
+     * Gets the keys of custom items registered.
+     *
+     * @return a set of keys
+     */
     public static HashSet<NamespacedKey> getNamespacedKeys() {
         return CUSTOM_ITEMS.stream().map(AbstractCustomItem::getRecipeNamespace).collect(Collectors.toCollection(HashSet::new));
     }
@@ -215,10 +264,21 @@ public class CustomItemsManager {
         return CustomItemsManager.getCustomItem(baseItemClass).map(AbstractCustomItem::getItemForPlayer).map(ItemStack::clone);
     }
 
+    /**
+     * Returns if recipe is register by custom item.
+     *
+     * @param recipe the recipe
+     * @return {@code true} if recipe is from a custom item
+     */
     public static boolean isRegisterRecipe(Recipe recipe) {
         return CUSTOM_ITEMS.stream().filter(abstractCustomItem -> abstractCustomItem.getRecipe() != null).anyMatch(baseRecipe -> baseRecipe.getRecipe().equals(recipe));
     }
 
+    /**
+     * Handle the recipe for a player.
+     *
+     * @param player player to handle
+     */
     public static void handleAvailableRecipes(Player player) {
         for (AbstractCustomItem customItem : CUSTOM_ITEMS) {
             if (customItem.isEnabled()) {
@@ -229,15 +289,26 @@ public class CustomItemsManager {
         }
     }
 
+    /**
+     * Gets the recipes
+     *
+     * @return list of recipes
+     */
     public static List<Recipe> getRecipes() {
         return CUSTOM_ITEMS.stream().map(AbstractCustomItem::getRecipe).collect(Collectors.toList());
     }
 
+    /**
+     * Register the internal commands
+     */
     public static void registerAllCommands() {
         new GiveItemCustomCommand();
         new DisplayItemCustomCommand();
     }
 
+    /**
+     * Register
+     */
     public static void registerAllRecipes() {
         for (AbstractCustomItem customItem : CUSTOM_ITEMS) {
             try {
@@ -248,6 +319,9 @@ public class CustomItemsManager {
         }
     }
 
+    /**
+     * Unregister
+     */
     public static void unregisterAllRecipes() {
         for (AbstractCustomItem customItem : CUSTOM_ITEMS) {
             customItem.unRegisterRecipe();
