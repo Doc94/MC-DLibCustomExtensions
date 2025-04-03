@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import lombok.Getter;
+import me.mrdoc.minecraft.dlibcustomextension.items.CustomItemRecipeHelper;
 import me.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import me.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import net.kyori.adventure.key.Key;
@@ -136,8 +137,9 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
                 for (String lineStr : shapedRecipe.getShape()) {
                     for (char character : lineStr.toCharArray()) {
                         RecipeChoice recipeChoice = shapedRecipe.getChoiceMap().get(character);
-                        if (recipeChoice != null && recipeChoice.getItemStack() != null) {
-                            inventoryView.getTopInventory().setItem(pos, recipeChoice.getItemStack());
+                        final ItemStack itemStackInRecipe = CustomItemRecipeHelper.getRecipeChoiceItemStack(recipeChoice);
+                        if (recipeChoice != null && itemStackInRecipe != null) {
+                            inventoryView.getTopInventory().setItem(pos, itemStackInRecipe);
                         }
                         //player.sendMessage(lineStr + " -> " + character + " " + pos + " " + shapedRecipe.getChoiceMap().get(character).getItemStack().getType());
                         pos = pos + 1;
@@ -148,20 +150,20 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
             case ShapelessRecipe shapelessRecipe -> {
                 InventoryView inventoryView = MenuType.CRAFTING.create(player, titleInventoryView);
                 for (int pos = 1; pos <= shapelessRecipe.getChoiceList().size(); pos++) {
-                    inventoryView.getTopInventory().setItem(pos, shapelessRecipe.getChoiceList().get(pos - 1).getItemStack());
+                    inventoryView.getTopInventory().setItem(pos, CustomItemRecipeHelper.getRecipeChoiceItemStack(shapelessRecipe.getChoiceList().get(pos - 1)));
                 }
                 yield inventoryView;
             }
             case SmithingTransformRecipe smithingTransformRecipe -> {
                 InventoryView inventoryView = MenuType.SMITHING.create(player, titleInventoryView);
                 if (!smithingTransformRecipe.getTemplate().equals(RecipeChoice.empty())) {
-                    inventoryView.setItem(0, smithingTransformRecipe.getTemplate().getItemStack());
+                    inventoryView.setItem(0, CustomItemRecipeHelper.getRecipeChoiceItemStack(smithingTransformRecipe.getTemplate()));
                 }
                 if (!smithingTransformRecipe.getBase().equals(RecipeChoice.empty())) {
-                    inventoryView.setItem(1, smithingTransformRecipe.getBase().getItemStack());
+                    inventoryView.setItem(1, CustomItemRecipeHelper.getRecipeChoiceItemStack(smithingTransformRecipe.getBase()));
                 }
                 if (!smithingTransformRecipe.getAddition().equals(RecipeChoice.empty())) {
-                    inventoryView.setItem(2, smithingTransformRecipe.getAddition().getItemStack());
+                    inventoryView.setItem(2, CustomItemRecipeHelper.getRecipeChoiceItemStack(smithingTransformRecipe.getAddition()));
                 }
                 yield inventoryView;
             }
