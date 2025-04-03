@@ -216,7 +216,7 @@ public class CustomItemsManager {
     }
 
     public static boolean isRegisterRecipe(Recipe recipe) {
-        return CUSTOM_ITEMS.stream().anyMatch(baseRecipe -> baseRecipe.getRecipe().equals(recipe));
+        return CUSTOM_ITEMS.stream().filter(abstractCustomItem -> abstractCustomItem.getRecipe() != null).anyMatch(baseRecipe -> baseRecipe.getRecipe().equals(recipe));
     }
 
     public static void handleAvailableRecipes(Player player) {
