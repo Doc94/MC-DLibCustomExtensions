@@ -14,18 +14,58 @@ import org.bukkit.inventory.ItemType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
+/**
+ * Class for implementation of custom enchantments
+ */
 @NullMarked
 @Getter
 public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCustomEnchantment {
 
+    /**
+     * The key for this enchantment.
+     *
+     * @return key
+     */
     private final Key key;
+    /**
+     * The internal name.
+     *
+     * @return name
+     */
     private final String name;
+    /**
+     * The tags for this enchantment
+     *
+     * @return tags
+     */
     private final Set<TagKey<Enchantment>> tagsEnchantments = new HashSet<>();
+    /**
+     * The item types valid for this enchantment.
+     *
+     * @return entry tags
+     */
     private final Set<TagEntry<ItemType>> tagsItemTypes = new HashSet<>();
+    /**
+     * The primary item types valid for this enchantment.
+     * <br>
+     * <b>Note:</b> primary are items who can appear with this enchantment (ex: loot)
+     *
+     * @return entry tags
+     */
     private final Set<TagEntry<ItemType>> tagsItemPrimaryTypes = new HashSet<>();
+    /**
+     * If primary items are based in items valid.
+     *
+     * @return {@code true} if {@link #getTagsItemPrimaryTypes()} need to be {@link #getTagsItemTypes()}
+     */
     @Accessors(fluent = true)
     private final boolean useSupportedItemsForPrimaryItems;
 
+    /**
+     * Constructor
+     *
+     * @param customEnchantmentBuilder the builder
+     */
     @ApiStatus.Internal
     public AbstractBaseCustomEnchantment(CustomEnchantmentBuilder customEnchantmentBuilder) {
         String keyName = DLibCustomExtensionManager.getPluginNamespace().concat(":").concat(customEnchantmentBuilder.getInternalName());

@@ -23,6 +23,9 @@ import javax.tools.StandardLocation;
 import me.mrdoc.minecraft.dlibcustomextension.enchantments.classes.AbstractBaseCustomEnchantment;
 import org.jspecify.annotations.NonNull;
 
+/**
+ * An abstract annotation processor
+ */
 @AutoService(Processor.class)
 @SupportedAnnotationTypes(CustomEnchantmentContainer.ANNOTATION_PATH)
 @SupportedSourceVersion(SourceVersion.RELEASE_21)

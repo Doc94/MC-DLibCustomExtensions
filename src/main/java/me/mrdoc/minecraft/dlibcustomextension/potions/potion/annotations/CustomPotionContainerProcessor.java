@@ -23,6 +23,9 @@ import javax.tools.StandardLocation;
 import me.mrdoc.minecraft.dlibcustomextension.potions.potion.classes.AbstractBaseCustomPotion;
 import org.jspecify.annotations.NonNull;
 
+/**
+ * {@inheritDoc}
+ */
 @AutoService(Processor.class)
 @SupportedAnnotationTypes(CustomPotionContainer.ANNOTATION_PATH)
 @SupportedSourceVersion(SourceVersion.RELEASE_21)

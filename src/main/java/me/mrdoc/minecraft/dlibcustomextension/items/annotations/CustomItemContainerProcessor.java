@@ -17,6 +17,9 @@ import me.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractBaseCustomIt
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
 
+/**
+ * An abstract annotation processor
+ */
 @AutoService(Processor.class)
 @SupportedAnnotationTypes(CustomItemContainer.ANNOTATION_PATH)
 @SupportedSourceVersion(SourceVersion.RELEASE_21)

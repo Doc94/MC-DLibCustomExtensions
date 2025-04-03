@@ -83,6 +83,12 @@ public class CustomItemsManager {
         CONFIG = CONFIG_NODE.get(CustomItemConfig.class); // Populate object
     }
 
+    /**
+     * Get the custom classes
+     *
+     * @param classLoader a class loader
+     * @return a set of classes
+     */
     @SuppressWarnings("unchecked")
     @SneakyThrows
     private static Set<Class<? extends AbstractCustomItem>> getClasses(final @NonNull ClassLoader classLoader) {

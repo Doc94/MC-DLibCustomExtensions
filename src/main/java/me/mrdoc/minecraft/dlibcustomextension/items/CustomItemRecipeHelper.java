@@ -13,15 +13,33 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.jspecify.annotations.NullMarked;
 
+/**
+ * Helper related to recipes
+ */
 public class CustomItemRecipeHelper {
 
+    /**
+     * Check the ingredients for a custom item.
+     *
+     * @param customItem the custom item
+     * @param matrixCraft the matrix of ingredients
+     * @return {@code true} if is valid
+     */
     static boolean validateRecipeIngredients(AbstractCustomItem customItem, ItemStack[] matrixCraft) {
         return validateRecipeIngredients(customItem.getRecipe(), matrixCraft);
     }
 
+    /**
+     * Check the ingredients for a custom item.
+     *
+     * @param recipe the custom recipe
+     * @param matrixCraft the matrix of ingredients
+     * @return {@code true} if is valid
+     */
     static boolean validateRecipeIngredients(Recipe recipe, ItemStack[] matrixCraft) {
-        // Validamos que la matriz siempre sea de tamaño 9 (3x3)
+        // We validate that the matrix is always of size 9 (3x3)
         if (matrixCraft == null || matrixCraft.length != 9) {
             return false;
         }
@@ -30,10 +48,10 @@ public class CustomItemRecipeHelper {
             String[] shape = shapedRecipe.getShape();
             Map<Character, ItemStack> ingredientMap = shapedRecipe.getIngredientMap();
 
-            int rows = shape.length; // Filas de la receta
-            int columns = shape[0].length(); // Columnas de la receta (asumimos receta bien formada)
+            int rows = shape.length; // Recipe rows
+            int columns = shape[0].length(); // Recipe columns (we assume well-formed recipe)
 
-            // Calculamos el desplazamiento (offset) para centrar la receta en la matriz 3x3
+            // We calculate the offset to center the recipe in the 3x3 matrix
             int rowOffset = (3 - rows) / 2;
             int colOffset = (3 - columns) / 2;
 
@@ -42,10 +60,10 @@ public class CustomItemRecipeHelper {
 
                 for (int col = 0; col < columns; col++) {
                     char slot = shapeRow.charAt(col);
-                    int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // Ajustamos por offset
+                    int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // We adjust by offset
 
                     if (slot == ' ' || !ingredientMap.containsKey(slot)) {
-                        // Espacios vacíos en la receta deben corresponder a slots vacíos en la matriz
+                        // Empty spaces in the recipe must correspond to empty slots in the array
                         if (matrixCraft[matrixIndex] != null && !matrixCraft[matrixIndex].isEmpty()) {
                             return false;
                         }
@@ -84,13 +102,20 @@ public class CustomItemRecipeHelper {
             }
 
             if (!ingredients.isEmpty()) {
-                return false; // Si sobran ingredientes sin usar, la matriz no es válida
+                return false; // If there are any unused ingredients left over, the array is invalid
             }
         }
 
         return true;
     }
 
+    /**
+     * Validate and compare an item with the recipe item ingredient.
+     *
+     * @param itemMatrix the item in craft matrix
+     * @param itemInRecipe the item in the recipe
+     * @return {@code true} if is valid
+     */
     private static boolean validateIngredient(ItemStack itemMatrix, ItemStack itemInRecipe) {
         if (itemInRecipe == null || itemInRecipe.isEmpty()) {
             return true; // No se requiere este slot
@@ -113,19 +138,31 @@ public class CustomItemRecipeHelper {
         return true;
     }
 
+    /**
+     * Reduce a matrix using a recipe.
+     *
+     * @param craftingRecipe the craft recipe
+     * @param matrix the matrix to reduce
+     * @return a pair with the matrix result and the item result size
+     */
     static Pair<ItemStack[], Integer> reduceMatrix(CraftingRecipe craftingRecipe, ItemStack[] matrix) {
         return reduceMatrix(craftingRecipe, matrix, false);
     }
 
+    /**
+     * Reduce a matrix using a recipe.
+     *
+     * @param craftingRecipe the craft recipe
+     * @param matrix the matrix to reduce
+     * @param processAll true for try the max of reduction
+     * @return a pair with the matrix result and the item result size
+     */
     static Pair<ItemStack[], Integer> reduceMatrix(CraftingRecipe craftingRecipe, final ItemStack[] matrix, boolean processAll) {
-        // Función para calcular el desplazamiento (offset) necesario para centrar los ingredientes
-        final Function<Integer, Integer> calculateOffset = length -> (3 - length) / 2;
-
-        // Clonamos la matriz para trabajar sin modificar el original
+        // We clone the matrix to work without modifying the original
         ItemStack[] matrixResult = cloneMatrix(matrix);
-        int maxCrafts = Integer.MAX_VALUE; // Inicializamos con un valor muy alto para minimizarlo.
+        int maxCrafts = Integer.MAX_VALUE; // We initialize with a very high value to reduce
 
-        // Obtenemos el máximo permitido por pila del resultado de la receta
+        // We get the maximum allowed per stack from the recipe result
         int maxPerStack = craftingRecipe.getResult().getMaxStackSize();
         int craftsToProcess = 0;
 
@@ -133,33 +170,33 @@ public class CustomItemRecipeHelper {
             Map<Character, ItemStack> ingredientMap = shapedRecipe.getIngredientMap();
             String[] shape = shapedRecipe.getShape();
 
-            int rows = shape.length; // Filas de la receta
-            int columns = shape[0].length(); // Columnas de la receta (asumimos receta bien formada)
+            int rows = shape.length; // Recipe rows
+            int columns = shape[0].length(); // Recipe columns (we assume well-formed recipe)
 
             // Calculamos los desplazamientos (offset) para centrar la receta en la matriz 3x3
             int rowOffset = (3 - rows) / 2;
             int colOffset = (3 - columns) / 2;
 
-            // Determinamos el número máximo de crafteos posibles respetando cada slot
+            // Determinate the max crafts based in any slot
             for (int row = 0; row < rows; row++) {
                 String shapeRow = shape[row];
 
                 for (int col = 0; col < columns; col++) {
                     char slot = shapeRow.charAt(col);
-                    int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // Ajustamos con offsets
+                    int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // Adjust with offsets
 
                     if (slot == ' ' || !ingredientMap.containsKey(slot)) {
-                        continue; // Ignoramos espacios vacíos
+                        continue; // Ignore empty spaces
                     }
 
                     ItemStack requiredItem = ingredientMap.get(slot);
                     if (requiredItem == null || requiredItem.isEmpty()) {
-                        continue; // Ignoramos ingredientes no definidos
+                        continue; // Ignore ingredients not defined
                     }
 
                     ItemStack matrixItem = matrixResult[matrixIndex];
                     if (matrixItem == null || !validateIngredient(matrixItem, requiredItem)) {
-                        maxCrafts = 0; // Si no hay el ingrediente requerido, no se puede craftear
+                        maxCrafts = 0; // If not has a requirement ingredient then cannot craft
                     } else {
                         int possibleCrafts = matrixItem.getAmount() / requiredItem.getAmount();
                         maxCrafts = Math.min(maxCrafts, possibleCrafts);
@@ -167,23 +204,23 @@ public class CustomItemRecipeHelper {
                 }
             }
 
-            // Aseguramos que el número de crafteos no exceda el máximo permitido por pila
+            // We limit the max crafts for avoid more than an stack
             maxCrafts = Math.min(maxCrafts, maxPerStack);
 
-            // Si no se permite procesar todo, limitamos a 1 crafteo
+            // If cannot process all then limit to 1 craft
             craftsToProcess = processAll ? maxCrafts : 1;
 
-            // Reducimos la matriz según la cantidad de crafteos posibles
+            // Reduce the matrix based in the craft allowed
             if (craftsToProcess > 0) {
                 for (int row = 0; row < rows; row++) {
                     String shapeRow = shape[row];
 
                     for (int col = 0; col < columns; col++) {
                         char slot = shapeRow.charAt(col);
-                        int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // Ajustamos con offsets
+                        int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // Adjust with offsets
 
                         if (slot == ' ' || !ingredientMap.containsKey(slot)) {
-                            continue; // Ignoramos espacios vacíos
+                            continue; // Ignore empty spaces
                         }
 
                         ItemStack requiredItem = ingredientMap.get(slot);
@@ -196,7 +233,7 @@ public class CustomItemRecipeHelper {
                 }
             }
         } else if (craftingRecipe instanceof ShapelessRecipe shapelessRecipe) {
-            // Procesamos las recetas sin forma
+            // ShapelessRecipe Process
             for (ItemStack ingredient : shapelessRecipe.getIngredientList()) {
                 int totalAvailable = 0;
 
@@ -210,13 +247,13 @@ public class CustomItemRecipeHelper {
                 maxCrafts = Math.min(maxCrafts, possibleCrafts);
             }
 
-            // Aseguramos que el número de crafteos no exceda el máximo permitido por pila
+            // We limit the max crafts for avoid more than an stack
             maxCrafts = Math.min(maxCrafts, maxPerStack);
 
-            // Si no se permite procesar todo, limitamos a 1 crafteo
+            // If cannot process all then limit to 1 craft
             craftsToProcess = processAll ? maxCrafts : 1;
 
-            // Reducimos la matriz según la cantidad de crafteos permitidos
+            // Reduce the matrix based in the craft allowed
             for (ItemStack ingredient : shapelessRecipe.getIngredientList()) {
                 for (int i = 0; i < matrixResult.length; i++) {
                     ItemStack matrixItem = matrixResult[i];
@@ -228,15 +265,21 @@ public class CustomItemRecipeHelper {
             }
         }
 
-        // Si no hay crafteos posibles, devolvemos la matriz original y 0
+        // If the max craft is zero then return the matrix with 0 size
         if (craftsToProcess == 0) {
             return Pair.of(matrix, 0);
         }
 
-        // Retornamos la matriz actualizada y el número de crafteos permitidos
+        // Return the matrix updated and the max craft allowed
         return Pair.of(matrixResult, craftsToProcess);
     }
 
+    /**
+     * Clone this matrix.
+     *
+     * @param matrix the original matrix
+     * @return a copied matrix
+     */
     private static ItemStack[] cloneMatrix(ItemStack[] matrix) {
         ItemStack[] clonedMatrix = new ItemStack[matrix.length];
 

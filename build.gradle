@@ -56,6 +56,7 @@ build.dependsOn shadowJar
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.incremental = false
+    options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
 tasks.withType(Javadoc).configureEach {

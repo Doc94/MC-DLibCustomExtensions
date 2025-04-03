@@ -9,9 +9,13 @@ import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.paper.util.sender.PaperSimpleSenderMapper;
 import org.incendo.cloud.paper.util.sender.Source;
+import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * The command manager.
+ */
 @NullMarked
 @Getter
 public class CommandManager {
@@ -40,6 +44,11 @@ public class CommandManager {
         this.annotationParser.parseContainers();
     }
 
+    /**
+     * Load the manager using the Paper {@link BootstrapContext}
+     *
+     * @param bootstrapContext paper bootstrapContext
+     */
     public static void load(BootstrapContext bootstrapContext) {
         if (instance != null) {
             return;
@@ -47,6 +56,11 @@ public class CommandManager {
         instance = new CommandManager(bootstrapContext);
     }
 
+    /**
+     * Load the manager using a generic bukkit {@link Plugin}
+     *
+     * @param plugin bukkit plugin
+     */
     public static void load(Plugin plugin) {
         if (instance != null || !plugin.isEnabled()) {
             return;

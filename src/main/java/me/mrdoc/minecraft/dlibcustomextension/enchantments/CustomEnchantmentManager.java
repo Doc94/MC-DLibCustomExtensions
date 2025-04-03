@@ -32,6 +32,9 @@ import org.jspecify.annotations.NonNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
+/**
+ * Enchantment manager
+ */
 public class CustomEnchantmentManager {
     public static HashMap<Key, AbstractCustomEnchantment> CUSTOM_ENCHANTMENTS = new HashMap<>();
 
@@ -41,17 +44,30 @@ public class CustomEnchantmentManager {
     private static CommentedConfigurationNode CONFIG_NODE;
     private static CustomEnchantmentConfig CONFIG;
 
+    /**
+     * Load the manager
+     *
+     * @param context the context
+     */
     public static void load(BootstrapContext context) {
         loadConfig(context);
         loadAllCustomEnchantments(context);
     }
 
+    /**
+     * Save the config.
+     */
     @SneakyThrows
     public static void saveConfig() {
         CONFIG_NODE.set(CustomEnchantmentConfig.class, CONFIG); // Update the backing node
         CONFIG_LOADER.save(CONFIG_NODE); // Write to the original file
     }
 
+    /**
+     * Load the config.
+     *
+     * @param context the context
+     */
     @SneakyThrows
     private static void loadConfig(BootstrapContext context) {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
@@ -63,6 +79,9 @@ public class CustomEnchantmentManager {
         saveConfig(); // force a save
     }
 
+    /**
+     * Reload the config.
+     */
     @SneakyThrows
     public static void reloadConfig() {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
@@ -73,6 +92,12 @@ public class CustomEnchantmentManager {
         CONFIG = CONFIG_NODE.get(CustomEnchantmentConfig.class); // Populate object
     }
 
+    /**
+     * Get the custom classes
+     *
+     * @param classLoader a class loader
+     * @return a set of classes
+     */
     @SuppressWarnings("unchecked")
     @SneakyThrows
     private static Set<Class<? extends AbstractCustomEnchantment>> getClasses(final @NonNull ClassLoader classLoader) {

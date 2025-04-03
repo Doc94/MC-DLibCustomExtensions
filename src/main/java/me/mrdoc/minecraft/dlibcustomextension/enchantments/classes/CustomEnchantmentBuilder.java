@@ -18,10 +18,32 @@ import org.jspecify.annotations.Nullable;
 @Getter
 public class CustomEnchantmentBuilder {
 
+    /**
+     * The internal name.
+     *
+     * @return name
+     */
     private final String internalName;
+    /**
+     * The item types valid for this enchantment.
+     *
+     * @return entry tags
+     */
     private Set<TagEntry<ItemType>> tagSupportedItems = Set.of();
+    /**
+     * The primary item types valid for this enchantment.
+     * <br>
+     * <b>Note:</b> primary are items who can appear with this enchantment (ex: loot)
+     *
+     * @return entry tags
+     */
     @Nullable
     private Set<TagEntry<ItemType>> tagPrimaryItems = Set.of();
+    /**
+     * The tags for this enchantment
+     *
+     * @return tags
+     */
     private Set<TagKey<Enchantment>> tagEnchantments = Set.of();
 
     private CustomEnchantmentBuilder(String internalName) {
@@ -34,7 +56,8 @@ public class CustomEnchantmentBuilder {
      * @param itemsValidForEnchantment ItemType tag of items
      * @return the builder
      */
-    public CustomEnchantmentBuilder supportedItems(TagEntry<ItemType>... itemsValidForEnchantment) {
+    @SafeVarargs
+    public final CustomEnchantmentBuilder supportedItems(TagEntry<ItemType>... itemsValidForEnchantment) {
         return this.supportedItems(Set.of(itemsValidForEnchantment));
     }
 
@@ -58,7 +81,8 @@ public class CustomEnchantmentBuilder {
      * @return the builder
      * @see EnchantmentRegistryEntry.Builder#primaryItems()
      */
-    public CustomEnchantmentBuilder primaryItems(TagEntry<ItemType>... itemsValidNaturalForEnchantment) {
+    @SafeVarargs
+    public final CustomEnchantmentBuilder primaryItems(TagEntry<ItemType>... itemsValidNaturalForEnchantment) {
         return this.primaryItems(Set.of(itemsValidNaturalForEnchantment));
     }
 
@@ -95,7 +119,8 @@ public class CustomEnchantmentBuilder {
      * @param enchantmentTags Enchantment tags
      * @return the builder
      */
-    public CustomEnchantmentBuilder tags(TagKey<Enchantment>... enchantmentTags) {
+    @SafeVarargs
+    public final CustomEnchantmentBuilder tags(TagKey<Enchantment>... enchantmentTags) {
         return this.tags(Set.of(enchantmentTags));
     }
 
