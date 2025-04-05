@@ -77,40 +77,43 @@ public class CustomItemRecipeHelper {
             String[] shape = shapedRecipe.getShape();
             Map<Character, @Nullable ItemStack> ingredientMap = getIngredientMap(shapedRecipe.getChoiceMap());
 
-            int rows = shape.length; // Recipe rows
-            int columns = shape[0].length(); // Recipe columns (we assume well-formed recipe)
+            int recipeRows = shape.length;
+            int recipeCols = shape[0].length(); // Se asume que todas las filas tienen la misma longitud
 
-            // We calculate the offset to center the recipe in the 3x3 matrix
-            int rowOffset = (3 - rows) / 2;
-            int colOffset = (3 - columns) / 2;
+            for (int rowOffset = 0; rowOffset <= 3 - recipeRows; rowOffset++) {
+                for (int colOffset = 0; colOffset <= 3 - recipeCols; colOffset++) {
+                    boolean matched = true;
 
-            for (int row = 0; row < rows; row++) {
-                String shapeRow = shape[row];
+                    outerLoop:
+                    for (int row = 0; row < recipeRows; row++) {
+                        String shapeRow = shape[row];
+                        for (int col = 0; col < recipeCols; col++) {
+                            char slot = shapeRow.charAt(col);
+                            int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset);
 
-                for (int col = 0; col < columns; col++) {
-                    char slot = shapeRow.charAt(col);
-                    int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // We adjust by offset
+                            ItemStack matrixItem = matrixCraft[matrixIndex];
 
-                    if (slot == ' ' || !ingredientMap.containsKey(slot)) {
-                        // Empty spaces in the recipe must correspond to empty slots in the array
-                        if (matrixCraft[matrixIndex] != null) {
-                            final ItemStack itemMatrix = matrixCraft[matrixIndex];
-                            assert itemMatrix != null;
-                            if (!itemMatrix.isEmpty()) {
-                                return false;
+                            if (slot == ' ' || !ingredientMap.containsKey(slot)) {
+                                if (matrixItem != null && !matrixItem.isEmpty()) {
+                                    matched = false;
+                                    break outerLoop;
+                                }
+                            } else {
+                                ItemStack requiredItem = ingredientMap.get(slot);
+                                if (!validateIngredient(matrixItem, requiredItem)) {
+                                    matched = false;
+                                    break outerLoop;
+                                }
                             }
                         }
-                        continue;
                     }
 
-                    ItemStack requiredItem = ingredientMap.get(slot);
-                    ItemStack matrixItem = matrixCraft[matrixIndex];
-
-                    if (!validateIngredient(matrixItem, requiredItem)) {
-                        return false;
-                    }
+                    // Si alguna disposición hace match, la receta es válida
+                    if (matched) return true;
                 }
             }
+
+            return false;
         } else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
             List<ItemStack> ingredients = new ArrayList<>(shapelessRecipe.getChoiceList().stream().map(CustomItemRecipeHelper::getRecipeChoiceItemStack).map(itemStack -> (itemStack == null) ? ItemStack.empty() : itemStack).toList());
 
@@ -200,68 +203,67 @@ public class CustomItemRecipeHelper {
         int craftsToProcess = 0;
 
         if (craftingRecipe instanceof ShapedRecipe shapedRecipe) {
-            Map<Character, @Nullable ItemStack> ingredientMap = getIngredientMap(shapedRecipe.getChoiceMap());
             String[] shape = shapedRecipe.getShape();
+            Map<Character, @Nullable ItemStack> ingredientMap = getIngredientMap(shapedRecipe.getChoiceMap());
 
-            int rows = shape.length; // Recipe rows
-            int columns = shape[0].length(); // Recipe columns (we assume well-formed recipe)
+            int recipeRows = shape.length;
+            int recipeCols = shape[0].length();
 
-            // Calculamos los desplazamientos (offset) para centrar la receta en la matriz 3x3
-            int rowOffset = (3 - rows) / 2;
-            int colOffset = (3 - columns) / 2;
+            for (int rowOffset = 0; rowOffset <= 3 - recipeRows; rowOffset++) {
+                for (int colOffset = 0; colOffset <= 3 - recipeCols; colOffset++) {
+                    boolean matched = true;
 
-            // Determinate the max crafts based in any slot
-            for (int row = 0; row < rows; row++) {
-                String shapeRow = shape[row];
+                    outerLoop:
+                    for (int row = 0; row < recipeRows; row++) {
+                        String shapeRow = shape[row];
+                        for (int col = 0; col < recipeCols; col++) {
+                            char slot = shapeRow.charAt(col);
+                            int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset);
+                            ItemStack matrixItem = matrix[matrixIndex];
 
-                for (int col = 0; col < columns; col++) {
-                    char slot = shapeRow.charAt(col);
-                    int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // Adjust with offsets
+                            if (slot == ' ' || !ingredientMap.containsKey(slot)) {
+                                if (matrixItem != null && !matrixItem.isEmpty()) {
+                                    matched = false;
+                                    break outerLoop;
+                                }
+                                continue;
+                            }
 
-                    if (slot == ' ' || !ingredientMap.containsKey(slot)) {
-                        continue; // Ignore empty spaces
-                    }
+                            ItemStack requiredItem = ingredientMap.get(slot);
+                            if (requiredItem == null || !validateIngredient(matrixItem, requiredItem)) {
+                                matched = false;
+                                break outerLoop;
+                            }
 
-                    ItemStack requiredItem = ingredientMap.get(slot);
-                    if (requiredItem == null || requiredItem.isEmpty()) {
-                        continue; // Ignore ingredients not defined
-                    }
-
-                    ItemStack matrixItem = matrixResult[matrixIndex];
-                    if (matrixItem == null || !validateIngredient(matrixItem, requiredItem)) {
-                        maxCrafts = 0; // If not has a requirement ingredient then cannot craft
-                    } else {
-                        int possibleCrafts = matrixItem.getAmount() / requiredItem.getAmount();
-                        maxCrafts = Math.min(maxCrafts, possibleCrafts);
-                    }
-                }
-            }
-
-            // We limit the max crafts for avoid more than an stack
-            maxCrafts = Math.min(maxCrafts, maxPerStack);
-
-            // If cannot process all then limit to 1 craft
-            craftsToProcess = processAll ? maxCrafts : 1;
-
-            // Reduce the matrix based in the craft allowed
-            if (craftsToProcess > 0) {
-                for (int row = 0; row < rows; row++) {
-                    String shapeRow = shape[row];
-
-                    for (int col = 0; col < columns; col++) {
-                        char slot = shapeRow.charAt(col);
-                        int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // Adjust with offsets
-
-                        if (slot == ' ' || !ingredientMap.containsKey(slot)) {
-                            continue; // Ignore empty spaces
+                            int possibleCrafts = matrixItem.getAmount() / requiredItem.getAmount();
+                            maxCrafts = Math.min(maxCrafts, possibleCrafts);
                         }
+                    }
 
-                        ItemStack requiredItem = ingredientMap.get(slot);
-                        ItemStack matrixItem = matrixResult[matrixIndex];
-                        if (matrixItem != null && validateIngredient(matrixItem, requiredItem)) {
-                            int amountToSubtract = requiredItem.getAmount() * craftsToProcess;
-                            matrixResult[matrixIndex] = matrixItem.clone().subtract(amountToSubtract);
+                    if (matched) {
+                        // We limit the max crafts for avoid more than an stack
+                        maxCrafts = Math.min(maxCrafts, maxPerStack);
+
+                        // If cannot process all then limit to 1 craft
+                        craftsToProcess = processAll ? maxCrafts : 1;
+
+                        for (int row = 0; row < recipeRows; row++) {
+                            String shapeRow = shape[row];
+                            for (int col = 0; col < recipeCols; col++) {
+                                char slot = shapeRow.charAt(col);
+                                if (slot == ' ' || !ingredientMap.containsKey(slot)) continue;
+
+                                int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset);
+                                ItemStack requiredItem = ingredientMap.get(slot);
+                                assert matrixResult != null;
+                                ItemStack matrixItem = matrixResult[matrixIndex];
+                                if (requiredItem != null && validateIngredient(matrixItem, requiredItem)) {
+                                    int amountToSubtract = requiredItem.getAmount() * craftsToProcess;
+                                    matrixResult[matrixIndex] = matrixItem.clone().subtract(amountToSubtract);
+                                }
+                            }
                         }
+                        break;
                     }
                 }
             }
