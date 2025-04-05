@@ -6,6 +6,7 @@ import io.papermc.paper.datacomponent.item.ItemLore;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import me.mrdoc.minecraft.dlibcustomextension.items.CustomItemRecipeHelper;
 import me.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
@@ -133,16 +134,30 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
             case null -> null;
             case ShapedRecipe shapedRecipe -> {
                 InventoryView inventoryView = MenuType.CRAFTING.create(player, titleInventoryView);
-                int pos = 1;
-                for (String lineStr : shapedRecipe.getShape()) {
-                    for (char character : lineStr.toCharArray()) {
-                        RecipeChoice recipeChoice = shapedRecipe.getChoiceMap().get(character);
-                        final ItemStack itemStackInRecipe = CustomItemRecipeHelper.getRecipeChoiceItemStack(recipeChoice);
-                        if (recipeChoice != null && itemStackInRecipe != null) {
-                            inventoryView.getTopInventory().setItem(pos, itemStackInRecipe);
+
+                String[] shape = shapedRecipe.getShape();
+                Map<Character, @Nullable ItemStack> ingredientMap = CustomItemRecipeHelper.getIngredientMap(shapedRecipe.getChoiceMap());
+
+                int rows = shape.length; // Recipe rows
+                int columns = shape[0].length(); // Recipe columns (we assume well-formed recipe)
+
+                // We calculate the offset to center the recipe in the 3x3 matrix
+                int rowOffset = (3 - rows) / 2;
+                int colOffset = (3 - columns) / 2;
+
+                for (int row = 0; row < rows; row++) {
+                    String shapeRow = shape[row];
+
+                    for (int col = 0; col < columns; col++) {
+                        char slot = shapeRow.charAt(col);
+                        int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // We adjust by offset
+
+                        if (slot == ' ' || !ingredientMap.containsKey(slot)) {
+                            continue;
                         }
-                        //player.sendMessage(lineStr + " -> " + character + " " + pos + " " + shapedRecipe.getChoiceMap().get(character).getItemStack().getType());
-                        pos = pos + 1;
+
+                        ItemStack requiredItem = ingredientMap.get(slot);
+                        inventoryView.getTopInventory().setItem(matrixIndex + 1, requiredItem);
                     }
                 }
                 yield inventoryView;

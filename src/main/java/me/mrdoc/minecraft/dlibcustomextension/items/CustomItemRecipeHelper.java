@@ -33,7 +33,7 @@ public class CustomItemRecipeHelper {
         return null;
     }
 
-    static Map<Character, @Nullable ItemStack> getIngredientMap(Map<Character, RecipeChoice> ingredients) {
+    public static Map<Character, @Nullable ItemStack> getIngredientMap(Map<Character, RecipeChoice> ingredients) {
         HashMap<Character, @Nullable ItemStack> result = new HashMap<Character, ItemStack>();
         for (Map.Entry<Character, RecipeChoice> ingredient : ingredients.entrySet()) {
             final ItemStack itemStack = getRecipeChoiceItemStack(ingredient.getValue());
@@ -53,7 +53,7 @@ public class CustomItemRecipeHelper {
      * @param matrixCraft the matrix of ingredients
      * @return {@code true} if is valid
      */
-    static boolean validateRecipeIngredients(AbstractCustomItem customItem, ItemStack[] matrixCraft) {
+    static boolean validateRecipeIngredients(AbstractCustomItem customItem, @Nullable ItemStack @Nullable [] matrixCraft) {
         if (customItem.getRecipe() == null) {
             return false;
         }
