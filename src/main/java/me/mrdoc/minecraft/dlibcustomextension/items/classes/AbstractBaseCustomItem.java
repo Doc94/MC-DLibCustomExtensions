@@ -129,7 +129,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
     @Nullable
     public InventoryView createDisplayCraft(Player player) {
-        Component titleInventoryView = Component.text().append(Component.text("Crafteo de")).appendSpace().append(this.getItem().displayName()).build();
+        Component titleInventoryView = Component.translatable("dlce.items.recipe.display", this.getItem().displayName());
         return switch (this.getRecipe()) {
             case null -> null;
             case ShapedRecipe shapedRecipe -> {
