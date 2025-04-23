@@ -43,9 +43,9 @@ public class GiveItemCustomCommand extends BaseCommand {
 
         Component componentMessage;
         if (playersTargets.size() > 1) {
-            componentMessage = Component.translatable("commands.give.success.multiple", Component.text(amount), itemStack.displayName(), playersTargets.iterator().next().teamDisplayName());
+            componentMessage = Component.translatable("commands.give.success.multiple", Component.text(amount), itemStack.displayName(), Component.text(playersTargets.size()));
         } else {
-            componentMessage = Component.translatable("commands.give.success.single", Component.text(amount), itemStack.displayName(), Component.text(playersTargets.size()));
+            componentMessage = Component.translatable("commands.give.success.single", Component.text(amount), itemStack.displayName(), playersTargets.iterator().next().teamDisplayName());
         }
 
         sourceSender.source().sendMessage(componentMessage);
