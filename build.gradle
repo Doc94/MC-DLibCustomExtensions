@@ -118,7 +118,7 @@ publishing {
 
             pom {
                 name = projectArtifactName
-                description = 'A library for custom things'
+                description = 'A Minecraft library for custom things'
                 url = 'https://mrdoc.me/'
 
                 licenses {
@@ -131,7 +131,6 @@ publishing {
                     developer {
                         id = 'doc'
                         name = 'Pedro'
-                        email = 'nachito94@msn.com'
                     }
                 }
                 scm {
