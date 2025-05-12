@@ -7,7 +7,7 @@ plugins {
     id('org.jreleaser') version '1.18.0'
 }
 
-group = 'me.mrdoc.minecraft'
+group = 'dev.mrdoc.minecraft'
 version = '1.0.0-SNAPSHOT'
 
 ext {
@@ -47,8 +47,8 @@ java {
 }
 
 shadowJar {
-    relocate("org.incendo.cloud", "me.mrdoc.minecraft.dlce.libs.org.incendo.cloud")
-    relocate("com.github.fracpet", "me.mrdoc.minecraft.dlce.libs.com.github.fracpet")
+    relocate("org.incendo.cloud", "dev.mrdoc.minecraft.dlce.libs.org.incendo.cloud")
+    relocate("com.github.fracpet", "dev.mrdoc.minecraft.dlce.libs.com.github.fracpet")
     archiveClassifier.set('')
 }
 build.dependsOn shadowJar
