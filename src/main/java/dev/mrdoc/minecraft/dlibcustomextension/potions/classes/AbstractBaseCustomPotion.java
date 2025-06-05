@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -25,6 +26,13 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
     private final NamespacedKey potionNamespace;
     private final RecipeChoice recipeInput;
     private final RecipeChoice recipeIngredient;
+    /**
+     *  Gets the base Item used for recipe registration and validations.
+     *  The item is final and should not be modified.
+     *
+     * @return Potion Item Custom
+     */
+    @Getter
     private final ItemStack item;
     @Getter
     private final PotionMix potionMix;
@@ -35,12 +43,15 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
 
         potionNamespace = new NamespacedKey(instance, internalName);
         this.item = createItem();
-        Validate.notNull(this.item, "El item creado para BasePotion no puede ser null");
+        Validate.notNull(this.item, "The item for this potion cannot be null.");
 
         this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomPotionsManager.getNamespacedKey(), PersistentDataType.STRING, this.potionNamespace.toString()));
 
         if (displayName != null && !displayName.equals(Component.empty())) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName);
+            if (this.item.hasData(DataComponentTypes.POTION_CONTENTS) || this.item.getType().asItemType() == ItemType.POTION || this.item.getType().asItemType() == ItemType.SPLASH_POTION || this.item.getType().asItemType() == ItemType.LINGERING_POTION) {
+                this.item.setData(DataComponentTypes.CUSTOM_NAME, displayName);
+            }
         }
 
         ArrayList<Component> lore = new ArrayList<>();
@@ -58,20 +69,23 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
     }
 
     /**
-     * Metodo donde debe definirse el item
-     * @return Item a registrar.
+     * Definition of the item.
+     *
+     * @return item to create
      */
     public abstract ItemStack createItem();
 
     /**
-     * Lo que debe estar en los 3 slots del fondo
-     * @return Input
+     * The input (button) for the potion recipe.
+     *
+     * @return input
      */
     public abstract RecipeChoice createRecipeInput();
 
     /**
-     * El ingrediente de entrada
-     * @return Ingredient
+     * The ingredient (item button being added) for the potion recipe.
+     *
+     * @return ingredient
      */
     public abstract RecipeChoice createRecipeIngredient();
 
@@ -80,14 +94,10 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
     }
 
     /**
-     * Obtiene el Item base usado para registro de recetas y validaciones.
-     * El item es final por lo que no debería modificarse.
-     * @return Item Custom
+     * Gets the item for give to the player.
+     *
+     * @return the item
      */
-    public ItemStack getItem() {
-        return item;
-    }
-
     public ItemStack getItemForPlayer() {
         return getItem().clone();
     }
