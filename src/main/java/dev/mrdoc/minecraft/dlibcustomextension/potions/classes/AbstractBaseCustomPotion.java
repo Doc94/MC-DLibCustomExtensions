@@ -1,4 +1,4 @@
-package dev.mrdoc.minecraft.dlibcustomextension.potions.potion.classes;
+package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;

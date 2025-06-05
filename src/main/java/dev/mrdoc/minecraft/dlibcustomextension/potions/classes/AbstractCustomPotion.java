@@ -1,4 +1,4 @@
-package dev.mrdoc.minecraft.dlibcustomextension.potions.potion.classes;
+package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;

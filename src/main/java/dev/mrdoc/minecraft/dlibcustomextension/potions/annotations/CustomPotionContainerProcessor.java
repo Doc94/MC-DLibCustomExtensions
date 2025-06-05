@@ -1,4 +1,4 @@
-package dev.mrdoc.minecraft.dlibcustomextension.potions.potion.annotations;
+package dev.mrdoc.minecraft.dlibcustomextension.potions.annotations;
 
 import com.google.auto.service.AutoService;
 import java.io.BufferedWriter;
@@ -20,7 +20,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.StandardLocation;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.potion.classes.AbstractBaseCustomPotion;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCustomPotion;
 import org.jspecify.annotations.NonNull;
 
 /**

@@ -1,4 +1,4 @@
-package dev.mrdoc.minecraft.dlibcustomextension.potions.potion.annotations;
+package dev.mrdoc.minecraft.dlibcustomextension.potions.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

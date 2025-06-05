@@ -1,4 +1,4 @@
-package dev.mrdoc.minecraft.dlibcustomextension.potions.potion.classes;
+package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
