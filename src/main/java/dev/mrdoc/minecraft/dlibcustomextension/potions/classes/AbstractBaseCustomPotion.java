@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.Getter;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -50,7 +51,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         if (displayName != null && !displayName.equals(Component.empty())) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName);
             if (this.item.hasData(DataComponentTypes.POTION_CONTENTS) || this.item.getType().asItemType() == ItemType.POTION || this.item.getType().asItemType() == ItemType.SPLASH_POTION || this.item.getType().asItemType() == ItemType.LINGERING_POTION) {
-                this.item.setData(DataComponentTypes.CUSTOM_NAME, displayName);
+                this.item.setData(DataComponentTypes.CUSTOM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
             }
         }
 
