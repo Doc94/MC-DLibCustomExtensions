@@ -29,6 +29,11 @@ import org.jspecify.annotations.NonNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
+/**
+ * The CustomItemsManager class is responsible for managing custom items in the plugin.
+ * It provides methods for loading, managing, querying, and interacting with custom items.
+ * The manager also handles custom item configuration, persistence, and registration.
+ */
 public class CustomItemsManager {
 
     private static Plugin PLUGIN_INSTANCE;
@@ -171,7 +176,7 @@ public class CustomItemsManager {
         if (internalName == null || internalName.isEmpty()) {
             return Optional.empty();
         }
-        return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getRecipeNamespace().getKey().equalsIgnoreCase(internalName) || baseItem.getRecipeNamespace().toString().equalsIgnoreCase(internalName)).findFirst();
+        return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getKey().value().equalsIgnoreCase(internalName) || baseItem.getKey().toString().equalsIgnoreCase(internalName)).findFirst();
     }
 
     /**
@@ -241,7 +246,7 @@ public class CustomItemsManager {
      * @return a set of keys
      */
     public static HashSet<NamespacedKey> getNamespacedKeys() {
-        return CUSTOM_ITEMS.stream().map(AbstractCustomItem::getRecipeNamespace).collect(Collectors.toCollection(HashSet::new));
+        return CUSTOM_ITEMS.stream().map(AbstractCustomItem::getKey).map(key -> new NamespacedKey(key.namespace(), key.value())).collect(Collectors.toCollection(HashSet::new));
     }
 
     /**
@@ -251,7 +256,7 @@ public class CustomItemsManager {
      * @return an Optional
      */
     public static Optional<ItemStack> getItem(String internalName) {
-        return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getRecipeNamespace().getKey().equalsIgnoreCase(internalName)).map(AbstractCustomItem::getItemForPlayer).map(ItemStack::clone).findAny();
+        return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getKey().value().equalsIgnoreCase(internalName)).map(AbstractCustomItem::getItemForPlayer).map(ItemStack::clone).findAny();
     }
 
     /**
@@ -314,7 +319,7 @@ public class CustomItemsManager {
             try {
                 customItem.registerRecipe();
             } catch (IllegalStateException ex) {
-                LoggerUtils.warn("Cannot register the recipe for [%s]".formatted(customItem.getRecipeNamespace().getKey()), ex);
+                LoggerUtils.warn("Cannot register the recipe for [%s]".formatted(customItem.getKey().asString()), ex);
             }
         }
     }

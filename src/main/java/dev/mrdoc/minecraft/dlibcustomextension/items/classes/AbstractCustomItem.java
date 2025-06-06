@@ -23,7 +23,7 @@ public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomIt
     public AbstractCustomItem(CustomItemBuilder customItemBuilder) {
         super(customItemBuilder.getPlugin(), customItemBuilder.getInternalName(), customItemBuilder.getDisplayName(), customItemBuilder.getRarity(), customItemBuilder.isSpecial(), customItemBuilder.getItemModel(), customItemBuilder.getInventoryTypes(), customItemBuilder.getDescriptions());
         Bukkit.getServer().getPluginManager().registerEvents(this, customItemBuilder.getPlugin());
-        LoggerUtils.info("Item registered " + this.getRecipeNamespace());
+        LoggerUtils.info("Item registered " + this.getKey());
     }
 
     @Override

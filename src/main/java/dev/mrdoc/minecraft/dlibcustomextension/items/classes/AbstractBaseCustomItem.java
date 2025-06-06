@@ -40,7 +40,8 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     private final Plugin instance;
     @Getter
     private final String internalName;
-    private final NamespacedKey recipeNamespace;
+    @Getter
+    private final Key key;
     @Nullable
     @Getter
     private final Recipe recipe;
@@ -60,16 +61,15 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     @ApiStatus.Internal
     public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions) {
         this.inventoryTypes.addAll(inventoryTypes);
-
         this.instance = instance;
-
         this.internalName = internalName;
 
-        this.recipeNamespace = new NamespacedKey(this.instance, internalName);
+        this.key = new NamespacedKey(this.instance, this.internalName);
+
         this.item = this.createItem();
         Preconditions.checkState(this.item != null, "The item for %s is null", internalName);
 
-        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, this.recipeNamespace.toString()));
+        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, this.key.asString()));
 
         if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
@@ -104,10 +104,20 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
         this.recipe = this.createRecipe();
     }
 
-    public NamespacedKey getRecipeNamespace() {
-        return recipeNamespace;
+    /**
+     * Returns the {@link NamespacedKey} associated with this custom item.
+     *
+     * @return the namespaced key representing the namespace and value of the custom item
+     */
+    public NamespacedKey getNamespacedKey() {
+        return new NamespacedKey(this.key.namespace(), this.key.value());
     }
 
+    /**
+     * Determines whether the custom item is enabled.
+     *
+     * @return {@code true} if the item is enabled, {@code false} otherwise
+     */
     public boolean isEnabled() {
         return CustomItemsManager.isItemEnable(getInternalName());
     }
@@ -187,7 +197,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     }
 
     /**
-     * Generate a copy of the item to give to player.
+     * Generate a copy of the item to give to the player.
      *
      * @return item to give
      */
@@ -196,7 +206,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     }
 
     /**
-     * Generate a copy of the item to give to player.
+     * Generate a copy of the item to give to the player.
      *
      * @param quantity amount of item
      * @return item to give
@@ -208,28 +218,28 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     }
 
     public void discoverRecipe(Player player) {
-        if (this.recipe != null && !player.hasDiscoveredRecipe(this.getRecipeNamespace())) {
-            player.discoverRecipe(this.getRecipeNamespace());
+        if (this.recipe != null && !player.hasDiscoveredRecipe(this.getNamespacedKey())) {
+            player.discoverRecipe(this.getNamespacedKey());
         }
     }
 
     public void undiscoverRecipe(Player player) {
-        if (this.recipe != null && player.hasDiscoveredRecipe(this.getRecipeNamespace())) {
-            player.undiscoverRecipe(this.getRecipeNamespace());
+        if (this.recipe != null && player.hasDiscoveredRecipe(this.getNamespacedKey())) {
+            player.undiscoverRecipe(this.getNamespacedKey());
         }
     }
 
     public void registerRecipe() {
         if (this.recipe != null) {
-            LoggerUtils.info("Adding recipe " + this.getRecipeNamespace());
-            Bukkit.getServer().addRecipe(getRecipe());
+            LoggerUtils.info("Adding recipe " + this.getKey());
+            Bukkit.getServer().addRecipe(this.getRecipe());
         }
     }
 
     public void unRegisterRecipe() {
         if (this.recipe != null) {
-            LoggerUtils.info("Removing recipe " + this.getRecipeNamespace());
-            Bukkit.removeRecipe(this.getRecipeNamespace());
+            LoggerUtils.info("Removing recipe " + this.getKey());
+            Bukkit.removeRecipe(this.getNamespacedKey());
         }
     }
 
@@ -244,6 +254,6 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
             return false;
         }
         String data = itemToCheck.getPersistentDataContainer().getOrDefault(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, "");
-        return itemToCheck.getType().equals(getItem().getType()) && data.equals(getRecipeNamespace().toString());
+        return itemToCheck.getType().equals(getItem().getType()) && data.equals(getKey().toString());
     }
 }
