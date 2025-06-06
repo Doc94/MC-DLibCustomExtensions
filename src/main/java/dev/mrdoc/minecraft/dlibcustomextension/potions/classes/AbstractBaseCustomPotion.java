@@ -1,5 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
+import com.google.common.base.Preconditions;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import io.papermc.paper.potion.PotionMix;
@@ -7,9 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.apache.commons.lang3.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
@@ -27,7 +30,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
     @Getter
     private final String internalName;
     @Getter
-    private final NamespacedKey potionNamespace;
+    private final Key key;
     private final RecipeChoice recipeInput;
     private final RecipeChoice recipeIngredient;
     /**
@@ -45,31 +48,43 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         this.instance = plugin;
         this.internalName = internalName;
 
-        this.potionNamespace = new NamespacedKey(this.instance, internalName);
+        this.key = new NamespacedKey(this.instance, this.internalName);
+
         this.item = createItem();
-        Validate.notNull(this.item, "The item for this potion cannot be null.");
+        Preconditions.checkState(this.item != null, "The potion item for %s is null", internalName);
 
-        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomPotionsManager.getNamespacedKey(), PersistentDataType.STRING, this.potionNamespace.toString()));
+        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomPotionsManager.getNamespacedKey(), PersistentDataType.STRING, this.key.toString()));
 
-        if (displayName != null && !displayName.equals(Component.empty())) {
+        if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName);
+            // Patch because potion contents and POTION/SPLASH has a diff behavior for displayName
             if (this.item.hasData(DataComponentTypes.POTION_CONTENTS) || this.item.getType().asItemType() == ItemType.POTION || this.item.getType().asItemType() == ItemType.SPLASH_POTION || this.item.getType().asItemType() == ItemType.LINGERING_POTION) {
                 this.item.setData(DataComponentTypes.CUSTOM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
             }
         }
 
-        ArrayList<Component> lore = new ArrayList<>();
+        ArrayList<Component> loreComponents = new ArrayList<>();
 
         if (!descriptions.isEmpty()) {
-            lore.add(Component.empty());
-            lore.addAll(descriptions);
+            loreComponents.add(Component.empty());
+            List<Component> descriptionProcessed = descriptions.stream().map(component -> component.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)).toList();
+            loreComponents.addAll(descriptionProcessed);
         }
 
-        this.item.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
+        this.item.setData(DataComponentTypes.LORE, ItemLore.lore(loreComponents));
 
-        this.recipeInput = createRecipeInput();
-        this.recipeIngredient = createRecipeIngredient();
-        this.potionMix = createPotionMix();
+        this.recipeInput = this.createRecipeInput();
+        this.recipeIngredient = this.createRecipeIngredient();
+        this.potionMix = this.createPotionMix();
+    }
+
+    /**
+     * Retrieves the {@link NamespacedKey} associated with this potion.
+     *
+     * @return the {@link NamespacedKey} representing the namespace and value for this potion.
+     */
+    public NamespacedKey getNamespaceKey() {
+        return new NamespacedKey(this.key.namespace(), this.key.value());
     }
 
     /**
@@ -94,7 +109,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
     public abstract RecipeChoice createRecipeIngredient();
 
     private PotionMix createPotionMix() {
-        return new PotionMix(this.potionNamespace, this.item, this.recipeInput, this.recipeIngredient);
+        return new PotionMix(this.getNamespaceKey(), this.item, this.recipeInput, this.recipeIngredient);
     }
 
     /**
@@ -129,7 +144,17 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
             return false;
         }
         String data = itemToCheck.getPersistentDataContainer().getOrDefault(CustomPotionsManager.getNamespacedKey(), PersistentDataType.STRING, "");
-        return itemToCheck.getType().equals(getItem().getType()) && data.equals(getPotionNamespace().toString());
+        return itemToCheck.getType().equals(getItem().getType()) && data.equals(getKey().toString());
+    }
+
+    public void registerPotionMix() {
+        LoggerUtils.info("Adding PotionMix " + this.getKey());
+        Bukkit.getPotionBrewer().addPotionMix(this.getPotionMix());
+    }
+
+    public void unRegisterPotionMix() {
+        LoggerUtils.info("Removing PotionMix " + this.getKey());
+        Bukkit.getPotionBrewer().removePotionMix(this.getNamespaceKey());
     }
 
 }

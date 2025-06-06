@@ -24,6 +24,10 @@ import org.jspecify.annotations.NonNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
+/**
+ * Manages custom potions within the plugin, overseeing their loading, configuration, and interaction.
+ * Handles registration, configuration management, and access for custom potions.
+ */
 public class CustomPotionsManager {
 
     private static Plugin PLUGIN_INSTANCE;
@@ -112,16 +116,16 @@ public class CustomPotionsManager {
     public static void registerAllRecipes() {
         for (AbstractCustomPotion basePotion : CUSTOM_POTIONS) {
             try {
-                Bukkit.getPotionBrewer().addPotionMix(basePotion.getPotionMix());
+                basePotion.registerPotionMix();
             } catch (IllegalStateException | IllegalArgumentException ex) {
-                LoggerUtils.warn("Cannot create potion recipe [" + basePotion.getPotionNamespace().getKey() + "]: " + ex.getMessage());
+                LoggerUtils.warn("Cannot create potion recipe [" + basePotion.getKey().asString() + "]: " + ex.getMessage());
             }
         }
     }
 
     public static void unregisterAllRecipes() {
         for (AbstractBaseCustomPotion basePotion : CUSTOM_POTIONS) {
-            Bukkit.getPotionBrewer().removePotionMix(basePotion.getPotionNamespace());
+            basePotion.unRegisterPotionMix();
         }
     }
 
@@ -136,7 +140,7 @@ public class CustomPotionsManager {
      * @return an Optional
      */
     public static Optional<AbstractCustomPotion> getCustomPotion(String internalName) {
-        return CUSTOM_POTIONS.stream().filter(basePotion -> basePotion.getPotionNamespace().getKey().equalsIgnoreCase(internalName)).findFirst();
+        return CUSTOM_POTIONS.stream().filter(basePotion -> basePotion.getKey().value().equalsIgnoreCase(internalName)).findFirst();
     }
 
     /**
@@ -174,7 +178,7 @@ public class CustomPotionsManager {
     }
 
     public static HashSet<NamespacedKey> getNamespacedKeys() {
-        return CUSTOM_POTIONS.stream().map(AbstractBaseCustomPotion::getPotionNamespace).collect(Collectors.toCollection(HashSet::new));
+        return CUSTOM_POTIONS.stream().map(AbstractBaseCustomPotion::getNamespaceKey).collect(Collectors.toCollection(HashSet::new));
     }
 
     /**
@@ -194,7 +198,7 @@ public class CustomPotionsManager {
      * @return an Optional
      */
     public static Optional<ItemStack> getItem(String internalName) {
-        return CUSTOM_POTIONS.stream().filter(baseItem -> baseItem.getPotionNamespace().getKey().equalsIgnoreCase(internalName)).map(AbstractBaseCustomPotion::getItemForPlayer).map(ItemStack::clone).findAny();
+        return CUSTOM_POTIONS.stream().filter(baseItem -> baseItem.getKey().value().equalsIgnoreCase(internalName)).map(AbstractBaseCustomPotion::getItemForPlayer).map(ItemStack::clone).findAny();
     }
 
 }
