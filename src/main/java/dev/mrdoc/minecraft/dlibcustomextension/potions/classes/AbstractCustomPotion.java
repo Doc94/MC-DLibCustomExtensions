@@ -2,7 +2,9 @@ package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public abstract non-sealed class AbstractCustomPotion extends AbstractBaseCustomPotion implements Listener {
 
     public AbstractCustomPotion(CustomPotionBuilder customPotionBuilder) {

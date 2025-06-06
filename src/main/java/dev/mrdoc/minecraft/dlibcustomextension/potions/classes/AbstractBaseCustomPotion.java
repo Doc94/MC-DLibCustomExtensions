@@ -16,7 +16,10 @@ import org.bukkit.inventory.ItemType;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPotion {
 
     @Getter
@@ -42,7 +45,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         this.instance = plugin;
         this.internalName = internalName;
 
-        potionNamespace = new NamespacedKey(instance, internalName);
+        this.potionNamespace = new NamespacedKey(this.instance, internalName);
         this.item = createItem();
         Validate.notNull(this.item, "The item for this potion cannot be null.");
 
@@ -101,6 +104,32 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      */
     public ItemStack getItemForPlayer() {
         return getItem().clone();
+    }
+
+    /**
+     * Generate a copy of the item to give to player.
+     *
+     * @param quantity amount of item
+     * @return item to give
+     */
+    public ItemStack getItemForPlayer(int quantity) {
+        ItemStack itemStack = this.getItemForPlayer();
+        itemStack.setAmount(quantity);
+        return itemStack;
+    }
+
+    /**
+     * Checks if the provided item matches this custom potion item
+     *
+     * @param itemToCheck Item to validate
+     * @return {@code true} if it matches the custom potion item
+     */
+    public boolean isItem(@Nullable ItemStack itemToCheck) {
+        if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
+            return false;
+        }
+        String data = itemToCheck.getPersistentDataContainer().getOrDefault(CustomPotionsManager.getNamespacedKey(), PersistentDataType.STRING, "");
+        return itemToCheck.getType().equals(getItem().getType()) && data.equals(getPotionNamespace().toString());
     }
 
 }
