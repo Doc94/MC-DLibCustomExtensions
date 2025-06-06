@@ -40,7 +40,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     private final Plugin instance;
     @Getter
     private final String internalName;
-    private final NamespacedKey recipe_namespace;
+    private final NamespacedKey recipeNamespace;
     @Nullable
     @Getter
     private final Recipe recipe;
@@ -65,11 +65,11 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
         this.internalName = internalName;
 
-        this.recipe_namespace = new NamespacedKey(instance, internalName);
+        this.recipeNamespace = new NamespacedKey(this.instance, internalName);
         this.item = this.createItem();
         Preconditions.checkState(this.item != null, "The item for %s is null", internalName);
 
-        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, recipe_namespace.toString()));
+        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, this.recipeNamespace.toString()));
 
         if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
@@ -105,7 +105,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     }
 
     public NamespacedKey getRecipeNamespace() {
-        return recipe_namespace;
+        return recipeNamespace;
     }
 
     public boolean isEnabled() {
@@ -234,12 +234,12 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     }
 
     /**
-     * Revisa si el item ingresado corresponde al de la receta
+     * Checks if the provided item matches this custom item
      *
-     * @param itemToCheck Item a validar
-     * @return TRUE si corresponde al item custom
+     * @param itemToCheck Item to validate
+     * @return {@code true} if it matches the custom item
      */
-    public boolean isItem(ItemStack itemToCheck) {
+    public boolean isItem(@Nullable ItemStack itemToCheck) {
         if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
             return false;
         }
