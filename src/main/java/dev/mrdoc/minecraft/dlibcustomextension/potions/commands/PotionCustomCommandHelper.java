@@ -1,5 +1,6 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions.commands;
 
+import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,5 +28,11 @@ public class PotionCustomCommandHelper {
         final String input = commandInput.readString();
 
         return CustomPotionsManager.getItem(input.toUpperCase()).orElseThrow(() -> new IllegalArgumentException("Item Potion ID \"%s\" invalid.".formatted(input)));
+    }
+
+    static Class<? extends AbstractCustomPotion> parserItemCustomClass(CommandContext<Source> ctx, CommandInput commandInput) {
+        final String input = commandInput.readString();
+
+        return CustomPotionsManager.getCustomPotion(input.toUpperCase()).map(AbstractCustomPotion::getClass).orElseThrow(() -> new IllegalArgumentException("Item Potion ID \"%s\" invalid.".formatted(input)));
     }
 }

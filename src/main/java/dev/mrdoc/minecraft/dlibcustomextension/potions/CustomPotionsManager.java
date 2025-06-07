@@ -1,5 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions;
 
+import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.DisplayPotionCustomCommand;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
@@ -15,12 +17,13 @@ import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCusto
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
@@ -28,6 +31,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
  * Manages custom potions within the plugin, overseeing their loading, configuration, and interaction.
  * Handles registration, configuration management, and access for custom potions.
  */
+@NullMarked
 public class CustomPotionsManager {
 
     private static Plugin PLUGIN_INSTANCE;
@@ -131,6 +135,7 @@ public class CustomPotionsManager {
 
     public static void registerCommands() {
         new GivePotionCustomCommand();
+        new DisplayPotionCustomCommand();
     }
 
     /**
@@ -140,7 +145,7 @@ public class CustomPotionsManager {
      * @return an Optional
      */
     public static Optional<AbstractCustomPotion> getCustomPotion(String internalName) {
-        return CUSTOM_POTIONS.stream().filter(basePotion -> basePotion.getKey().value().equalsIgnoreCase(internalName)).findFirst();
+        return CUSTOM_POTIONS.stream().filter(basePotion -> basePotion.getKey().value().equalsIgnoreCase(internalName) || basePotion.getKey().toString().equalsIgnoreCase(internalName)).findFirst();
     }
 
     /**
@@ -161,20 +166,24 @@ public class CustomPotionsManager {
     }
 
     public static boolean isCustomItem(ItemStack item) {
-        return !getInternalName(item).isEmpty();
+        return getInternalKey(item) != null;
     }
 
     /**
      * Gets the internal potion name of this item if is valid.
      *
      * @param item ItemStack
-     * @return the internal name or empty
+     * @return the internal key or null
      */
-    public static String getInternalName(ItemStack item) {
+    @Nullable
+    public static Key getInternalKey(@Nullable ItemStack item) {
         if (item == null) {
-            return "";
+            return null;
         }
-        return item.getPersistentDataContainer().getOrDefault(NAMESPACED_CUSTOM_POTION, PersistentDataType.STRING, "");
+        if (!item.getPersistentDataContainer().has(NAMESPACED_CUSTOM_POTION)) {
+            return null;
+        }
+        return item.getPersistentDataContainer().get(NAMESPACED_CUSTOM_POTION, PersistentDataKey.KEY_CONTAINER);
     }
 
     public static HashSet<NamespacedKey> getNamespacedKeys() {
@@ -198,7 +207,7 @@ public class CustomPotionsManager {
      * @return an Optional
      */
     public static Optional<ItemStack> getItem(String internalName) {
-        return CUSTOM_POTIONS.stream().filter(baseItem -> baseItem.getKey().value().equalsIgnoreCase(internalName)).map(AbstractBaseCustomPotion::getItemForPlayer).map(ItemStack::clone).findAny();
+        return CUSTOM_POTIONS.stream().filter(basePotion -> basePotion.getKey().value().equalsIgnoreCase(internalName) || basePotion.getKey().toString().equalsIgnoreCase(internalName)).map(AbstractBaseCustomPotion::getItemForPlayer).map(ItemStack::clone).findAny();
     }
 
 }

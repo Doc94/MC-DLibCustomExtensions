@@ -2,11 +2,13 @@ package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import com.google.common.base.Preconditions;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import io.papermc.paper.potion.PotionMix;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import net.kyori.adventure.key.Key;
@@ -14,10 +16,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
+import org.bukkit.inventory.MenuType;
 import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.inventory.view.BrewingStandView;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -53,7 +58,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         this.item = createItem();
         Preconditions.checkState(this.item != null, "The potion item for %s is null", internalName);
 
-        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomPotionsManager.getNamespacedKey(), PersistentDataType.STRING, this.key.toString()));
+        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomPotionsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER, this.key));
 
         if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName);
@@ -112,6 +117,27 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         return new PotionMix(this.getNamespaceKey(), this.item, this.recipeInput, this.recipeIngredient);
     }
 
+    @Nullable
+    public InventoryView createDisplayCraft(Player player) {
+        Component titleInventoryView = Component.translatable("dlce.potions.recipe.display", this.getItem().displayName());
+        BrewingStandView brewingStandView = MenuType.BREWING_STAND.create(player, titleInventoryView);
+        for (int basePos = 0; basePos < 3; basePos++) {
+            if (this.getPotionMix().getInput() instanceof RecipeChoice.ExactChoice exactChoice) {
+                brewingStandView.setItem(basePos, exactChoice.getItemStack());
+            } else if (this.getPotionMix().getInput() instanceof RecipeChoice.MaterialChoice materialChoice) {
+                brewingStandView.setItem(basePos, materialChoice.getItemStack());
+            }
+        }
+
+        if (this.getPotionMix().getIngredient() instanceof RecipeChoice.ExactChoice exactChoice) {
+            brewingStandView.setItem(3, exactChoice.getItemStack());
+        } else if (this.getPotionMix().getIngredient() instanceof RecipeChoice.MaterialChoice materialChoice) {
+            brewingStandView.setItem(3, materialChoice.getItemStack());
+        }
+
+        return brewingStandView;
+    }
+
     /**
      * Gets the item for give to the player.
      *
@@ -143,8 +169,10 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
             return false;
         }
-        String data = itemToCheck.getPersistentDataContainer().getOrDefault(CustomPotionsManager.getNamespacedKey(), PersistentDataType.STRING, "");
-        return itemToCheck.getType().equals(getItem().getType()) && data.equals(getKey().toString());
+        if (!itemToCheck.getPersistentDataContainer().has(CustomPotionsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER)) {
+            return false;
+        }
+        return Objects.equals(itemToCheck.getPersistentDataContainer().get(CustomPotionsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER), this.getKey());
     }
 
     public void registerPotionMix() {
