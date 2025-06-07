@@ -119,21 +119,27 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
 
     @Nullable
     public InventoryView createDisplayCraft(Player player) {
+        final ItemStack unknownItem = ItemType.STRUCTURE_VOID.createItemStack(itemMeta -> itemMeta.itemName(Component.text("???").decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)));
+
         Component titleInventoryView = Component.translatable("dlce.potions.recipe.display", this.getItem().displayName());
         BrewingStandView brewingStandView = MenuType.BREWING_STAND.create(player, titleInventoryView);
         for (int basePos = 0; basePos < 3; basePos++) {
+            ItemStack inputItem = unknownItem.clone();
             if (this.getPotionMix().getInput() instanceof RecipeChoice.ExactChoice exactChoice) {
-                brewingStandView.setItem(basePos, exactChoice.getItemStack());
+                inputItem = exactChoice.getItemStack();
             } else if (this.getPotionMix().getInput() instanceof RecipeChoice.MaterialChoice materialChoice) {
-                brewingStandView.setItem(basePos, materialChoice.getItemStack());
+                inputItem = materialChoice.getItemStack();
             }
+            brewingStandView.setItem(basePos, inputItem);
         }
 
+        ItemStack ingredientItem = unknownItem.clone();
         if (this.getPotionMix().getIngredient() instanceof RecipeChoice.ExactChoice exactChoice) {
-            brewingStandView.setItem(3, exactChoice.getItemStack());
+            ingredientItem = exactChoice.getItemStack();
         } else if (this.getPotionMix().getIngredient() instanceof RecipeChoice.MaterialChoice materialChoice) {
-            brewingStandView.setItem(3, materialChoice.getItemStack());
+            ingredientItem = materialChoice.getItemStack();
         }
+        brewingStandView.setItem(3, ingredientItem);
 
         return brewingStandView;
     }
