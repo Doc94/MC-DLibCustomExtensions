@@ -29,7 +29,7 @@ import org.incendo.cloud.paper.util.sender.Source;
 
 public class DisplayItemCustomCommand extends BaseCommand implements Listener {
 
-    private final String TAG_INVENTORY_PREVIEW = "INVENTORY_PREVIEW";
+    private final String TAG_INVENTORY_PREVIEW = "INVENTORY_PREVIEW_DISPLAY_ITEM";
 
     public DisplayItemCustomCommand() {
         super(DLibCustomExtensionManager.getPluginInstance());
@@ -39,7 +39,7 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
     @Command("displayitemcustom <item>")
     @CommandDescription("Comando para ver receta de un item custom")
     @Permission("dlibcustomextensions.items.command.displaycustom")
-    public void executeDisplayItemCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itemcustom") ItemStack itemStack) {
+    public void executeDisplayCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itemcustom") ItemStack itemStack) {
         Player senderPlayer = playerSourceSender.source();
         CustomItemsManager.getCustomItem(CustomItemsManager.getInternalName(itemStack)).ifPresentOrElse(baseItem -> {
             if (baseItem.getRecipe() == null) {
