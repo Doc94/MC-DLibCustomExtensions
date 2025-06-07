@@ -1,5 +1,6 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.commands;
 
+import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import java.util.List;
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.commands.BaseCommand;
@@ -15,7 +16,6 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -39,9 +39,9 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
     @Command("displayitemcustom <item>")
     @CommandDescription("Comando para ver receta de un item custom")
     @Permission("dlibcustomextensions.items.command.displaycustom")
-    public void executeDisplayCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itemcustom") ItemStack itemStack) {
+    public void executeDisplayCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itemcustomclass") Class<? extends AbstractCustomItem> customItemClass) {
         Player senderPlayer = playerSourceSender.source();
-        CustomItemsManager.getCustomItem(CustomItemsManager.getInternalName(itemStack)).ifPresentOrElse(baseItem -> {
+        CustomItemsManager.getCustomItem(customItemClass).ifPresentOrElse(baseItem -> {
             if (baseItem.getRecipe() == null) {
                 senderPlayer.sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.recipe_not_found", baseItem.getItem().displayName()).color(NamedTextColor.RED));
                 return;
@@ -62,9 +62,9 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
         return ItemCustomCommandHelper.suggestItemCustom(ctx, input);
     }
 
-    @Parser(name = "parser_itemcustom", suggestions = "suggest_itemcustom")
-    public ItemStack parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
-        return ItemCustomCommandHelper.parserItemCustom(ctx, commandInput);
+    @Parser(name = "parser_itemcustomclass", suggestions = "suggest_itemcustom")
+    public Class<? extends AbstractCustomItem> parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
+        return ItemCustomCommandHelper.parserItemCustomClass(ctx, commandInput);
     }
 
     @EventHandler

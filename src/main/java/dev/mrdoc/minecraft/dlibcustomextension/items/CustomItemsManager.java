@@ -1,5 +1,6 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items;
 
+import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -18,14 +19,16 @@ import dev.mrdoc.minecraft.dlibcustomextension.items.commands.DisplayItemCustomC
 import dev.mrdoc.minecraft.dlibcustomextension.items.commands.GiveItemCustomCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
@@ -34,6 +37,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
  * It provides methods for loading, managing, querying, and interacting with custom items.
  * The manager also handles custom item configuration, persistence, and registration.
  */
+@NullMarked
 public class CustomItemsManager {
 
     private static Plugin PLUGIN_INSTANCE;
@@ -172,11 +176,11 @@ public class CustomItemsManager {
      * @param internalName custom item name
      * @return an Optional
      */
-    public static Optional<AbstractCustomItem> getCustomItem(String internalName) {
+    public static Optional<AbstractCustomItem> getCustomItem(@Nullable String internalName) {
         if (internalName == null || internalName.isEmpty()) {
             return Optional.empty();
         }
-        return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getKey().value().equalsIgnoreCase(internalName) || baseItem.getKey().toString().equalsIgnoreCase(internalName)).findFirst();
+        return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getKey().value().equalsIgnoreCase(internalName) || baseItem.getKey().asString().equalsIgnoreCase(internalName)).findFirst();
     }
 
     /**
@@ -196,12 +200,18 @@ public class CustomItemsManager {
      * @param itemStack the itemstack
      * @return an optional with the class
      */
-    public static Optional<AbstractCustomItem> getCustomItem(ItemStack itemStack) {
+    public static Optional<AbstractCustomItem> getCustomItem(@Nullable ItemStack itemStack) {
         if (itemStack == null || itemStack.isEmpty()) {
             return Optional.empty();
         }
 
-        return CustomItemsManager.getCustomItem(getInternalName(itemStack));
+        Key key = getInternalKey(itemStack);
+
+        if (key == null) {
+            return Optional.empty();
+        }
+
+        return CustomItemsManager.getCustomItem(key.asString());
     }
 
     /**
@@ -224,7 +234,7 @@ public class CustomItemsManager {
      * @return {@code true} if item is custom
      */
     public static boolean isCustomItem(ItemStack item) {
-        return !CustomItemsManager.getInternalName(item).isEmpty();
+        return CustomItemsManager.getInternalKey(item) != null;
     }
 
     /**
@@ -233,11 +243,15 @@ public class CustomItemsManager {
      * @param item ItemStack
      * @return the internal name or empty
      */
-    public static String getInternalName(ItemStack item) {
+    @Nullable
+    public static Key getInternalKey(@Nullable ItemStack item) {
         if (item == null) {
-            return "";
+            return null;
         }
-        return item.getPersistentDataContainer().getOrDefault(CustomItemsManager.NAMESPACED_CUSTOM_ITEM, PersistentDataType.STRING, "");
+        if (!item.getPersistentDataContainer().has(NAMESPACED_CUSTOM_ITEM)) {
+            return null;
+        }
+        return item.getPersistentDataContainer().get(NAMESPACED_CUSTOM_ITEM, PersistentDataKey.KEY_CONTAINER);
     }
 
     /**

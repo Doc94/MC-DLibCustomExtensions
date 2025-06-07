@@ -106,7 +106,7 @@ public class CustomItemsListener implements Listener {
                 humanWhoClicked.getInventory().addItem(itemResult).forEach((integer, itemStack) -> humanWhoClicked.getWorld().dropItem(humanWhoClicked.getLocation(), itemStack));
             } else if (humanWhoClicked.getItemOnCursor().isEmpty()) {
                 humanWhoClicked.setItemOnCursor(itemResult);
-            } else if (CustomItemsManager.getInternalName(humanWhoClicked.getItemOnCursor()).equals(CustomItemsManager.getInternalName(itemResult))) {
+            } else if (Objects.equals(CustomItemsManager.getInternalKey(humanWhoClicked.getItemOnCursor()), CustomItemsManager.getInternalKey(itemResult))) {
                 if (humanWhoClicked.getItemOnCursor().getAmount() >= humanWhoClicked.getItemOnCursor().getMaxStackSize()) {
                     humanWhoClicked.getInventory().addItem(itemResult).forEach((integer, itemStack) -> humanWhoClicked.getWorld().dropItem(humanWhoClicked.getLocation(), itemStack));
                 } else {

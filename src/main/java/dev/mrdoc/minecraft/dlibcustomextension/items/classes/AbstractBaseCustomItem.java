@@ -1,12 +1,14 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import com.google.common.base.Preconditions;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.Getter;
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemRecipeHelper;
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
@@ -27,7 +29,6 @@ import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.SmithingTransformRecipe;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
@@ -69,7 +70,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
         this.item = this.createItem();
         Preconditions.checkState(this.item != null, "The item for %s is null", internalName);
 
-        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, this.key.asString()));
+        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER, this.key));
 
         if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
@@ -253,7 +254,9 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
         if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
             return false;
         }
-        String data = itemToCheck.getPersistentDataContainer().getOrDefault(CustomItemsManager.getNamespacedKey(), PersistentDataType.STRING, "");
-        return itemToCheck.getType().equals(getItem().getType()) && data.equals(getKey().toString());
+        if (!itemToCheck.getPersistentDataContainer().has(CustomItemsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER)) {
+            return false;
+        }
+        return Objects.equals(itemToCheck.getPersistentDataContainer().get(CustomItemsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER), this.getKey());
     }
 }
