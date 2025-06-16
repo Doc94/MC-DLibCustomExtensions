@@ -50,7 +50,7 @@ public class CustomItemRecipeHelper {
     /**
      * Check the ingredients for a custom item.
      *
-     * @param customItem the custom item
+     * @param customItem  the custom item
      * @param matrixCraft the matrix of ingredients
      * @return {@code true} if is valid
      */
@@ -64,7 +64,7 @@ public class CustomItemRecipeHelper {
     /**
      * Check the ingredients for a custom item.
      *
-     * @param recipe the custom recipe
+     * @param recipe      the custom recipe
      * @param matrixCraft the matrix of ingredients
      * @return {@code true} if is valid
      */
@@ -149,7 +149,7 @@ public class CustomItemRecipeHelper {
     /**
      * Validate and compare an item with the recipe item ingredient.
      *
-     * @param itemMatrix the item in craft matrix
+     * @param itemMatrix   the item in craft matrix
      * @param itemInRecipe the item in the recipe
      * @return {@code true} if is valid
      */
@@ -162,13 +162,27 @@ public class CustomItemRecipeHelper {
             return false;
         }
 
+        if (itemMatrix.getType() != itemInRecipe.getType()) {
+            return false;
+        }
+
         if (!Objects.equals(CustomItemsManager.getInternalKey(itemInRecipe), CustomItemsManager.getInternalKey(itemMatrix))) {
             return false;
         }
 
-        if (itemMatrix.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) &&
-                itemInRecipe.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) &&
-                itemMatrix.getData(DataComponentTypes.CUSTOM_MODEL_DATA) != itemInRecipe.getData(DataComponentTypes.CUSTOM_MODEL_DATA)) {
+        if (itemMatrix.hasData(DataComponentTypes.ITEM_MODEL) && itemInRecipe.hasData(DataComponentTypes.ITEM_MODEL)) {
+            if (!itemMatrix.getData(DataComponentTypes.ITEM_MODEL).equals(itemInRecipe.getData(DataComponentTypes.ITEM_MODEL))) {
+                return false;
+            }
+        } else if (itemMatrix.hasData(DataComponentTypes.ITEM_MODEL) || itemInRecipe.hasData(DataComponentTypes.ITEM_MODEL)) {
+            return false;
+        }
+
+        if (itemMatrix.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) && itemInRecipe.hasData(DataComponentTypes.CUSTOM_MODEL_DATA)) {
+            if (!itemMatrix.getData(DataComponentTypes.CUSTOM_MODEL_DATA).equals(itemInRecipe.getData(DataComponentTypes.CUSTOM_MODEL_DATA))) {
+                return false;
+            }
+        } else if (itemMatrix.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) || itemInRecipe.hasData(DataComponentTypes.CUSTOM_MODEL_DATA)) {
             return false;
         }
 
@@ -179,7 +193,7 @@ public class CustomItemRecipeHelper {
      * Reduce a matrix using a recipe.
      *
      * @param craftingRecipe the craft recipe
-     * @param matrix the matrix to reduce
+     * @param matrix         the matrix to reduce
      * @return a pair with the matrix result and the item result size
      */
     static Pair<ItemStack[], Integer> reduceMatrix(CraftingRecipe craftingRecipe, ItemStack[] matrix) {
@@ -190,8 +204,8 @@ public class CustomItemRecipeHelper {
      * Reduce a matrix using a recipe.
      *
      * @param craftingRecipe the craft recipe
-     * @param matrix the matrix to reduce
-     * @param processAll true for try the max of reduction
+     * @param matrix         the matrix to reduce
+     * @param processAll     true for try the max of reduction
      * @return a pair with the matrix result and the item result size
      */
     static Pair<ItemStack[], Integer> reduceMatrix(CraftingRecipe craftingRecipe, final ItemStack @Nullable [] matrix, boolean processAll) {
