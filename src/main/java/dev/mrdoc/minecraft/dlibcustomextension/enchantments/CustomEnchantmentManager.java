@@ -4,7 +4,6 @@ import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.event.RegistryEvents;
-import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys;
 import io.papermc.paper.registry.tag.TagKey;
 import io.papermc.paper.tag.PreFlattenTagRegistrar;
 import io.papermc.paper.tag.TagEntry;
@@ -127,14 +126,7 @@ public class CustomEnchantmentManager {
                 context.getLifecycleManager().registerEventHandler(RegistryEvents.ENCHANTMENT.freeze().newHandler(registryFreezeEvent -> {
                     registryFreezeEvent.registry().register(
                             abstractCustomEnchantment.getTypedKey(),
-                            abstractCustomEnchantment.generateConsumerEREB(registryFreezeEvent).andThen(builder -> {
-                                builder.supportedItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(abstractCustomEnchantment.getEnchantableKey())));
-                                if (abstractCustomEnchantment.useSupportedItemsForPrimaryItems()) {
-                                    builder.primaryItems(null);
-                                } else if(!abstractCustomEnchantment.getTagsItemPrimaryTypes().isEmpty()) {
-                                    builder.primaryItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(abstractCustomEnchantment.getEnchantablePrimaryKey())));
-                                }
-                            })
+                            abstractCustomEnchantment.generateConsumerEREB(registryFreezeEvent)
                     );
                 }));
 

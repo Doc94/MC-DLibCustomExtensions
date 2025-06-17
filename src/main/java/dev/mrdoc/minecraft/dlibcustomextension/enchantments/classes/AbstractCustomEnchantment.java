@@ -5,6 +5,7 @@ import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry;
 import io.papermc.paper.registry.event.RegistryFreezeEvent;
+import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys;
 import java.util.function.Consumer;
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import net.kyori.adventure.key.Key;
@@ -104,13 +105,37 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
     }
 
     /**
-     * Util class for define and get the arguments for build this Enchantment.
+     * Util method to define and get the builder for EnchantmentRegistryEntry.
      * <br>
-     * Things like costs, levels, other things like tags are managed internally using the {@link CustomEnchantmentBuilder}
+     * With this builder are defined all parameters for use this enchantment like:
+     * <ul>
+     *     <li>Costs</li>
+     *     <li>Levels</li>
+     *     <li>Exclusive enchantments</li>
+     *     <li>Items valid</li>
+     *     <li>Items that can have this enchantment in generation</li>
+     * </ul>
      *
-     * @param registryFreezeEvent the builder
-     * @return a consumer builder
+     * @param registryFreezeEvent the event for register the enchantment
+     * @return a consumer builder for EnchantmentRegistryEntry
      */
-    public abstract Consumer<EnchantmentRegistryEntry.Builder> generateConsumerEREB(RegistryFreezeEvent<Enchantment, EnchantmentRegistryEntry. Builder> registryFreezeEvent);
+    public Consumer<EnchantmentRegistryEntry.Builder> generateConsumerEREB(RegistryFreezeEvent<Enchantment, EnchantmentRegistryEntry. Builder> registryFreezeEvent) {
+        return builder -> {
+            builder.description(this.getDisplayName());
+            builder.weight(this.getWeight());
+            builder.maxLevel(this.getMaxLevel());
+            builder.minimumCost(this.getMinimumCost());
+            builder.maximumCost(this.getMaximumCost());
+            builder.anvilCost(this.getAnvilCost());
+            builder.activeSlots(this.getActiveSlots());
+            builder.exclusiveWith(this.getExclusiveWith());
+            builder.supportedItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(this.getEnchantableKey())));
+            if (this.useSupportedItemsForPrimaryItems()) {
+                builder.primaryItems(null);
+            } else if(!this.getTagsItemPrimaryTypes().isEmpty()) {
+                builder.primaryItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(this.getEnchantablePrimaryKey())));
+            }
+        };
+    }
 
 }
