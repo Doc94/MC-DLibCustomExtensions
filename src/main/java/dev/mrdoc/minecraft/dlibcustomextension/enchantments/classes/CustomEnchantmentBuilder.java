@@ -105,7 +105,7 @@ public class CustomEnchantmentBuilder {
      *
      * @return a registry set of enchantments exclusive to this one.
      */
-    private RegistryKeySet<Enchantment> exclusiveWith;
+    private RegistryKeySet<Enchantment> exclusiveWith = RegistrySet.keySet(RegistryKey.ENCHANTMENT);
     /**
      * The item types valid for this enchantment.
      *
