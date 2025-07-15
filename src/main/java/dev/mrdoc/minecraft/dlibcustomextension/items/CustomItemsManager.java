@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -284,10 +285,10 @@ public class CustomItemsManager {
     }
 
     /**
-     * Returns if recipe is register by custom item.
+     * Returns if a recipe is register by custom item.
      *
      * @param recipe the recipe
-     * @return {@code true} if recipe is from a custom item
+     * @return {@code true} if a recipe is from a custom item
      */
     public static boolean isRegisterRecipe(Recipe recipe) {
         return CUSTOM_ITEMS.stream().filter(abstractCustomItem -> abstractCustomItem.getRecipe() != null).anyMatch(baseRecipe -> baseRecipe.getRecipe().equals(recipe));
@@ -301,7 +302,9 @@ public class CustomItemsManager {
     public static void handleAvailableRecipes(Player player) {
         for (AbstractCustomItem customItem : CUSTOM_ITEMS) {
             if (customItem.isEnabled()) {
-                customItem.discoverRecipe(player);
+                if (customItem.isAutoDiscoverRecipe()) {
+                    customItem.discoverRecipe(player);
+                }
             } else {
                 customItem.undiscoverRecipe(player);
             }
@@ -314,7 +317,7 @@ public class CustomItemsManager {
      * @return list of recipes
      */
     public static List<Recipe> getRecipes() {
-        return CUSTOM_ITEMS.stream().map(AbstractCustomItem::getRecipe).collect(Collectors.toList());
+        return CUSTOM_ITEMS.stream().map(AbstractCustomItem::getRecipe).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**

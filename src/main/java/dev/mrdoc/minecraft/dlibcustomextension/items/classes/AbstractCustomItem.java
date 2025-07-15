@@ -21,7 +21,7 @@ import org.jspecify.annotations.NullMarked;
 public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomItem implements Listener {
 
     public AbstractCustomItem(CustomItemBuilder customItemBuilder) {
-        super(customItemBuilder.getPlugin(), customItemBuilder.getInternalName(), customItemBuilder.getDisplayName(), customItemBuilder.getRarity(), customItemBuilder.isSpecial(), customItemBuilder.getItemModel(), customItemBuilder.getInventoryTypes(), customItemBuilder.getDescriptions());
+        super(customItemBuilder.getPlugin(), customItemBuilder.getInternalName(), customItemBuilder.getDisplayName(), customItemBuilder.getRarity(), customItemBuilder.isSpecial(), customItemBuilder.isAutoDiscoverRecipe(), customItemBuilder.getItemModel(), customItemBuilder.getInventoryTypes(), customItemBuilder.getDescriptions());
         Bukkit.getServer().getPluginManager().registerEvents(this, customItemBuilder.getPlugin());
         LoggerUtils.info("Item registered " + this.getKey());
     }

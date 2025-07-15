@@ -23,6 +23,7 @@ public class CustomItemBuilder {
     @Nullable
     private CustomItemRarity rarity = null;
     private boolean isSpecial = false;
+    private boolean autoDiscoverRecipe = true;
     @Nullable
     private Key itemModel = null;
     private List<InventoryType> inventoryTypes = new ArrayList<>();
@@ -38,17 +39,45 @@ public class CustomItemBuilder {
         this.displayName = displayName;
     }
 
+    /**
+     * Sets the rarity for the custom item.
+     *
+     * @param rarity the custom item rarity to set
+     * @return the updated instance of the CustomItemBuilder
+     */
     public CustomItemBuilder rarity(CustomItemRarity rarity) {
         this.rarity = rarity;
         return this;
     }
 
+    /**
+     * Marks the custom item as special.
+     *
+     * @return the updated instance of the CustomItemBuilder
+     */
     public CustomItemBuilder special() {
         return this.special(true);
     }
 
+    /**
+     * Sets whether the custom item is marked as special.
+     *
+     * @param isSpecial a boolean value indicating if the custom item should be marked as special
+     * @return the updated instance of the CustomItemBuilder
+     */
     public CustomItemBuilder special(boolean isSpecial) {
         this.isSpecial = isSpecial;
+        return this;
+    }
+
+    /**
+     * Sets whether the item's recipe should be auto-discovered.
+     *
+     * @param autoDiscover a boolean value indicating if the item should be auto-discovered
+     * @return the updated instance of the CustomItemBuilder
+     */
+    public CustomItemBuilder autoDiscoverRecipe(boolean autoDiscover) {
+        this.autoDiscoverRecipe = autoDiscover;
         return this;
     }
 

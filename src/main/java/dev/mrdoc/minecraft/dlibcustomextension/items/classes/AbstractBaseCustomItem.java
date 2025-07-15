@@ -53,6 +53,8 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     private final ItemStack item;
     @Getter
     private boolean special;
+    @Getter
+    private boolean autoDiscoverRecipe;
     @Nullable
     @Getter
     private final CustomItemRarity rarity;
@@ -60,10 +62,12 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     private final HashSet<InventoryType> inventoryTypes = new HashSet<>();
 
     @ApiStatus.Internal
-    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions) {
+    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions) {
         this.inventoryTypes.addAll(inventoryTypes);
         this.instance = instance;
         this.internalName = internalName;
+
+        this.autoDiscoverRecipe = autoDiscoverRecipe;
 
         this.key = new NamespacedKey(this.instance, this.internalName);
 
