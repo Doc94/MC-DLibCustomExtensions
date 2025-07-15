@@ -1,23 +1,13 @@
 package dev.mrdoc.minecraft.dlibcustomextension.enchantments;
 
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import io.papermc.paper.registry.RegistryKey;
-import io.papermc.paper.registry.event.RegistryEvents;
-import io.papermc.paper.registry.tag.TagKey;
-import io.papermc.paper.tag.PostFlattenTagRegistrar;
-import io.papermc.paper.tag.PreFlattenTagRegistrar;
-import io.papermc.paper.tag.TagEntry;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.enchantments.annotations.CustomEnchantmentContainerProcessor;
@@ -27,7 +17,6 @@ import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import net.kyori.adventure.key.Key;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ItemType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
@@ -126,39 +115,7 @@ public class CustomEnchantmentManager {
                 CUSTOM_ENCHANTMENTS.put(abstractCustomEnchantment.getKey(), abstractCustomEnchantment);
 
                 // Registry
-                context.getLifecycleManager().registerEventHandler(RegistryEvents.ENCHANTMENT.freeze().newHandler(registryFreezeEvent -> {
-                    registryFreezeEvent.registry().register(
-                            abstractCustomEnchantment.getTypedKey(),
-                            abstractCustomEnchantment.generateConsumerEREB(registryFreezeEvent)
-                    );
-                }));
-
-                // Registry in Vanilla TAG
-                if (!abstractCustomEnchantment.getTagsEnchantments().isEmpty()) {
-                    LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getKey().asString() + " has the following tags to be added: " + abstractCustomEnchantment.getTagsEnchantments().stream().map(enchantmentTagKey -> enchantmentTagKey.key().asString()).collect(Collectors.joining(", ")));
-                    context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ENCHANTMENT), event -> {
-                        final PreFlattenTagRegistrar<Enchantment> registrar = event.registrar();
-                        abstractCustomEnchantment.getTagsEnchantments().forEach(enchantmentTagKey -> registrar.addToTag(enchantmentTagKey, List.of(TagEntry.valueEntry(abstractCustomEnchantment.getTypedKey()))));
-                    });
-                }
-
-                // Registry for items valid to be enchanted with abstractCustomEnchantment
-                LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getKey().asString() + " has the following Supported ItemType available to be added: " + abstractCustomEnchantment.getTagsItemTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
-                if (abstractCustomEnchantment.useSupportedItemsForPrimaryItems()) {
-                    LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getKey().asString() + " is going to use the previous list of supported items for Primary ItemType used in natural enchantment");
-                }
-                context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
-                    final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
-                    registrar.addToTag(TagKey.create(RegistryKey.ITEM, abstractCustomEnchantment.getEnchantableKey()), abstractCustomEnchantment.getTagsItemTypes());
-                });
-
-                if (!abstractCustomEnchantment.getTagsItemPrimaryTypes().isEmpty()) {
-                    LoggerUtils.info("The custom enchantment " + abstractCustomEnchantment.getKey().asString() + " has the following Primary ItemType available to be added: " + abstractCustomEnchantment.getTagsItemPrimaryTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
-                    context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
-                        final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
-                        registrar.addToTag(TagKey.create(RegistryKey.ITEM, abstractCustomEnchantment.getEnchantablePrimaryKey()), abstractCustomEnchantment.getTagsItemPrimaryTypes());
-                    });
-                }
+                abstractCustomEnchantment.registerEnchantment(context);
 
                 LoggerUtils.info("Loaded " + abstractCustomEnchantment.getKey().asString() + " for Custom Enchantment.");
 

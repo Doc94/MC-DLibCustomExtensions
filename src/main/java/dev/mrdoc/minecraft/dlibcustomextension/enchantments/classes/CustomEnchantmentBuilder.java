@@ -249,7 +249,7 @@ public class CustomEnchantmentBuilder {
      * @param exclusiveWith a registry set of enchantments exclusive to this one.
      * @return this builder instance.
      * @see RegistrySet#keySet(RegistryKey, TypedKey[])
-     * @see io.papermc.paper.registry.event.RegistryFreezeEvent#getOrCreateTag(TagKey)
+     * @see io.papermc.paper.registry.event.RegistryComposeEvent#getOrCreateTag(TagKey)
      */
     @Contract(value = "_ -> this", mutates = "this")
     public CustomEnchantmentBuilder exclusiveWith(RegistryKeySet<Enchantment> exclusiveWith) {

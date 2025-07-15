@@ -1,24 +1,38 @@
 package dev.mrdoc.minecraft.dlibcustomextension.enchantments.classes;
 
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
+import io.papermc.paper.plugin.bootstrap.BootstrapContext;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry;
-import io.papermc.paper.registry.event.RegistryFreezeEvent;
+import io.papermc.paper.registry.event.RegistryComposeEvent;
+import io.papermc.paper.registry.event.RegistryEvents;
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys;
+import io.papermc.paper.registry.tag.TagKey;
+import io.papermc.paper.tag.PreFlattenTagRegistrar;
+import io.papermc.paper.tag.TagEntry;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import java.util.stream.Collectors;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Basic class for implementation of custom enchantments
  */
+@NullMarked
 public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseCustomEnchantment implements Listener {
 
     /**
@@ -75,7 +89,7 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
      * <br>
      * <b>Note:</b> the level is the min available.
      *
-     * @return an {@link ItemStack} of {@link org.bukkit.inventory.ItemType#ENCHANTED_BOOK} with this enchantment.
+     * @return an {@link ItemStack} of {@link ItemType#ENCHANTED_BOOK} with this enchantment.
      */
     public ItemStack generateEnchantmentBook() {
         return this.generateEnchantmentBook(this.getEnchantment().getStartLevel());
@@ -87,11 +101,11 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
      * <b>Note:</b> the level is the min available.
      *
      * @param level the level of enchantment
-     * @return an {@link ItemStack} of {@link org.bukkit.inventory.ItemType#ENCHANTED_BOOK} with this enchantment.
+     * @return an {@link ItemStack} of {@link ItemType#ENCHANTED_BOOK} with this enchantment.
      */
     public ItemStack generateEnchantmentBook(int level) {
         ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
-        book.editMeta(EnchantmentStorageMeta.class, enchantmentStorageMeta -> enchantmentStorageMeta.addStoredEnchant(this.getEnchantment(), level, true));
+        book.setData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments(Map.of(this.getEnchantment(), level)));
         return book;
     }
 
@@ -113,13 +127,13 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
      *     <li>Levels</li>
      *     <li>Exclusive enchantments</li>
      *     <li>Items valid</li>
-     *     <li>Items that can have this enchantment in generation</li>
+     *     <li>Items that can have this enchantment in a generation</li>
      * </ul>
      *
-     * @param registryFreezeEvent the event for register the enchantment
+     * @param registryComposeEvent the event for register the enchantment
      * @return a consumer builder for EnchantmentRegistryEntry
      */
-    public Consumer<EnchantmentRegistryEntry.Builder> generateConsumerEREB(RegistryFreezeEvent<Enchantment, EnchantmentRegistryEntry. Builder> registryFreezeEvent) {
+    public Consumer<EnchantmentRegistryEntry.Builder> generateConsumerEREB(RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder> registryComposeEvent) {
         return builder -> {
             builder.description(this.getDisplayName());
             builder.weight(this.getWeight());
@@ -129,13 +143,48 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
             builder.anvilCost(this.getAnvilCost());
             builder.activeSlots(this.getActiveSlots());
             builder.exclusiveWith(this.getExclusiveWith());
-            builder.supportedItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(this.getEnchantableKey())));
+            builder.supportedItems(registryComposeEvent.getOrCreateTag(ItemTypeTagKeys.create(this.getEnchantableKey())));
             if (this.useSupportedItemsForPrimaryItems()) {
                 builder.primaryItems(null);
-            } else if(!this.getTagsItemPrimaryTypes().isEmpty()) {
-                builder.primaryItems(registryFreezeEvent.getOrCreateTag(ItemTypeTagKeys.create(this.getEnchantablePrimaryKey())));
+            } else if (!this.getTagsItemPrimaryTypes().isEmpty()) {
+                builder.primaryItems(registryComposeEvent.getOrCreateTag(ItemTypeTagKeys.create(this.getEnchantablePrimaryKey())));
             }
         };
+    }
+
+    public void registerEnchantment(BootstrapContext context) {
+        context.getLifecycleManager()
+                .registerEventHandler(RegistryEvents.ENCHANTMENT.compose()
+                        .newHandler(registryComposeEvent -> registryComposeEvent.registry()
+                                .register(this.getTypedKey(), this.generateConsumerEREB(registryComposeEvent))
+                        ));
+
+        // Registry in Vanilla TAG
+        if (!this.getTagsEnchantments().isEmpty()) {
+            LoggerUtils.info("The custom enchantment " + this.getKey().asString() + " has the following tags to be added: " + this.getTagsEnchantments().stream().map(enchantmentTagKey -> enchantmentTagKey.key().asString()).collect(Collectors.joining(", ")));
+            context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ENCHANTMENT), event -> {
+                final PreFlattenTagRegistrar<Enchantment> registrar = event.registrar();
+                this.getTagsEnchantments().forEach(enchantmentTagKey -> registrar.addToTag(enchantmentTagKey, List.of(TagEntry.valueEntry(this.getTypedKey()))));
+            });
+        }
+
+        // Registry for items valid to be enchanted with abstractCustomEnchantment
+        LoggerUtils.info("The custom enchantment " + this.getKey().asString() + " has the following Supported ItemType available to be added: " + this.getTagsItemTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
+        if (this.useSupportedItemsForPrimaryItems()) {
+            LoggerUtils.info("The custom enchantment " + this.getKey().asString() + " is going to use the previous list of supported items for Primary ItemType used in natural enchantment");
+        }
+        context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
+            final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
+            registrar.addToTag(TagKey.create(RegistryKey.ITEM, this.getEnchantableKey()), this.getTagsItemTypes());
+        });
+
+        if (!this.getTagsItemPrimaryTypes().isEmpty()) {
+            LoggerUtils.info("The custom enchantment " + this.getKey().asString() + " has the following Primary ItemType available to be added: " + this.getTagsItemPrimaryTypes().stream().map(itemTypeTagEntry -> itemTypeTagEntry.key().asString()).collect(Collectors.joining(", ")));
+            context.getLifecycleManager().registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM), event -> {
+                final PreFlattenTagRegistrar<ItemType> registrar = event.registrar();
+                registrar.addToTag(TagKey.create(RegistryKey.ITEM, this.getEnchantablePrimaryKey()), this.getTagsItemPrimaryTypes());
+            });
+        }
     }
 
 }
