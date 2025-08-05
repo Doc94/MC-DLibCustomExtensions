@@ -3,7 +3,7 @@ plugins {
     id('maven-publish')
     id('signing')
     id('io.freefair.lombok') version "8.14"
-    id('com.gradleup.shadow') version '8.3.8'
+    id('com.gradleup.shadow') version '8.3.9'
     id('org.jreleaser') version '1.19.0'
 }
 
