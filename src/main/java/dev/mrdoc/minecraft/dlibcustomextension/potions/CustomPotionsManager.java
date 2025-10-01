@@ -96,7 +96,12 @@ public class CustomPotionsManager {
 
         final Set<Class<? extends AbstractCustomPotion>> classes = new HashSet<>();
         for (final String className : classNames) {
-            classes.add((Class<? extends AbstractCustomPotion>) Class.forName(className, true, classLoader));
+            try {
+                Class<? extends AbstractCustomPotion> aClass = (Class<? extends AbstractCustomPotion>) Class.forName(className, true, classLoader);
+                classes.add(aClass);
+            } catch (Throwable e) {
+                LoggerUtils.warn("Cannot get the class for %s".formatted(className), e);
+            }
         }
 
         return classes;
@@ -109,8 +114,7 @@ public class CustomPotionsManager {
             try {
                 AbstractCustomPotion baseItem = aClass.getConstructor().newInstance();
                 CUSTOM_POTIONS.add(baseItem);
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                     InvocationTargetException e) {
+            } catch (Exception e) {
                 LoggerUtils.warn("Cannot load the custom potion " + aClass.getSimpleName() + ". Details: " + e.getMessage(), e);
             }
         });

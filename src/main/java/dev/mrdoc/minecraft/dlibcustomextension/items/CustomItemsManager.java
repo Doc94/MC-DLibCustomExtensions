@@ -126,7 +126,12 @@ public class CustomItemsManager {
 
         final Set<Class<? extends AbstractCustomItem>> classes = new HashSet<>();
         for (final String className : classNames) {
-            classes.add((Class<? extends AbstractCustomItem>) Class.forName(className, true, classLoader));
+            try {
+                Class<? extends AbstractCustomItem> aClass = (Class<? extends AbstractCustomItem>) Class.forName(className, true, classLoader);
+                classes.add(aClass);
+            } catch (Throwable e) {
+                LoggerUtils.warn("Cannot get the class for %s".formatted(className), e);
+            }
         }
 
         return classes;
@@ -158,8 +163,7 @@ public class CustomItemsManager {
                         CUSTOM_ITEMS.add(customItem);  // Añadir directamente a CUSTOM_ITEMS
                         loadedClasses.add(itemClass);
                         iterator.remove();
-                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                             InvocationTargetException e) {
+                    } catch (Exception e) {
                         LoggerUtils.warn("Cannot load [%s] item custom".formatted(itemClass.getSimpleName()), e);
                         failedClasses.add(itemClass);
                         iterator.remove();

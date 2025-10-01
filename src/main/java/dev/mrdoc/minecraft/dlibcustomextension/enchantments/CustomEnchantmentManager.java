@@ -100,7 +100,13 @@ public class CustomEnchantmentManager {
 
         final Set<Class<? extends AbstractCustomEnchantment>> classes = new HashSet<>();
         for (final String className : classNames) {
-            classes.add((Class<? extends AbstractCustomEnchantment>) Class.forName(className, true, classLoader));
+            try {
+                Class<? extends AbstractCustomEnchantment> aClass = (Class<? extends AbstractCustomEnchantment>) Class.forName(className, true, classLoader);
+                classes.add(aClass);
+            } catch (Throwable e) {
+                LoggerUtils.warn("Cannot get the class for %s".formatted(className), e);
+            }
+
         }
 
         return classes;
@@ -119,8 +125,7 @@ public class CustomEnchantmentManager {
 
                 LoggerUtils.info("Loaded " + abstractCustomEnchantment.getKey().asString() + " for Custom Enchantment.");
 
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                     InvocationTargetException e) {
+            } catch (Exception e) {
                 LoggerUtils.warn("Cannot load [%s] for Custom Enchantment".formatted(aClass.getSimpleName()), e);
             }
         });
