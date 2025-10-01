@@ -19,7 +19,7 @@ jobs:
           distribution: 'microsoft'
           cache: 'gradle'
       - name: 🏗️ Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
       - name: 🏗️ Publish with Gradle
         run: ./gradlew publishJar --stacktrace
         env:
