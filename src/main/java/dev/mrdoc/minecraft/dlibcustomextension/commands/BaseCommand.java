@@ -16,10 +16,10 @@ public class BaseCommand {
     private final Plugin plugin;
 
     @SneakyThrows
-    public BaseCommand(Plugin Plugin) {
-        this.plugin = Plugin;
-        CommandManager.load(Plugin);
-        if (!this.getClass().isAnnotationPresent(CommandContainer.class)) {
+    public BaseCommand(Plugin plugin) {
+        this.plugin = plugin;
+        CommandManager.load(plugin);
+        if (!this.getClass().isAnnotationPresent(CommandContainer.class) && CommandManager.getInstance() != null) {
             CommandManager.getInstance().getAnnotationParser().parse(this);
         }
     }
