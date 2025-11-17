@@ -99,6 +99,15 @@ tasks.register("publishJar") {
     }
 }
 
+release {
+    preTagCommitMessage = 'chore: Release version'
+    tagCommitMessage = 'chore: Release version'
+    newVersionCommitMessage = 'chore: Next development version'
+    git {
+        requireBranch.set('')
+    }
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
