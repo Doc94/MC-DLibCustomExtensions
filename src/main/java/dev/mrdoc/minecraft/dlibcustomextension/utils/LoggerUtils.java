@@ -32,47 +32,52 @@ public class LoggerUtils {
         if (!DEBUG) {
             return;
         }
-        getLogger().info("[DEBUG] [{}] {}", getCallerClass().getSimpleName(), message);
+        getLogger().info("[DEBUG] [{}] {}", getCallerClassSimpleName(), message);
     }
 
     public static void info(JavaPlugin javaPlugin, Component message) {
-        javaPlugin.getComponentLogger().info(Component.text("[{}] {}"), getCallerClass().getSimpleName(), message);
+        javaPlugin.getComponentLogger().info(Component.text("[{}] {}"), getCallerClassSimpleName(), message);
     }
 
     public static void info(String message) {
-        getLogger().info("[{}] {}", getCallerClass().getSimpleName(), message);
+        getLogger().info("[{}] {}", getCallerClassSimpleName(), message);
     }
 
     public static void info(String message, Throwable throwable) {
-        getLogger().info("[%s] %s".formatted(getCallerClass().getSimpleName(), message), throwable);
+        getLogger().info("[%s] %s".formatted(getCallerClassSimpleName(), message), throwable);
     }
 
     public static void warn(String message) {
-        getLogger().warn("[{}] {}", getCallerClass().getSimpleName(), message);
+        getLogger().warn("[{}] {}", getCallerClassSimpleName(), message);
     }
 
     public static void warn(String message, Throwable throwable) {
-        getLogger().warn("[%s] %s".formatted(getCallerClass().getSimpleName(), message), throwable);
+        getLogger().warn("[%s] %s".formatted(getCallerClassSimpleName(), message), throwable);
     }
 
     public static void error(String message) {
-        getLogger().error("[{}] {}", getCallerClass().getSimpleName(), message);
+        getLogger().error("[{}] {}", getCallerClassSimpleName(), message);
     }
 
     public static void error(String message, Throwable throwable) {
-        getLogger().error("[%s] %s".formatted(getCallerClass().getSimpleName(), message), throwable);
+        getLogger().error("[%s] %s".formatted(getCallerClassSimpleName(), message), throwable);
+    }
+
+    private static String getCallerClassSimpleName() {
+        Class<?> callerClass = getCallerClass();
+        return callerClass == null ? "Unknown" : callerClass.getSimpleName();
     }
 
     @Nullable
-    public static Class<?> getCallerClass() {
+    private static Class<?> getCallerClass() {
         StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
         Optional<Class<?>> callerClass = walker.walk(stream ->
                 stream
-                        .skip(2) // Salta los dos primeros frames para obtener la clase que lo llamo
+                        .skip(2)
                         .findFirst()
                         .map(StackWalker.StackFrame::getDeclaringClass)
         );
-        return callerClass.orElse(null); // Retorna null si no se encuentra ningún frame
+        return callerClass.orElse(null);
     }
 
 
