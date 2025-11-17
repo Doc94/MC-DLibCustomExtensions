@@ -9,3 +9,5 @@ A library with custom things for:
 - Commands
 - Items
 - Potions
+
+This library requires [Paper](https://github.com/PaperMC/Paper) and Java 21
