@@ -103,6 +103,7 @@ release {
     preTagCommitMessage = 'chore: Release version'
     tagCommitMessage = 'chore: Release version'
     newVersionCommitMessage = 'chore: Next development version'
+    failOnSnapshotDependencies = false
     git {
         requireBranch.set('')
     }
