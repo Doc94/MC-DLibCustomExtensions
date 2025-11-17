@@ -71,6 +71,9 @@ public class DLibCustomExtensionManager {
         throw new RuntimeException("No context set!");
     }
 
+    /**
+     * For call in onEnable plugin step.
+     */
     public void onEnable() {
         Preconditions.checkState(this.context != null, "Context is null!");
         TranslatesManager.load();
@@ -87,6 +90,9 @@ public class DLibCustomExtensionManager {
         }
     }
 
+    /**
+     * For call in boostrap plugin step.
+     */
     public void onBoostrap() {
         Preconditions.checkState(this.context != null, "Context is null!");
         if (this.context instanceof ContextBoostrap contextBootstrap) {
