@@ -3,7 +3,9 @@ package dev.mrdoc.minecraft.dlibcustomextension.utils.persistence;
 import net.kyori.adventure.key.Key;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class PersistentDataKey implements PersistentDataType<String, Key> {
 
     public static PersistentDataKey KEY_CONTAINER = new PersistentDataKey();

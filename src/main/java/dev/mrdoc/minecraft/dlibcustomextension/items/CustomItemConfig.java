@@ -3,12 +3,14 @@ package dev.mrdoc.minecraft.dlibcustomextension.items;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 
 /**
  * The general config for this module.
  */
+@ApiStatus.Internal
 @Getter
 @ConfigSerializable
 public class CustomItemConfig {

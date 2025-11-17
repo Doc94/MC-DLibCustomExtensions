@@ -1,6 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions.annotations;
 
 import com.google.auto.service.AutoService;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,11 +22,13 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.StandardLocation;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCustomPotion;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 /**
  * An abstract annotation processor
  */
+@ApiStatus.Internal
 @AutoService(Processor.class)
 @SupportedAnnotationTypes(CustomPotionContainer.ANNOTATION_PATH)
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
@@ -94,7 +97,7 @@ public class CustomPotionContainerProcessor extends AbstractProcessor {
             }
             writer.flush();
         } catch (final IOException e) {
-            e.printStackTrace();
+            LoggerUtils.error("Cannot write the file %s".formatted(PATH), e);
         }
     }
 }

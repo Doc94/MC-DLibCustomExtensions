@@ -2,7 +2,6 @@ package dev.mrdoc.minecraft.dlibcustomextension.items;
 
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,7 +26,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -41,14 +39,19 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 @NullMarked
 public class CustomItemsManager {
 
+    @Nullable
     private static Plugin PLUGIN_INSTANCE;
+    @Nullable
     private static NamespacedKey NAMESPACED_CUSTOM_ITEM;
     private static final HashSet<AbstractCustomItem> CUSTOM_ITEMS = new HashSet<>();
 
     // Config
     private static final String CONFIG_FILE_NAME = "config-custom-items.yaml";
+    @Nullable
     private static YamlConfigurationLoader CONFIG_LOADER;
+    @Nullable
     private static CommentedConfigurationNode CONFIG_NODE;
+    @Nullable
     private static CustomItemConfig CONFIG;
 
     /**
@@ -70,7 +73,7 @@ public class CustomItemsManager {
      * @return the key
      */
     public static NamespacedKey getNamespacedKey() {
-        return NAMESPACED_CUSTOM_ITEM;
+        return Objects.requireNonNull(NAMESPACED_CUSTOM_ITEM);
     }
 
     /**
@@ -78,8 +81,8 @@ public class CustomItemsManager {
      */
     @SneakyThrows
     public static void saveConfig() {
-        CONFIG_NODE.set(CustomItemConfig.class, CONFIG); // Update the backing node
-        CONFIG_LOADER.save(CONFIG_NODE); // Write to the original file
+        Objects.requireNonNull(CONFIG_NODE).set(CustomItemConfig.class, CONFIG); // Update the backing node
+        Objects.requireNonNull(CONFIG_LOADER).save(CONFIG_NODE); // Write to the original file
     }
 
     /**
@@ -105,7 +108,7 @@ public class CustomItemsManager {
                 .path(new File(DLibCustomExtensionManager.getPluginInstance().getDataFolder(), CONFIG_FILE_NAME).toPath())
                 .build();
 
-        CONFIG_NODE = CONFIG_LOADER.load(); // Load from file
+        CONFIG_NODE = CONFIG_LOADER.load(); // Load from a file
         CONFIG = CONFIG_NODE.get(CustomItemConfig.class); // Populate object
     }
 
@@ -117,7 +120,7 @@ public class CustomItemsManager {
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private static Set<Class<? extends AbstractCustomItem>> getClasses(final @NonNull ClassLoader classLoader) {
+    private static Set<Class<? extends AbstractCustomItem>> getClasses(final ClassLoader classLoader) {
         final List<String> classNames = AnnotationProcessorUtil.getClassesInPath(classLoader, CustomItemContainerProcessor.PATH);
 
         if (classNames.isEmpty()) {
@@ -226,10 +229,10 @@ public class CustomItemsManager {
      * @return {@code true} if item with this name is enabled
      */
     public static boolean isItemEnable(String internalName) {
-        if (!CONFIG.isEnabled()) {
+        if (CONFIG != null && !CONFIG.isEnabled()) {
             return true;
         }
-        return CONFIG.getNameItems().stream().anyMatch(internalName::equalsIgnoreCase);
+        return CONFIG != null && CONFIG.getNameItems().stream().anyMatch(internalName::equalsIgnoreCase);
     }
 
     /**
@@ -253,7 +256,7 @@ public class CustomItemsManager {
         if (item == null) {
             return null;
         }
-        if (!item.getPersistentDataContainer().has(NAMESPACED_CUSTOM_ITEM)) {
+        if (!item.getPersistentDataContainer().has(Objects.requireNonNull(NAMESPACED_CUSTOM_ITEM))) {
             return null;
         }
         return item.getPersistentDataContainer().get(NAMESPACED_CUSTOM_ITEM, PersistentDataKey.KEY_CONTAINER);

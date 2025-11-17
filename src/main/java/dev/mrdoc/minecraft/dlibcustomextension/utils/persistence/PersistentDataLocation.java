@@ -6,30 +6,31 @@ import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class PersistentDataLocation implements PersistentDataType<String, Location> {
 
     public static PersistentDataLocation LOCATION_CONTAINER = new PersistentDataLocation();
 
     @Override
-    public @NotNull Class<String> getPrimitiveType() {
+    public Class<String> getPrimitiveType() {
         return String.class;
     }
 
     @Override
-    public @NotNull Class<Location> getComplexType() {
+    public Class<Location> getComplexType() {
         return Location.class;
     }
 
     @Override
-    public @NotNull String toPrimitive(@NotNull Location complex, @NotNull PersistentDataAdapterContext context) {
+    public String toPrimitive(Location complex, PersistentDataAdapterContext context) {
         return new GsonBuilder().create().toJson(complex.serialize(), Map.class);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NotNull Location fromPrimitive(@NotNull String primitive, @NotNull PersistentDataAdapterContext context) {
+    public Location fromPrimitive(String primitive, PersistentDataAdapterContext context) {
         return Location.deserialize(new Gson().fromJson(primitive, Map.class));
     }
 }

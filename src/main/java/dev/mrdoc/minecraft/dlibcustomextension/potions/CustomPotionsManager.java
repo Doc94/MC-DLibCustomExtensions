@@ -3,9 +3,9 @@ package dev.mrdoc.minecraft.dlibcustomextension.potions;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.DisplayPotionCustomCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,7 +21,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -31,18 +31,24 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
  * Manages custom potions within the plugin, overseeing their loading, configuration, and interaction.
  * Handles registration, configuration management, and access for custom potions.
  */
+@ApiStatus.Internal
 @NullMarked
 public class CustomPotionsManager {
 
+    @Nullable
     private static Plugin PLUGIN_INSTANCE;
+    @Nullable
     private static NamespacedKey NAMESPACED_CUSTOM_POTION;
 
     private static final HashSet<AbstractCustomPotion> CUSTOM_POTIONS = new HashSet<>();
 
     // Config
     private static final String CONFIG_FILE_NAME = "config-custom-potions.yaml";
+    @Nullable
     private static YamlConfigurationLoader CONFIG_LOADER;
+    @Nullable
     private static CommentedConfigurationNode CONFIG_NODE;
+    @Nullable
     private static CustomPotionConfig CONFIG;
 
     public static void load() {
@@ -55,13 +61,13 @@ public class CustomPotionsManager {
     }
 
     public static NamespacedKey getNamespacedKey() {
-        return NAMESPACED_CUSTOM_POTION;
+        return Objects.requireNonNull(NAMESPACED_CUSTOM_POTION);
     }
 
     @SneakyThrows
     public static void saveConfig() {
-        CONFIG_NODE.set(CustomPotionConfig.class, CONFIG); // Update the backing node
-        CONFIG_LOADER.save(CONFIG_NODE); // Write to the original file
+        Objects.requireNonNull(CONFIG_NODE).set(CustomPotionConfig.class, CONFIG); // Update the backing node
+        Objects.requireNonNull(CONFIG_LOADER).save(CONFIG_NODE); // Write to the original file
     }
 
     @SneakyThrows
@@ -70,7 +76,7 @@ public class CustomPotionsManager {
                 .path(new File(PLUGIN_INSTANCE.getDataFolder(), CONFIG_FILE_NAME).toPath())
                 .build();
 
-        CONFIG_NODE = CONFIG_LOADER.load(); // Load from file
+        CONFIG_NODE = CONFIG_LOADER.load(); // Load from a file
         CONFIG = CONFIG_NODE.get(CustomPotionConfig.class); // Populate object
         saveConfig(); // force a save
     }
@@ -81,13 +87,13 @@ public class CustomPotionsManager {
                 .path(new File(DLibCustomExtensionManager.getPluginInstance().getDataFolder(), CONFIG_FILE_NAME).toPath())
                 .build();
 
-        CONFIG_NODE = CONFIG_LOADER.load(); // Load from file
+        CONFIG_NODE = CONFIG_LOADER.load(); // Load from a file
         CONFIG = CONFIG_NODE.get(CustomPotionConfig.class); // Populate object
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private static Set<Class<? extends AbstractCustomPotion>> getClasses(final @NonNull ClassLoader classLoader) {
+    private static Set<Class<? extends AbstractCustomPotion>> getClasses(final ClassLoader classLoader) {
         final List<String> classNames = AnnotationProcessorUtil.getClassesInPath(classLoader, CustomPotionContainerProcessor.PATH);
 
         if (classNames.isEmpty()) {
@@ -163,10 +169,10 @@ public class CustomPotionsManager {
     }
 
     public static boolean isItemEnable(String internalName) {
-        if (!CONFIG.isEnabled()) {
+        if (CONFIG != null && !CONFIG.isEnabled()) {
             return true;
         }
-        return CONFIG.getNamePotions().stream().anyMatch(internalName::equalsIgnoreCase);
+        return CONFIG != null && CONFIG.getNamePotions().stream().anyMatch(internalName::equalsIgnoreCase);
     }
 
     public static boolean isCustomItem(ItemStack item) {
@@ -184,7 +190,7 @@ public class CustomPotionsManager {
         if (item == null) {
             return null;
         }
-        if (!item.getPersistentDataContainer().has(NAMESPACED_CUSTOM_POTION)) {
+        if (!item.getPersistentDataContainer().has(Objects.requireNonNull(NAMESPACED_CUSTOM_POTION))) {
             return null;
         }
         return item.getPersistentDataContainer().get(NAMESPACED_CUSTOM_POTION, PersistentDataKey.KEY_CONTAINER);

@@ -9,7 +9,11 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationStore;
 import net.kyori.adventure.util.UTF8ResourceBundleControl;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
+@ApiStatus.Internal
+@NullMarked
 public class TranslatesManager {
 
     private static TranslatesManager INSTANCE;

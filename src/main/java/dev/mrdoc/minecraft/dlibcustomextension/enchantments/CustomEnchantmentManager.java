@@ -2,10 +2,10 @@ package dev.mrdoc.minecraft.dlibcustomextension.enchantments;
 
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.SneakyThrows;
@@ -18,21 +18,25 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 /**
  * Enchantment manager
  */
+@NullMarked
 public class CustomEnchantmentManager {
     public static HashMap<Key, AbstractCustomEnchantment> CUSTOM_ENCHANTMENTS = new HashMap<>();
 
     // Config
     private static final String CONFIG_FILE_NAME = "config-custom-enchantments.yaml";
+    @Nullable
     private static YamlConfigurationLoader CONFIG_LOADER;
+    @Nullable
     private static CommentedConfigurationNode CONFIG_NODE;
+    @Nullable
     private static CustomEnchantmentConfig CONFIG;
 
     /**
@@ -50,8 +54,8 @@ public class CustomEnchantmentManager {
      */
     @SneakyThrows
     public static void saveConfig() {
-        CONFIG_NODE.set(CustomEnchantmentConfig.class, CONFIG); // Update the backing node
-        CONFIG_LOADER.save(CONFIG_NODE); // Write to the original file
+        Objects.requireNonNull(CONFIG_NODE).set(CustomEnchantmentConfig.class, CONFIG); // Update the backing node
+        Objects.requireNonNull(CONFIG_LOADER).save(CONFIG_NODE); // Write to the original file
     }
 
     /**
@@ -91,7 +95,7 @@ public class CustomEnchantmentManager {
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private static Set<Class<? extends AbstractCustomEnchantment>> getClasses(final @NonNull ClassLoader classLoader) {
+    private static Set<Class<? extends AbstractCustomEnchantment>> getClasses(final ClassLoader classLoader) {
         final List<String> classNames = AnnotationProcessorUtil.getClassesInPath(classLoader, CustomEnchantmentContainerProcessor.PATH);
 
         if (classNames.isEmpty()) {
@@ -112,7 +116,7 @@ public class CustomEnchantmentManager {
         return classes;
     }
 
-    private static void loadAllCustomEnchantments(@NotNull BootstrapContext context) {
+    private static void loadAllCustomEnchantments(BootstrapContext context) {
         Set<Class<? extends AbstractCustomEnchantment>> reflectionCustomEnchantments = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
 
         reflectionCustomEnchantments.forEach(aClass -> {
@@ -152,14 +156,14 @@ public class CustomEnchantmentManager {
         return CustomEnchantmentManager.getEnchantmentBook(clazz, 1);
     }
 
-    public static int getEnchantmentLevel(final Class<? extends AbstractCustomEnchantment> clazz, final ItemStack itemStack) {
+    public static int getEnchantmentLevel(final Class<? extends AbstractCustomEnchantment> clazz, @Nullable final ItemStack itemStack) {
         if (itemStack == null || itemStack.isEmpty()) {
             return 0;
         }
         return CustomEnchantmentManager.getEnchantment(clazz).map(itemStack::getEnchantmentLevel).orElse(0);
     }
 
-    public static boolean hasEnchantment(final Class<? extends AbstractCustomEnchantment> clazz, final ItemStack itemStack) {
+    public static boolean hasEnchantment(final Class<? extends AbstractCustomEnchantment> clazz, @Nullable final ItemStack itemStack) {
         if (itemStack == null || itemStack.isEmpty()) {
             return false;
         }
@@ -167,10 +171,10 @@ public class CustomEnchantmentManager {
     }
 
     public static boolean isEnchantmentEnabled(String internalName) {
-        if (!CONFIG.isEnabled()) {
+        if (CONFIG != null && !CONFIG.isEnabled()) {
             return true;
         }
-        return CONFIG.getNameEnchantments().stream().anyMatch(internalName::equalsIgnoreCase);
+        return CONFIG != null && CONFIG.getNameEnchantments().stream().anyMatch(internalName::equalsIgnoreCase);
     }
 
 }

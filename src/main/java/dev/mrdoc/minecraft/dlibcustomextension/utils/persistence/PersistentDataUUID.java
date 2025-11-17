@@ -4,7 +4,9 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class PersistentDataUUID implements PersistentDataType<byte[], UUID> {
 
     public static PersistentDataUUID UUID_CONTAINER = new PersistentDataUUID();
