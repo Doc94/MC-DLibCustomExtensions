@@ -82,7 +82,7 @@ public class CustomItemBuilder {
     }
 
     /**
-     * Sets the item model using key.
+     * Sets the item model using a key.
      * <br>
      * <b>Note:</b> the namespace is get from the instance using this lib.
      *
