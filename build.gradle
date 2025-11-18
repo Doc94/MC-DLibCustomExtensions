@@ -194,7 +194,7 @@ jreleaser {
                     url = 'https://central.sonatype.com/api/v1/publisher'
                     namespace = "${projectGroup}"
                     snapshotSupported = true
-                    retryDelay = 30
+                    retryDelay = 120
                     if (isRelease) {
                         applyMavenCentralRules = true
                         stagingRepository('build/staging-deploy/release')
