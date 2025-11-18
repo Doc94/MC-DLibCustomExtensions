@@ -106,6 +106,7 @@ release {
     failOnSnapshotDependencies = false
     git {
         requireBranch.set('')
+        pushToRemote.set('')
     }
 }
 
