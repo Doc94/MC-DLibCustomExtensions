@@ -10,7 +10,7 @@ paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 configurate = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
 incendo-cloud-core = { module = "org.incendo:cloud-core", version.ref = "incendo-cloud" }
 incendo-cloud-annotations = { module = "org.incendo:cloud-annotations", version.ref = "incendo-cloud" }
-incendo-cloud-paper = { module = "org.incendo:cloud-paper", version = "2.0.0-beta.13" }
+incendo-cloud-paper = { module = "org.incendo:cloud-paper", version = "2.0.0-beta.14" }
 google-autoservice = { module = "com.google.auto.service:auto-service", version.ref = "google-autoservice" }
 romannumerals4j = { module = "com.github.fracpete:romannumerals4j", version.ref = "romannumerals4j" }
 
