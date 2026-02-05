@@ -9,6 +9,7 @@ import java.util.Map;
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import java.util.Objects;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.Registry;
 import org.bukkit.inventory.CraftingRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -27,9 +28,11 @@ public class CustomItemRecipeHelper {
     @Nullable
     public static ItemStack getRecipeChoiceItemStack(@Nullable RecipeChoice recipeChoice) {
         if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
-            return exactChoice.getItemStack();
+            return exactChoice.getChoices().getFirst();
+        } else if (recipeChoice instanceof RecipeChoice.ItemTypeChoice itemTypeChoice) {
+            return Registry.ITEM.get(itemTypeChoice.itemTypes().iterator().next()).createItemStack();
         } else if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice) {
-            return materialChoice.getItemStack();
+            return Objects.requireNonNull(materialChoice.getChoices().getFirst().asItemType()).createItemStack();
         }
         return null;
     }
