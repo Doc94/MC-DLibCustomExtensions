@@ -20,11 +20,21 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Helper related to recipes
+ * Helper class for handling custom item recipes and crafting validations.
+ * <p>
+ * Provides utilities for extracting items from recipe choices, validating crafting matrices
+ * against recipes, and calculating the results of recipe applications.
+ * </p>
  */
 @NullMarked
 public class CustomItemRecipeHelper {
 
+    /**
+     * Gets an {@link ItemStack} representation from a {@link RecipeChoice}.
+     *
+     * @param recipeChoice the recipe choice to convert
+     * @return the corresponding item stack, or {@code null} if the choice type is unsupported
+     */
     @Nullable
     public static ItemStack getRecipeChoiceItemStack(@Nullable RecipeChoice recipeChoice) {
         if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
@@ -37,6 +47,12 @@ public class CustomItemRecipeHelper {
         return null;
     }
 
+    /**
+     * Converts a map of characters and recipe choices into a map of characters and item stacks.
+     *
+     * @param ingredients the map of recipe ingredients
+     * @return a map with characters as keys and corresponding item stacks as values
+     */
     public static Map<Character, @Nullable ItemStack> getIngredientMap(Map<Character, RecipeChoice> ingredients) {
         HashMap<Character, @Nullable ItemStack> result = new HashMap<Character, ItemStack>();
         for (Map.Entry<Character, RecipeChoice> ingredient : ingredients.entrySet()) {

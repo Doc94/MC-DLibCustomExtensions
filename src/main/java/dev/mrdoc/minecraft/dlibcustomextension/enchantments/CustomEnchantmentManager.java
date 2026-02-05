@@ -24,7 +24,11 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 /**
- * Enchantment manager
+ * Manager class for custom enchantments.
+ * <p>
+ * This class handles the loading, configuration, and registration of custom enchantments
+ * during the bootstrap and enable phases of the plugin.
+ * </p>
  */
 @NullMarked
 public class CustomEnchantmentManager {
@@ -40,9 +44,9 @@ public class CustomEnchantmentManager {
     private static CustomEnchantmentConfig CONFIG;
 
     /**
-     * Load the manager
+     * Loads and initializes the manager and its configuration.
      *
-     * @param context the context
+     * @param context the bootstrap context
      */
     public static void load(BootstrapContext context) {
         loadConfig(context);
@@ -50,7 +54,7 @@ public class CustomEnchantmentManager {
     }
 
     /**
-     * Save the config.
+     * Saves the current custom enchantment configuration to the file.
      */
     @SneakyThrows
     public static void saveConfig() {
@@ -59,9 +63,9 @@ public class CustomEnchantmentManager {
     }
 
     /**
-     * Load the config.
+     * Loads the custom enchantment configuration from the file.
      *
-     * @param context the context
+     * @param context the bootstrap context
      */
     @SneakyThrows
     private static void loadConfig(BootstrapContext context) {
@@ -75,7 +79,7 @@ public class CustomEnchantmentManager {
     }
 
     /**
-     * Reload the config.
+     * Reloads the custom enchantment configuration from the file.
      */
     @SneakyThrows
     public static void reloadConfig() {
@@ -88,10 +92,10 @@ public class CustomEnchantmentManager {
     }
 
     /**
-     * Get the custom classes
+     * Scans and retrieves all classes extending {@link AbstractCustomEnchantment} from the specified path.
      *
-     * @param classLoader a class loader
-     * @return a set of classes
+     * @param classLoader the class loader to use for scanning
+     * @return a set of custom enchantment classes
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
@@ -116,6 +120,11 @@ public class CustomEnchantmentManager {
         return classes;
     }
 
+    /**
+     * Scans, instantiates, and registers all custom enchantments.
+     *
+     * @param context the bootstrap context
+     */
     private static void loadAllCustomEnchantments(BootstrapContext context) {
         Set<Class<? extends AbstractCustomEnchantment>> reflectionCustomEnchantments = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
 
@@ -136,6 +145,11 @@ public class CustomEnchantmentManager {
         LoggerUtils.info("Loaded " + CustomEnchantmentManager.CUSTOM_ENCHANTMENTS.size() + " Custom Enchantments.");
     }
 
+    /**
+     * Registers listeners for all custom enchantments during the plugin enable phase.
+     *
+     * @param plugin the owning plugin instance
+     */
     public static void onEnable(Plugin plugin) {
         CUSTOM_ENCHANTMENTS.forEach((key, abstractCustomEnchantment) -> abstractCustomEnchantment.registerListener(plugin));
     }

@@ -19,8 +19,14 @@ import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.paper.util.sender.Source;
 
+/**
+ * Command for giving custom items to players.
+ */
 public class GiveItemCustomCommand extends BaseCommand {
 
+    /**
+     * Constructs a new GiveItemCustomCommand.
+     */
     public GiveItemCustomCommand() {
         super(DLibCustomExtensionManager.getPluginInstance());
     }

@@ -26,6 +26,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
+/**
+ * Listener for custom item events.
+ */
 public class CustomItemsListener implements Listener {
 
     @EventHandler

@@ -12,32 +12,71 @@ import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Manager class for the DLibCustomExtensions library.
+ * <p>
+ * This class handles the initialization and lifecycle of custom items, potions, and enchantments.
+ * It follows the singleton pattern and provides utility methods to access the plugin instance and namespace.
+ * </p>
+ */
 @Getter
 public class DLibCustomExtensionManager {
 
     private static DLibCustomExtensionManager INSTANCE;
 
+    /**
+     * Gets the singleton instance of the manager.
+     *
+     * @return the manager instance
+     */
     public static DLibCustomExtensionManager getInstance() {
         return INSTANCE;
     }
 
+    /**
+     * Gets the plugin instance from the current manager singleton.
+     *
+     * @return the plugin instance
+     */
     public static Plugin getPluginInstance() {
         return INSTANCE.getPlugin();
     }
 
+    /**
+     * Gets the plugin name from the current manager singleton.
+     *
+     * @return the plugin name
+     */
     public static String getPluginName() {
         return INSTANCE.getInstanceName();
     }
 
+    /**
+     * Gets the plugin namespace (lowercase plugin name) from the current manager singleton.
+     *
+     * @return the plugin namespace
+     */
     public static String getPluginNamespace() {
         return INSTANCE.getInstanceName().toLowerCase();
     }
 
+    /**
+     * Builds and initializes the manager instance using a bootstrap context.
+     *
+     * @param boostrapContext the bootstrap context to use
+     * @return the initialized manager instance
+     */
     public static DLibCustomExtensionManager buildWithBoostrap(ContextBoostrap boostrapContext) {
         INSTANCE = new DLibCustomExtensionManager(boostrapContext);
         return INSTANCE;
     }
 
+    /**
+     * Builds and initializes the manager instance using a plugin enable context.
+     *
+     * @param pluginContext the plugin context to use
+     * @return the initialized manager instance
+     */
     public static DLibCustomExtensionManager buildWithEnable(ContextPlugin pluginContext) {
         INSTANCE = new DLibCustomExtensionManager(pluginContext);
         return INSTANCE;
@@ -49,10 +88,21 @@ public class DLibCustomExtensionManager {
         this.context = context;
     }
 
+    /**
+     * Gets the class loader used by the manager instance.
+     *
+     * @return the class loader
+     */
     public ClassLoader getClassLoader() {
         return INSTANCE.getClass().getClassLoader();
     }
 
+    /**
+     * Gets the plugin instance associated with the current context.
+     *
+     * @return the plugin instance
+     * @throws RuntimeException if no context is set
+     */
     public Plugin getPlugin() {
         if (this.context instanceof ContextPlugin contextPlugin) {
             return contextPlugin.pluginInstance();
@@ -62,6 +112,12 @@ public class DLibCustomExtensionManager {
         throw new RuntimeException("No context set!");
     }
 
+    /**
+     * Gets the name of the plugin instance associated with the current context.
+     *
+     * @return the plugin name
+     * @throws RuntimeException if no context is set
+     */
     public String getInstanceName() {
         if (this.context instanceof ContextPlugin contextPlugin) {
             return contextPlugin.pluginInstance().getPluginMeta().getName();

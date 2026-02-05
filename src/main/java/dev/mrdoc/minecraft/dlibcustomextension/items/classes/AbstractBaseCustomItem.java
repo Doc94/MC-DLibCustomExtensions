@@ -34,15 +34,34 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Base class for custom items.
+ * <p>
+ * This class provides the foundation for creating custom items with support for recipes,
+ * visual components, and integration with the custom items manager.
+ * </p>
+ */
 @NullMarked
 public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
+    /**
+     * Gets the instance of the plugin that owns this custom item.
+     */
     @Getter
     private final Plugin instance;
+    /**
+     * Gets the unique internal name of the custom item (logical identifier).
+     */
     @Getter
     private final String internalName;
+    /**
+     * Gets the unique Adventure key used as a full internal identifier.
+     */
     @Getter
     private final Key key;
+    /**
+     * Gets the recipe associated with this custom item, if any.
+     */
     @Nullable
     @Getter
     private final Recipe recipe;
@@ -51,16 +70,41 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      */
     @Getter
     private final ItemStack item;
+    /**
+     * Gets whether this item is considered special (e.g., has special visual effects or tags).
+     */
     @Getter
     private boolean special;
+    /**
+     * Gets whether the recipe should be automatically discovered by the player.
+     */
     @Getter
     private boolean autoDiscoverRecipe;
+    /**
+     * Gets the rarity of the custom item, if assigned.
+     */
     @Nullable
     @Getter
     private final CustomItemRarity rarity;
+    /**
+     * Gets the set of inventory types where this item is permitted.
+     */
     @Getter
     private final HashSet<InventoryType> inventoryTypes = new HashSet<>();
 
+    /**
+     * Creates a new base custom item.
+     *
+     * @param instance           the owning plugin instance
+     * @param internalName       the unique internal name
+     * @param displayName        the display name of the item (can be {@link Component#empty()})
+     * @param rarity             the rarity of the item
+     * @param isSpecial          whether the item is marked as special
+     * @param autoDiscoverRecipe whether to automatically discover the recipe
+     * @param modelNameKey       the key for the item model
+     * @param inventoryTypes     the permitted inventory types
+     * @param descriptions       descriptive lines for the lore
+     */
     @ApiStatus.Internal
     public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions) {
         this.inventoryTypes.addAll(inventoryTypes);
@@ -142,6 +186,12 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     @Nullable
     public abstract Recipe createRecipe();
 
+    /**
+     * Creates a crafting view to display the recipe to the player.
+     *
+     * @param player the player for whom the view is created
+     * @return an inventory view representing the recipe, or {@code null} if no recipe exists
+     */
     @Nullable
     public InventoryView createDisplayCraft(Player player) {
         Component titleInventoryView = Component.translatable("dlce.items.recipe.display", this.getItem().displayName());
@@ -222,18 +272,31 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
         return itemStack;
     }
 
+    /**
+     * Discovers the recipe for the specified player.
+     *
+     * @param player the player who discovers the recipe
+     */
     public void discoverRecipe(Player player) {
         if (this.recipe != null && !player.hasDiscoveredRecipe(this.getNamespacedKey())) {
             player.discoverRecipe(this.getNamespacedKey());
         }
     }
 
+    /**
+     * Undiscovers the recipe for the specified player.
+     *
+     * @param player the player who undiscovers the recipe
+     */
     public void undiscoverRecipe(Player player) {
         if (this.recipe != null && player.hasDiscoveredRecipe(this.getNamespacedKey())) {
             player.undiscoverRecipe(this.getNamespacedKey());
         }
     }
 
+    /**
+     * Registers the recipe into the server.
+     */
     public void registerRecipe() {
         if (this.recipe != null) {
             LoggerUtils.info("Adding recipe " + this.getKey());
@@ -241,6 +304,9 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
         }
     }
 
+    /**
+     * Unregisters the recipe from the server.
+     */
     public void unRegisterRecipe() {
         if (this.recipe != null) {
             LoggerUtils.info("Removing recipe " + this.getKey());
@@ -249,10 +315,10 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     }
 
     /**
-     * Checks if the provided item matches this custom item
+     * Checks if the provided item stack matches this custom item.
      *
-     * @param itemToCheck Item to validate
-     * @return {@code true} if it matches the custom item
+     * @param itemToCheck the item stack to validate
+     * @return {@code true} if it matches, {@code false} otherwise
      */
     public boolean isItem(@Nullable ItemStack itemToCheck) {
         if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {

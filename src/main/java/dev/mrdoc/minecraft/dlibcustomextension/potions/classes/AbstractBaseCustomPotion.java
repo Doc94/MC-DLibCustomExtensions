@@ -28,16 +28,38 @@ import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Base class for custom potions.
+ * <p>
+ * Manages the base item, namespace keys, visual components, and potion mixing,
+ * including utilities for registering/unregistering and displaying the recipe in a brewing stand.
+ * </p>
+ */
 @NullMarked
 public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPotion {
 
+    /**
+     * Gets the instance of the plugin that owns this potion.
+     */
     @Getter
     private final Plugin instance;
+    /**
+     * Gets the unique internal name of the potion (logical identifier).
+     */
     @Getter
     private final String internalName;
+    /**
+     * Gets the unique Adventure key used as a full internal identifier.
+     */
     @Getter
     private final Key key;
+    /**
+     * The base input for the brewing recipe (bottle/base).
+     */
     private final RecipeChoice recipeInput;
+    /**
+     * The ingredient added to the brewing recipe.
+     */
     private final RecipeChoice recipeIngredient;
     /**
      *  Gets the base Item used for recipe registration and validations.
@@ -47,9 +69,20 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      */
     @Getter
     private final ItemStack item;
+    /**
+     * Gets the potion mix definition used by the Paper brewer.
+     */
     @Getter
     private final PotionMix potionMix;
 
+    /**
+     * Creates a new base custom potion.
+     *
+     * @param plugin        the owning plugin instance
+     * @param internalName  the unique internal name
+     * @param displayName   the display name of the item (can be {@link Component#empty()})
+     * @param descriptions  descriptive lines for the lore
+     */
     public AbstractBaseCustomPotion(Plugin plugin, String internalName, Component displayName, List<Component> descriptions) {
         this.instance = plugin;
         this.internalName = internalName;
@@ -114,10 +147,21 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      */
     public abstract RecipeChoice createRecipeIngredient();
 
+    /**
+     * Creates the potion mix to be registered in the brewing system.
+     *
+     * @return the prepared potion mix
+     */
     private PotionMix createPotionMix() {
         return new PotionMix(this.getNamespaceKey(), this.item, this.recipeInput, this.recipeIngredient);
     }
 
+    /**
+     * Creates a brewing stand view to display the recipe to the player.
+     *
+     * @param player the player for whom the view is created
+     * @return a brewing stand view, or {@code null} if it could not be created
+     */
     @Nullable
     public InventoryView createDisplayCraft(Player player) {
         final ItemStack unknownItem = ItemType.STRUCTURE_VOID.createItemStack(itemMeta -> itemMeta.itemName(Component.text("???").decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)));
@@ -185,11 +229,17 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         return Objects.equals(itemToCheck.getPersistentDataContainer().get(CustomPotionsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER), this.getKey());
     }
 
+    /**
+     * Registers the potion mix into the Bukkit/Paper PotionBrewer.
+     */
     public void registerPotionMix() {
         LoggerUtils.info("Adding PotionMix " + this.getKey());
         Bukkit.getPotionBrewer().addPotionMix(this.getPotionMix());
     }
 
+    /**
+     * Unregisters the potion mix from the PotionBrewer.
+     */
     public void unRegisterPotionMix() {
         LoggerUtils.info("Removing PotionMix " + this.getKey());
         Bukkit.getPotionBrewer().removePotionMix(this.getNamespaceKey());

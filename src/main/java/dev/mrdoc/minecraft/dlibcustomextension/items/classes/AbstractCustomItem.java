@@ -17,9 +17,17 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NullMarked;
 
+/**
+ * Abstract class representing a custom item with listener capabilities.
+ */
 @NullMarked
 public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomItem implements Listener {
 
+    /**
+     * Constructs a new AbstractCustomItem.
+     *
+     * @param customItemBuilder the builder containing item configuration
+     */
     public AbstractCustomItem(CustomItemBuilder customItemBuilder) {
         super(customItemBuilder.getPlugin(), customItemBuilder.getInternalName(), customItemBuilder.getDisplayName(), customItemBuilder.getRarity(), customItemBuilder.isSpecial(), customItemBuilder.isAutoDiscoverRecipe(), customItemBuilder.getItemModel(), customItemBuilder.getInventoryTypes(), customItemBuilder.getDescriptions());
         Bukkit.getServer().getPluginManager().registerEvents(this, customItemBuilder.getPlugin());

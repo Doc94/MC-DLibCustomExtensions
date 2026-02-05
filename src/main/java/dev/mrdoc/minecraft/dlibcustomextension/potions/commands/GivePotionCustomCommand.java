@@ -19,8 +19,14 @@ import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.paper.util.sender.Source;
 
+/**
+ * Command for giving custom potions to players.
+ */
 public class GivePotionCustomCommand extends BaseCommand {
 
+    /**
+     * Constructs a new GivePotionCustomCommand.
+     */
     public GivePotionCustomCommand() {
         super(DLibCustomExtensionManager.getPluginInstance());
     }

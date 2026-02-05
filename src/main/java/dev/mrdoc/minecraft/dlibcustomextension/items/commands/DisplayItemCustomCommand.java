@@ -27,6 +27,13 @@ import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.paper.util.sender.PlayerSource;
 import org.incendo.cloud.paper.util.sender.Source;
 
+/**
+ * Command for displaying the recipe of a custom item in a preview inventory.
+ * <p>
+ * This command allows players to see how to craft a specific custom item
+ * and prevents interaction with the preview inventory.
+ * </p>
+ */
 public class DisplayItemCustomCommand extends BaseCommand implements Listener {
 
     private final String TAG_INVENTORY_PREVIEW = "INVENTORY_PREVIEW_DISPLAY_ITEM";
@@ -36,6 +43,12 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
         Bukkit.getPluginManager().registerEvents(this, DLibCustomExtensionManager.getPluginInstance());
     }
 
+    /**
+     * Executes the display custom item command.
+     *
+     * @param playerSourceSender the player who executed the command
+     * @param customItemClass    the class of the custom item to display
+     */
     @Command("displayitemcustom <item>")
     @CommandDescription("Comando para ver receta de un item custom")
     @Permission("dlibcustomextensions.items.command.displaycustom")
@@ -57,11 +70,25 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
         }, () -> senderPlayer.sendMessage(Component.translatable("dlce.argument.item.notfound")));
     }
 
+    /**
+     * Provides suggestions for custom item names.
+     *
+     * @param ctx   the command context
+     * @param input the current input string
+     * @return a list of suggested custom item names
+     */
     @Suggestions("suggest_itemcustom")
     public List<String> suggestItemCustom(CommandContext<Source> ctx, String input) {
         return ItemCustomCommandHelper.suggestItemCustom(ctx, input);
     }
 
+    /**
+     * Parses the custom item class from the command input.
+     *
+     * @param ctx          the command context
+     * @param commandInput the command input to parse
+     * @return the parsed custom item class
+     */
     @Parser(name = "parser_itemcustomclass", suggestions = "suggest_itemcustom")
     public Class<? extends AbstractCustomItem> parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
         return ItemCustomCommandHelper.parserItemCustomClass(ctx, commandInput);

@@ -55,7 +55,7 @@ public class CustomItemsManager {
     private static CustomItemConfig CONFIG;
 
     /**
-     * Load the manager
+     * Loads and initializes the manager, its configuration, items, and events.
      */
     public static void load() {
         PLUGIN_INSTANCE = DLibCustomExtensionManager.getPluginInstance();
@@ -77,7 +77,7 @@ public class CustomItemsManager {
     }
 
     /**
-     * Save the config
+     * Saves the current custom item configuration to the file.
      */
     @SneakyThrows
     public static void saveConfig() {
@@ -86,7 +86,7 @@ public class CustomItemsManager {
     }
 
     /**
-     * Load the config
+     * Loads the custom item configuration from the file.
      */
     @SneakyThrows
     private static void loadConfig() {
@@ -100,7 +100,7 @@ public class CustomItemsManager {
     }
 
     /**
-     * Reload the config
+     * Reloads the custom item configuration from the file.
      */
     @SneakyThrows
     public static void reloadConfig() {
@@ -113,10 +113,10 @@ public class CustomItemsManager {
     }
 
     /**
-     * Get the custom classes
+     * Scans and retrieves all classes extending {@link AbstractCustomItem} from the specified path.
      *
-     * @param classLoader a class loader
-     * @return a set of classes
+     * @param classLoader the class loader to use for scanning
+     * @return a set of custom item classes
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
@@ -141,7 +141,7 @@ public class CustomItemsManager {
     }
 
     /**
-     * Load all custom items
+     * Scans, instantiates, and loads all custom items into the manager.
      */
     public static void loadAllCustomItems() {
         Set<Class<? extends AbstractCustomItem>> reflectionCustomItems = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
@@ -328,7 +328,7 @@ public class CustomItemsManager {
     }
 
     /**
-     * Register the internal commands
+     * Registers all custom item commands.
      */
     public static void registerAllCommands() {
         new GiveItemCustomCommand();
@@ -336,7 +336,7 @@ public class CustomItemsManager {
     }
 
     /**
-     * Register
+     * Registers all custom item recipes.
      */
     public static void registerAllRecipes() {
         for (AbstractCustomItem customItem : CUSTOM_ITEMS) {
@@ -349,7 +349,7 @@ public class CustomItemsManager {
     }
 
     /**
-     * Unregister
+     * Unregisters all custom item recipes.
      */
     public static void unregisterAllRecipes() {
         for (AbstractCustomItem customItem : CUSTOM_ITEMS) {

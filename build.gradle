@@ -63,6 +63,7 @@ tasks.withType(JavaCompile).configureEach {
 tasks.withType(Javadoc).configureEach {
     title = "${projectArtifactName} ${projectVersion} API"
     options.windowTitle = "${projectArtifactName} ($projectVersion)"
+    options.addBooleanOption('Xdoclint:all,-missing', true)
 }
 
 tasks {

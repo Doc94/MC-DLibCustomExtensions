@@ -17,22 +17,70 @@ import org.jspecify.annotations.Nullable;
 @Getter
 public class CustomItemBuilder {
 
+    /**
+     * The plugin instance.
+     *
+     * @return the plugin
+     */
     private final Plugin plugin;
+    /**
+     * The unique internal name.
+     *
+     * @return the internal name
+     */
     private final String internalName;
+    /**
+     * The display name of the item.
+     *
+     * @return the display name
+     */
     private final Component displayName;
     @Nullable
     private CustomItemRarity rarity = null;
+    /**
+     * The special flag for the item.
+     *
+     * @return {@code true} if special
+     */
     private boolean isSpecial = false;
+    /**
+     * The auto-discovery flag for the recipe.
+     *
+     * @return {@code true} if auto-discover
+     */
     private boolean autoDiscoverRecipe = true;
     @Nullable
     private Key itemModel = null;
+    /**
+     * The inventory types where the item is permitted.
+     *
+     * @return the list of inventory types
+     */
     private List<InventoryType> inventoryTypes = new ArrayList<>();
+    /**
+     * The descriptive lines for the item lore.
+     *
+     * @return the list of descriptions
+     */
     private List<Component> descriptions = new ArrayList<>();
 
+    /**
+     * Constructs a new CustomItemBuilder with the default plugin instance.
+     *
+     * @param internalName the unique internal name
+     * @param displayName  the display name
+     */
     private CustomItemBuilder(String internalName, Component displayName) {
         this(DLibCustomExtensionManager.getPluginInstance(), internalName, displayName);
     }
 
+    /**
+     * Constructs a new CustomItemBuilder.
+     *
+     * @param plugin       the plugin instance
+     * @param internalName the unique internal name
+     * @param displayName  the display name
+     */
     private CustomItemBuilder(Plugin plugin, String internalName, Component displayName) {
         this.plugin = plugin;
         this.internalName = internalName;
@@ -104,19 +152,43 @@ public class CustomItemBuilder {
         return this;
     }
 
+    /**
+     * Sets the inventory types where the item is permitted.
+     *
+     * @param inventoryTypes the inventory types
+     * @return the builder
+     */
     public CustomItemBuilder inventoryTypes(InventoryType... inventoryTypes) {
         return this.inventoryTypes(Arrays.asList(inventoryTypes));
     }
 
+    /**
+     * Sets the inventory types where the item is permitted.
+     *
+     * @param inventoryTypes the inventory types
+     * @return the builder
+     */
     public CustomItemBuilder inventoryTypes(List<InventoryType> inventoryTypes) {
         this.inventoryTypes = inventoryTypes;
         return this;
     }
 
+    /**
+     * Sets the descriptive lines for the item lore.
+     *
+     * @param descriptions the descriptions
+     * @return the builder
+     */
     public CustomItemBuilder description(Component... descriptions) {
         return this.description(Arrays.asList(descriptions));
     }
 
+    /**
+     * Sets the descriptive lines for the item lore.
+     *
+     * @param descriptions the descriptions
+     * @return the builder
+     */
     public CustomItemBuilder description(List<Component> descriptions) {
         this.descriptions = descriptions;
         return this;

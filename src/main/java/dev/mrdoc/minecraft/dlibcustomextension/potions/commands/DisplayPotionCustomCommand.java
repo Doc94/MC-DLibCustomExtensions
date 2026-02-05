@@ -27,10 +27,16 @@ import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.paper.util.sender.PlayerSource;
 import org.incendo.cloud.paper.util.sender.Source;
 
+/**
+ * Command for displaying the recipe of a custom potion.
+ */
 public class DisplayPotionCustomCommand extends BaseCommand implements Listener {
 
     private final String TAG_INVENTORY_PREVIEW = "INVENTORY_PREVIEW_DISPLAY_POTION";
 
+    /**
+     * Constructs a new DisplayPotionCustomCommand.
+     */
     public DisplayPotionCustomCommand() {
         super(DLibCustomExtensionManager.getPluginInstance());
         Bukkit.getPluginManager().registerEvents(this, DLibCustomExtensionManager.getPluginInstance());

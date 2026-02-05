@@ -28,38 +28,38 @@ import org.jspecify.annotations.NullMarked;
 public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCustomEnchantment {
 
     /**
-     * The key for this enchantment.
+     * Gets the key for this enchantment.
      *
      * @return key
      */
     private final Key key;
     /**
-     * The internal name.
+     * Gets the internal name.
      *
      * @return name
      */
     private final String name;
     /**
-     * The display name.
+     * Gets the display name.
      *
      * @return display name
      */
     private final Component displayName;
     /**
-     * Provides the weight of this enchantment used by the weighted random when selecting enchantments.
+     * Gets the weight of this enchantment used by the weighted random when selecting enchantments.
      *
      * @return the weight value.
      * @see <a href="https://minecraft.wiki/w/Enchanting">https://minecraft.wiki/w/Enchanting</a> for examplary weights.
      */
     private final @Range(from = 1, to = 1024) int weight;
     /**
-     * Provides the maximum level this enchantment can have when applied.
+     * Gets the maximum level this enchantment can have when applied.
      *
      * @return the maximum level.
      */
     private final @Range(from = 1, to = 255) int maxLevel;
     /**
-     * Provides the minimum cost needed to enchant an item with this enchantment.
+     * Gets the minimum cost needed to enchant an item with this enchantment.
      * <p>
      * Note that a cost is not directly related to the consumed xp.
      *
@@ -70,7 +70,7 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
     private final EnchantmentRegistryEntry.EnchantmentCost minimumCost;
 
     /**
-     * Provides the maximum cost allowed to enchant an item with this enchantment.
+     * Gets the maximum cost allowed to enchant an item with this enchantment.
      * <p>
      * Note that a cost is not directly related to the consumed xp.
      *
@@ -80,7 +80,7 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
      */
     private final EnchantmentRegistryEntry.EnchantmentCost maximumCost;
     /**
-     * Provides the cost of applying this enchantment using an anvil.
+     * Gets the cost of applying this enchantment using an anvil.
      * <p>
      * Note that this is halved when using an enchantment book, and is multiplied by the level of the enchantment.
      * See <a href="https://minecraft.wiki/w/Anvil_mechanics">https://minecraft.wiki/w/Anvil_mechanics</a> for more
@@ -92,7 +92,7 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
     private final @Range(from = 0, to = Integer.MAX_VALUE) int anvilCost;
 
     /**
-     * Provides a list of slot groups this enchantment may be active in.
+     * Gets a list of slot groups this enchantment may be active in.
      * <p>
      * If the item enchanted with this enchantment is equipped in a slot not covered by the returned list and its
      * groups, the enchantment's effects, like attribute modifiers, will not activate.
@@ -103,7 +103,7 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
     private final List<EquipmentSlotGroup> activeSlots;
 
     /**
-     * Provides the registry key set of enchantments that this enchantment is exclusive with.
+     * Gets the registry key set of enchantments that this enchantment is exclusive with.
      * <p>
      * Exclusive enchantments prohibit the application of this enchantment to an item if they are already present on
      * said item.
@@ -112,19 +112,19 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
      */
     private final RegistryKeySet<Enchantment> exclusiveWith;
     /**
-     * The tags for this enchantment
+     * Gets the tags for this enchantment.
      *
      * @return tags
      */
     private final Set<TagKey<Enchantment>> tagsEnchantments = new HashSet<>();
     /**
-     * The item types valid for this enchantment.
+     * Gets the item types valid for this enchantment.
      *
      * @return entry tags
      */
     private final Set<TagEntry<ItemType>> tagsItemTypes = new HashSet<>();
     /**
-     * The primary item types valid for this enchantment.
+     * Gets the primary item types valid for this enchantment.
      * <br>
      * <b>Note:</b> primary are items who can appear with this enchantment (ex: loot)
      *
@@ -132,7 +132,7 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
      */
     private final Set<TagEntry<ItemType>> tagsItemPrimaryTypes = new HashSet<>();
     /**
-     * If primary items are based in items valid.
+     * Gets whether primary items are based on valid items.
      *
      * @return {@code true} if {@link #getTagsItemPrimaryTypes()} need to be {@link #getTagsItemTypes()}
      */
