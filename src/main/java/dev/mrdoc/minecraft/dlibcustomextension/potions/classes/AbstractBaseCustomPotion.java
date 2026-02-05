@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -125,10 +126,13 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         BrewingStandView brewingStandView = MenuType.BREWING_STAND.create(player, titleInventoryView);
         for (int basePos = 0; basePos < 3; basePos++) {
             ItemStack inputItem = unknownItem.clone();
-            if (this.getPotionMix().getInput() instanceof RecipeChoice.ExactChoice exactChoice) {
-                inputItem = exactChoice.getItemStack();
-            } else if (this.getPotionMix().getInput() instanceof RecipeChoice.MaterialChoice materialChoice) {
-                inputItem = materialChoice.getItemStack();
+            final RecipeChoice recipeInput = this.getPotionMix().getInput();
+            if (recipeInput instanceof RecipeChoice.ExactChoice exactChoice) {
+                inputItem = exactChoice.getChoices().getFirst();
+            } else if (recipeInput instanceof RecipeChoice.ItemTypeChoice itemTypeChoice) {
+                inputItem = Registry.ITEM.get(itemTypeChoice.itemTypes().iterator().next()).createItemStack();
+            } else if (recipeInput instanceof RecipeChoice.MaterialChoice materialChoice) {
+                inputItem = Objects.requireNonNull(materialChoice.getChoices().getFirst().asItemType()).createItemStack();
             }
             brewingStandView.setItem(basePos, inputItem);
         }
