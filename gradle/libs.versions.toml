@@ -1,5 +1,5 @@
 [versions]
-paper = "1.21.11-R0.1-20260205.122330-66"
+paper = "26.1.1.build.+"
 incendo-cloud = "2.0.0"
 incendo-cloud-paper = "2.0.0-SNAPSHOT"
 google-autoservice = "1.1.1"
