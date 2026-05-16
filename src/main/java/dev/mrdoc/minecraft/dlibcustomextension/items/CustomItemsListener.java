@@ -56,7 +56,10 @@ public class CustomItemsListener implements Listener {
             if (event.getBlock().getState() instanceof Crafter crafter) {
                 Inventory inventory = crafter.getSnapshotInventory();
                 ItemStack[] matrix = inventory.getContents().clone();
-                final CraftingRecipe craftingRecipe = ((CraftingRecipe) customItem.getRecipe());
+                if (!(customItem.getRecipe() instanceof CraftingRecipe craftingRecipe)) {
+                    event.setCancelled(true);
+                    return;
+                }
                 if (CustomItemRecipeHelper.validateRecipeIngredients(customItem, matrix)) {
                     inventory.setContents(CustomItemRecipeHelper.reduceMatrix(craftingRecipe, matrix).getKey());
                     crafter.update(true);
@@ -90,7 +93,11 @@ public class CustomItemsListener implements Listener {
                 return;
             }
 
-            final CraftingRecipe craftingRecipe = ((CraftingRecipe) customItem.getRecipe());
+            if (!(customItem.getRecipe() instanceof CraftingRecipe craftingRecipe)) {
+                humanWhoClicked.sendMessage(Component.translatable("dlce.items.craftitem.failed.crafting_custom_item_recipe", NamedTextColor.RED));
+                event.setCancelled(true);
+                return;
+            }
 
             if (!CustomItemRecipeHelper.validateRecipeIngredients(customItem, event.getInventory().getMatrix())) {
                 humanWhoClicked.sendMessage(Component.translatable("dlce.items.craftitem.failed.crafting_invalid_for_recipe", NamedTextColor.RED));
@@ -134,7 +141,11 @@ public class CustomItemsListener implements Listener {
 
         if (baseItemOptional.isPresent()) {
             AbstractCustomItem customItem = baseItemOptional.get();
-            final CraftingRecipe craftingRecipe = ((CraftingRecipe) customItem.getRecipe());
+            if (!(customItem.getRecipe() instanceof CraftingRecipe craftingRecipe)) {
+                event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.translatable("dlce.items.craftitem.failed.crafting_invalid_recipe", customItem.getItem().displayName()).color(NamedTextColor.RED)));
+                event.getInventory().setResult(new ItemStack(Material.AIR));
+                return;
+            }
 
             if (!customItem.isEnabled()) {
                 event.getViewers().forEach(viewer -> viewer.sendActionBar(Component.translatable("dlce.items.precraftitem.failed.crafting_disabled", customItem.getItem().displayName()).color(NamedTextColor.RED)));

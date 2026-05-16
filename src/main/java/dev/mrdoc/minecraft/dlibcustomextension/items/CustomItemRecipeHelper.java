@@ -2,7 +2,6 @@ package dev.mrdoc.minecraft.dlibcustomextension.items;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Registry;
 import org.bukkit.inventory.CraftingRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
@@ -30,40 +30,30 @@ import org.jspecify.annotations.Nullable;
 public class CustomItemRecipeHelper {
 
     /**
-     * Gets an {@link ItemStack} representation from a {@link RecipeChoice}.
+     * Gets a list of {@link ItemStack} representations from a {@link RecipeChoice}.
      *
      * @param recipeChoice the recipe choice to convert
-     * @return the corresponding item stack, or {@code null} if the choice type is unsupported
+     * @return a list of corresponding item stacks
      */
-    @Nullable
-    public static ItemStack getRecipeChoiceItemStack(@Nullable RecipeChoice recipeChoice) {
+    @SuppressWarnings("UnstableApiUsage")
+    public static List<ItemStack> getRecipeChoiceItemStacks(@Nullable RecipeChoice recipeChoice) {
         if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
-            return exactChoice.getChoices().getFirst();
+            return exactChoice.getChoices();
         } else if (recipeChoice instanceof RecipeChoice.ItemTypeChoice itemTypeChoice) {
-            return Registry.ITEM.get(itemTypeChoice.itemTypes().iterator().next()).createItemStack();
+            List<ItemStack> itemStacks = new ArrayList<>();
+            itemTypeChoice.itemTypes().forEach(itemTypeTypedKey -> {
+                ItemType itemType = Registry.ITEM.get(itemTypeTypedKey);
+                if (itemType != null) {
+                    itemStacks.add(itemType.createItemStack());
+                }
+            });
+            return itemStacks;
         } else if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice) {
-            return Objects.requireNonNull(materialChoice.getChoices().getFirst().asItemType()).createItemStack();
+            return materialChoice.getChoices().stream()
+                    .map(material -> Objects.requireNonNull(material.asItemType()).createItemStack())
+                    .toList();
         }
-        return null;
-    }
-
-    /**
-     * Converts a map of characters and recipe choices into a map of characters and item stacks.
-     *
-     * @param ingredients the map of recipe ingredients
-     * @return a map with characters as keys and corresponding item stacks as values
-     */
-    public static Map<Character, @Nullable ItemStack> getIngredientMap(Map<Character, RecipeChoice> ingredients) {
-        HashMap<Character, @Nullable ItemStack> result = new HashMap<Character, ItemStack>();
-        for (Map.Entry<Character, RecipeChoice> ingredient : ingredients.entrySet()) {
-            final ItemStack itemStack = getRecipeChoiceItemStack(ingredient.getValue());
-            if (itemStack == null) {
-                result.put(ingredient.getKey(), null);
-            } else {
-                result.put(ingredient.getKey(), itemStack.clone());
-            }
-        }
-        return result;
+        return List.of();
     }
 
     /**
@@ -73,7 +63,7 @@ public class CustomItemRecipeHelper {
      * @param matrixCraft the matrix of ingredients
      * @return {@code true} if is valid
      */
-    static boolean validateRecipeIngredients(AbstractCustomItem customItem, @Nullable ItemStack @Nullable [] matrixCraft) {
+    static boolean validateRecipeIngredients(final AbstractCustomItem customItem, final @Nullable ItemStack @Nullable [] matrixCraft) {
         if (customItem.getRecipe() == null) {
             return false;
         }
@@ -87,7 +77,8 @@ public class CustomItemRecipeHelper {
      * @param matrixCraft the matrix of ingredients
      * @return {@code true} if is valid
      */
-    static boolean validateRecipeIngredients(Recipe recipe, @Nullable ItemStack @Nullable [] matrixCraft) {
+    @SuppressWarnings("ConstantConditions")
+    static boolean validateRecipeIngredients(final Recipe recipe, final @Nullable ItemStack @Nullable [] matrixCraft) {
         // We validate that the matrix is always of size 9 (3x3)
         if (matrixCraft == null || matrixCraft.length != 9) {
             return false;
@@ -95,7 +86,7 @@ public class CustomItemRecipeHelper {
 
         if (recipe instanceof ShapedRecipe shapedRecipe) {
             String[] shape = shapedRecipe.getShape();
-            Map<Character, @Nullable ItemStack> ingredientMap = getIngredientMap(shapedRecipe.getChoiceMap());
+            Map<Character, RecipeChoice> ingredientMap = shapedRecipe.getChoiceMap();
 
             int recipeRows = shape.length;
             int recipeCols = shape[0].length(); // Se asume que todas las filas tienen la misma longitud
@@ -119,8 +110,8 @@ public class CustomItemRecipeHelper {
                                     break outerLoop;
                                 }
                             } else {
-                                ItemStack requiredItem = ingredientMap.get(slot);
-                                if (!validateIngredient(matrixItem, requiredItem)) {
+                                RecipeChoice requiredChoice = ingredientMap.get(slot);
+                                if (!validateIngredient(matrixItem, requiredChoice)) {
                                     matched = false;
                                     break outerLoop;
                                 }
@@ -135,16 +126,16 @@ public class CustomItemRecipeHelper {
 
             return false;
         } else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-            List<ItemStack> ingredients = new ArrayList<>(shapelessRecipe.getChoiceList().stream().map(CustomItemRecipeHelper::getRecipeChoiceItemStack).map(itemStack -> (itemStack == null) ? ItemStack.empty() : itemStack).toList());
+            List<RecipeChoice> ingredients = new ArrayList<>(shapelessRecipe.getChoiceList());
 
             for (ItemStack itemMatrix : matrixCraft) {
                 if (itemMatrix != null && !itemMatrix.isEmpty()) {
                     boolean matched = false;
 
-                    Iterator<ItemStack> iterator = ingredients.iterator();
+                    Iterator<RecipeChoice> iterator = ingredients.iterator();
                     while (iterator.hasNext()) {
-                        ItemStack requiredItem = iterator.next();
-                        if (validateIngredient(itemMatrix, requiredItem)) {
+                        RecipeChoice requiredChoice = iterator.next();
+                        if (validateIngredient(itemMatrix, requiredChoice)) {
                             iterator.remove();
                             matched = true;
                             break;
@@ -157,9 +148,7 @@ public class CustomItemRecipeHelper {
                 }
             }
 
-            if (!ingredients.isEmpty()) {
-                return false; // If there are any unused ingredients left over, the array is invalid
-            }
+            return ingredients.isEmpty(); // If there are any unused ingredients left over, the array is invalid
         }
 
         return true;
@@ -169,9 +158,38 @@ public class CustomItemRecipeHelper {
      * Validate and compare an item with the recipe item ingredient.
      *
      * @param itemMatrix   the item in craft matrix
+     * @param recipeChoice the recipe choice to compare
+     * @return {@code true} if is valid
+     */
+    private static boolean validateIngredient(@Nullable ItemStack itemMatrix, @Nullable RecipeChoice recipeChoice) {
+        if (recipeChoice == null) {
+            return true; // Slot not required
+        }
+
+        if (itemMatrix == null || itemMatrix.isEmpty()) {
+            return false;
+        }
+
+        if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
+            for (ItemStack choice : exactChoice.getChoices()) {
+                if (validateIngredient(itemMatrix, choice)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return recipeChoice.test(itemMatrix);
+    }
+
+    /**
+     * Validate and compare an item with the recipe item ingredient.
+     *
+     * @param itemMatrix   the item in craft matrix
      * @param itemInRecipe the item in the recipe
      * @return {@code true} if is valid
      */
+    @SuppressWarnings("UnstableApiUsage")
     private static boolean validateIngredient(@Nullable ItemStack itemMatrix, @Nullable ItemStack itemInRecipe) {
         if (itemInRecipe == null || itemInRecipe.isEmpty()) {
             return true; // Slot not required
@@ -190,7 +208,7 @@ public class CustomItemRecipeHelper {
         }
 
         if (itemMatrix.hasData(DataComponentTypes.ITEM_MODEL) && itemInRecipe.hasData(DataComponentTypes.ITEM_MODEL)) {
-            if (!itemMatrix.getData(DataComponentTypes.ITEM_MODEL).equals(itemInRecipe.getData(DataComponentTypes.ITEM_MODEL))) {
+            if (!Objects.equals(itemMatrix.getData(DataComponentTypes.ITEM_MODEL), itemInRecipe.getData(DataComponentTypes.ITEM_MODEL))) {
                 return false;
             }
         } else if (itemMatrix.hasData(DataComponentTypes.ITEM_MODEL) || itemInRecipe.hasData(DataComponentTypes.ITEM_MODEL)) {
@@ -198,14 +216,31 @@ public class CustomItemRecipeHelper {
         }
 
         if (itemMatrix.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) && itemInRecipe.hasData(DataComponentTypes.CUSTOM_MODEL_DATA)) {
-            if (!itemMatrix.getData(DataComponentTypes.CUSTOM_MODEL_DATA).equals(itemInRecipe.getData(DataComponentTypes.CUSTOM_MODEL_DATA))) {
-                return false;
-            }
-        } else if (itemMatrix.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) || itemInRecipe.hasData(DataComponentTypes.CUSTOM_MODEL_DATA)) {
-            return false;
+            return Objects.equals(itemMatrix.getData(DataComponentTypes.CUSTOM_MODEL_DATA), itemInRecipe.getData(DataComponentTypes.CUSTOM_MODEL_DATA));
+        } else {
+            return !itemMatrix.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) && !itemInRecipe.hasData(DataComponentTypes.CUSTOM_MODEL_DATA);
+        }
+    }
+
+    /**
+     * Get the amount of an item in a recipe choice.
+     *
+     * @param itemMatrix   the item in craft matrix
+     * @param recipeChoice the recipe choice
+     * @return the amount
+     */
+    private static int getRecipeChoiceAmount(@Nullable ItemStack itemMatrix, @Nullable RecipeChoice recipeChoice) {
+        if (recipeChoice == null || itemMatrix == null || itemMatrix.isEmpty()) {
+            return 0;
         }
 
-        return true;
+        for (ItemStack itemStackChoice : getRecipeChoiceItemStacks(recipeChoice)) {
+            if (validateIngredient(itemMatrix, itemStackChoice)) {
+                return itemStackChoice.getAmount();
+            }
+        }
+
+        return 0;
     }
 
     /**
@@ -215,7 +250,7 @@ public class CustomItemRecipeHelper {
      * @param matrix         the matrix to reduce
      * @return a pair with the matrix result and the item result size
      */
-    static Pair<ItemStack[], Integer> reduceMatrix(CraftingRecipe craftingRecipe, ItemStack[] matrix) {
+    static Pair<@Nullable ItemStack @Nullable [], Integer> reduceMatrix(final CraftingRecipe craftingRecipe, final ItemStack[] matrix) {
         return reduceMatrix(craftingRecipe, matrix, false);
     }
 
@@ -227,10 +262,11 @@ public class CustomItemRecipeHelper {
      * @param processAll     true for try the max of reduction
      * @return a pair with the matrix result and the item result size
      */
-    static Pair<ItemStack[], Integer> reduceMatrix(CraftingRecipe craftingRecipe, final ItemStack @Nullable [] matrix, boolean processAll) {
+    static Pair<@Nullable ItemStack @Nullable [], Integer> reduceMatrix(final CraftingRecipe craftingRecipe, final @Nullable ItemStack @Nullable [] matrix, final boolean processAll) {
+        Objects.requireNonNull(matrix);
         // We clone the matrix to work without modifying the original
-        ItemStack[] matrixResult = cloneMatrix(matrix);
-        int maxCrafts = Integer.MAX_VALUE; // We initialize with a very high value to reduce
+        ItemStack[] matrixResult = Objects.requireNonNull(cloneMatrix(matrix));
+        int maxCrafts; // We initialize with a very high value to reduce
 
         // We get the maximum allowed per stack from the recipe result
         int maxPerStack = craftingRecipe.getResult().getMaxStackSize();
@@ -238,7 +274,7 @@ public class CustomItemRecipeHelper {
 
         if (craftingRecipe instanceof ShapedRecipe shapedRecipe) {
             String[] shape = shapedRecipe.getShape();
-            Map<Character, @Nullable ItemStack> ingredientMap = getIngredientMap(shapedRecipe.getChoiceMap());
+            Map<Character, RecipeChoice> ingredientMap = shapedRecipe.getChoiceMap();
 
             int recipeRows = shape.length;
             int recipeCols = shape[0].length();
@@ -246,6 +282,7 @@ public class CustomItemRecipeHelper {
             for (int rowOffset = 0; rowOffset <= 3 - recipeRows; rowOffset++) {
                 for (int colOffset = 0; colOffset <= 3 - recipeCols; colOffset++) {
                     boolean matched = true;
+                    int offsetMaxCrafts = Integer.MAX_VALUE;
 
                     outerLoop:
                     for (int row = 0; row < recipeRows; row++) {
@@ -263,18 +300,22 @@ public class CustomItemRecipeHelper {
                                 continue;
                             }
 
-                            ItemStack requiredItem = ingredientMap.get(slot);
-                            if (requiredItem == null || !validateIngredient(matrixItem, requiredItem)) {
+                            RecipeChoice requiredChoice = ingredientMap.get(slot);
+                            if (!validateIngredient(matrixItem, requiredChoice)) {
                                 matched = false;
                                 break outerLoop;
                             }
 
-                            int possibleCrafts = matrixItem.getAmount() / requiredItem.getAmount();
-                            maxCrafts = Math.min(maxCrafts, possibleCrafts);
+                            int recipeAmount = getRecipeChoiceAmount(matrixItem, requiredChoice);
+                            if (recipeAmount > 0) {
+                                int possibleCrafts = matrixItem.getAmount() / recipeAmount;
+                                offsetMaxCrafts = Math.min(offsetMaxCrafts, possibleCrafts);
+                            }
                         }
                     }
 
                     if (matched) {
+                        maxCrafts = offsetMaxCrafts;
                         // We limit the max crafts for avoid more than an stack
                         maxCrafts = Math.min(maxCrafts, maxPerStack);
 
@@ -288,47 +329,74 @@ public class CustomItemRecipeHelper {
                                 if (slot == ' ' || !ingredientMap.containsKey(slot)) continue;
 
                                 int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset);
-                                ItemStack requiredItem = ingredientMap.get(slot);
-                                assert matrixResult != null;
+                                RecipeChoice requiredChoice = ingredientMap.get(slot);
                                 ItemStack matrixItem = matrixResult[matrixIndex];
-                                if (requiredItem != null && validateIngredient(matrixItem, requiredItem)) {
-                                    int amountToSubtract = requiredItem.getAmount() * craftsToProcess;
-                                    matrixResult[matrixIndex] = matrixItem.clone().subtract(amountToSubtract);
+                                // We need to validate which choice matched to subtract the correct amount
+                                if (requiredChoice instanceof RecipeChoice.ExactChoice exactChoice) {
+                                    for (ItemStack choice : exactChoice.getChoices()) {
+                                        if (validateIngredient(matrixItem, choice)) {
+                                            int amountToSubtract = choice.getAmount() * craftsToProcess;
+                                            matrixResult[matrixIndex] = Objects.requireNonNull(matrixItem).clone().subtract(amountToSubtract);
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    int amountToSubtract = getRecipeChoiceAmount(matrixItem, requiredChoice) * craftsToProcess;
+                                    matrixResult[matrixIndex] = Objects.requireNonNull(matrixItem).clone().subtract(amountToSubtract);
                                 }
                             }
                         }
-                        break;
+                        return Pair.of(matrixResult, craftsToProcess);
                     }
                 }
             }
         } else if (craftingRecipe instanceof ShapelessRecipe shapelessRecipe) {
             // ShapelessRecipe Process
-            for (ItemStack ingredient : shapelessRecipe.getChoiceList().stream().map(CustomItemRecipeHelper::getRecipeChoiceItemStack).map(itemStack -> (itemStack == null) ? ItemStack.empty() : itemStack).toList()) {
-                int totalAvailable = 0;
+            List<RecipeChoice> recipeIngredients = shapelessRecipe.getChoiceList();
+            int possibleCraftsTotal = Integer.MAX_VALUE;
 
-                for (ItemStack matrixItem : matrixResult) {
-                    if (matrixItem != null && validateIngredient(matrixItem, ingredient)) {
-                        totalAvailable += matrixItem.getAmount();
+            // Accurate calculation of maxCrafts for Shapeless
+            // For each ingredient in the recipe, we sum all matching items in the matrix
+            // and divide by the amount required by that specific ingredient/variant match.
+            for (RecipeChoice ingredient : recipeIngredients) {
+                int totalAvailableForIngredient = 0;
+                int requiredAmount = 0;
+
+                for (ItemStack item : matrix) {
+                    if (item != null && validateIngredient(item, ingredient)) {
+                        totalAvailableForIngredient += item.getAmount();
+                        if (requiredAmount == 0) {
+                            requiredAmount = getRecipeChoiceAmount(item, ingredient);
+                        }
                     }
                 }
 
-                int possibleCrafts = totalAvailable / ingredient.getAmount();
-                maxCrafts = Math.min(maxCrafts, possibleCrafts);
+                if (requiredAmount > 0) {
+                    possibleCraftsTotal = Math.min(possibleCraftsTotal, totalAvailableForIngredient / requiredAmount);
+                } else {
+                    possibleCraftsTotal = 0;
+                    break;
+                }
             }
 
-            // We limit the max crafts for avoid more than an stack
-            maxCrafts = Math.min(maxCrafts, maxPerStack);
-
-            // If cannot process all then limit to 1 craft
+            maxCrafts = Math.min(possibleCraftsTotal, maxPerStack);
             craftsToProcess = processAll ? maxCrafts : 1;
 
-            // Reduce the matrix based in the craft allowed
-            for (ItemStack ingredient : shapelessRecipe.getChoiceList().stream().map(CustomItemRecipeHelper::getRecipeChoiceItemStack).map(itemStack -> (itemStack == null) ? ItemStack.empty() : itemStack).toList()) {
-                for (int i = 0; i < matrixResult.length; i++) {
-                    ItemStack matrixItem = matrixResult[i];
-                    if (matrixItem != null && validateIngredient(matrixItem, ingredient)) {
-                        int amountToSubtract = Math.min(matrixItem.getAmount(), ingredient.getAmount() * craftsToProcess);
-                        matrixResult[i] = matrixItem.clone().subtract(amountToSubtract);
+            if (craftsToProcess > 0) {
+                boolean[] usedSlots = new boolean[matrixResult.length];
+                for (RecipeChoice ingredient : recipeIngredients) {
+                    for (int i = 0; i < matrixResult.length; i++) {
+                        if (usedSlots[i]) {
+                            continue;
+                        }
+                        ItemStack matrixItem = matrixResult[i];
+                        if (matrixItem != null && validateIngredient(matrixItem, ingredient)) {
+                            int amountRequired = getRecipeChoiceAmount(matrixItem, ingredient);
+                            int amountToSubtract = amountRequired * craftsToProcess;
+                            matrixResult[i] = matrixItem.clone().subtract(amountToSubtract);
+                            usedSlots[i] = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -349,15 +417,15 @@ public class CustomItemRecipeHelper {
      * @param matrix the original matrix
      * @return a copied matrix
      */
-    private static ItemStack @Nullable [] cloneMatrix(ItemStack @Nullable [] matrix) {
-        assert matrix != null;
-        ItemStack[] clonedMatrix = new ItemStack[matrix.length];
+    private static @Nullable ItemStack @Nullable [] cloneMatrix(final @Nullable ItemStack @Nullable [] matrix) {
+        Objects.requireNonNull(matrix);
+        @Nullable ItemStack[] clonedMatrix = new ItemStack[matrix.length];
 
         for (int i = 0; i < matrix.length; i++) {
-            if (matrix[i] != null) {
-                clonedMatrix[i] = matrix[i].clone(); // Clonar cada ItemStack individualmente
-            } else {
+            if (matrix[i] == null) {
                 clonedMatrix[i] = null; // Si el elemento es null, mantener null en la nueva matriz
+            } else {
+                clonedMatrix[i] = Objects.requireNonNull(matrix[i]).clone(); // Clonar cada ItemStack individualmente
             }
         }
 

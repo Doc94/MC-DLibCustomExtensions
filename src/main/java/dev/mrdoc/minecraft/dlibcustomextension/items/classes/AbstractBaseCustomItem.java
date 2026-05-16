@@ -5,6 +5,7 @@ import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataK
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.SmithingTransformRecipe;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -195,60 +197,95 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     @Nullable
     public InventoryView createDisplayCraft(Player player) {
         Component titleInventoryView = Component.translatable("dlce.items.recipe.display", this.getItem().displayName());
-        return switch (this.getRecipe()) {
-            case null -> null;
+        final Recipe recipe = this.getRecipe();
+        if (recipe == null) return null;
+
+        final InventoryView inventoryView;
+        final List<Map<Integer, List<ItemStack>>> animatedSlots = new ArrayList<>();
+
+        switch (recipe) {
             case ShapedRecipe shapedRecipe -> {
-                InventoryView inventoryView = MenuType.CRAFTING.create(player, titleInventoryView);
-
+                inventoryView = MenuType.CRAFTING.create(player, titleInventoryView);
                 String[] shape = shapedRecipe.getShape();
-                Map<Character, @Nullable ItemStack> ingredientMap = CustomItemRecipeHelper.getIngredientMap(shapedRecipe.getChoiceMap());
+                Map<Character, RecipeChoice> choiceMap = shapedRecipe.getChoiceMap();
 
-                int rows = shape.length; // Recipe rows
-                int columns = shape[0].length(); // Recipe columns (we assume well-formed recipe)
-
-                // We calculate the offset to center the recipe in the 3x3 matrix
+                int rows = shape.length;
+                int columns = shape[0].length();
                 int rowOffset = (3 - rows) / 2;
                 int colOffset = (3 - columns) / 2;
 
+                Map<Integer, List<ItemStack>> slots = new HashMap<>();
                 for (int row = 0; row < rows; row++) {
                     String shapeRow = shape[row];
-
                     for (int col = 0; col < columns; col++) {
-                        char slot = shapeRow.charAt(col);
-                        int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset); // We adjust by offset
+                        char slotChar = shapeRow.charAt(col);
+                        if (slotChar == ' ' || !choiceMap.containsKey(slotChar)) continue;
 
-                        if (slot == ' ' || !ingredientMap.containsKey(slot)) {
-                            continue;
+                        int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset);
+                        List<ItemStack> variants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(choiceMap.get(slotChar));
+                        if (!variants.isEmpty()) {
+                            slots.put(matrixIndex + 1, variants);
                         }
-
-                        ItemStack requiredItem = ingredientMap.get(slot);
-                        inventoryView.getTopInventory().setItem(matrixIndex + 1, requiredItem);
                     }
                 }
-                yield inventoryView;
+                animatedSlots.add(slots);
             }
             case ShapelessRecipe shapelessRecipe -> {
-                InventoryView inventoryView = MenuType.CRAFTING.create(player, titleInventoryView);
-                for (int pos = 1; pos <= shapelessRecipe.getChoiceList().size(); pos++) {
-                    inventoryView.getTopInventory().setItem(pos, CustomItemRecipeHelper.getRecipeChoiceItemStack(shapelessRecipe.getChoiceList().get(pos - 1)));
+                inventoryView = MenuType.CRAFTING.create(player, titleInventoryView);
+                Map<Integer, List<ItemStack>> slots = new HashMap<>();
+                List<RecipeChoice> choices = shapelessRecipe.getChoiceList();
+                for (int i = 0; i < choices.size(); i++) {
+                    List<ItemStack> variants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(choices.get(i));
+                    if (!variants.isEmpty()) {
+                        slots.put(i + 1, variants);
+                    }
                 }
-                yield inventoryView;
+                animatedSlots.add(slots);
             }
             case SmithingTransformRecipe smithingTransformRecipe -> {
-                InventoryView inventoryView = MenuType.SMITHING.create(player, titleInventoryView);
-                if (!smithingTransformRecipe.getTemplate().equals(RecipeChoice.empty())) {
-                    inventoryView.setItem(0, CustomItemRecipeHelper.getRecipeChoiceItemStack(smithingTransformRecipe.getTemplate()));
-                }
-                if (!smithingTransformRecipe.getBase().equals(RecipeChoice.empty())) {
-                    inventoryView.setItem(1, CustomItemRecipeHelper.getRecipeChoiceItemStack(smithingTransformRecipe.getBase()));
-                }
-                if (!smithingTransformRecipe.getAddition().equals(RecipeChoice.empty())) {
-                    inventoryView.setItem(2, CustomItemRecipeHelper.getRecipeChoiceItemStack(smithingTransformRecipe.getAddition()));
-                }
-                yield inventoryView;
+                inventoryView = MenuType.SMITHING.create(player, titleInventoryView);
+                Map<Integer, List<ItemStack>> slots = new HashMap<>();
+
+                List<ItemStack> templateVariants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(smithingTransformRecipe.getTemplate());
+                if (!templateVariants.isEmpty()) slots.put(0, templateVariants);
+
+                List<ItemStack> baseVariants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(smithingTransformRecipe.getBase());
+                if (!baseVariants.isEmpty()) slots.put(1, baseVariants);
+
+                List<ItemStack> additionVariants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(smithingTransformRecipe.getAddition());
+                if (!additionVariants.isEmpty()) slots.put(2, additionVariants);
+
+                animatedSlots.add(slots);
             }
-            default -> null;
-        };
+            default -> {
+                return null;
+            }
+        }
+
+        if (!animatedSlots.isEmpty()) {
+            new BukkitRunnable() {
+                int tick = 0;
+
+                @Override
+                public void run() {
+                    if (inventoryView.getTopInventory().getViewers().isEmpty()) {
+                        LoggerUtils.debug("Player " + player.getName() + " closed the crafting view, remove animation for choices recipes");
+                        this.cancel();
+                        return;
+                    }
+
+                    for (Map<Integer, List<ItemStack>> slots : animatedSlots) {
+                        slots.forEach((slot, variants) -> {
+                            ItemStack item = variants.get((tick / 20) % variants.size());
+                            inventoryView.getTopInventory().setItem(slot, item);
+                        });
+                    }
+                    tick += 20;
+                }
+            }.runTaskTimer(this.instance, 0L, 20L);
+        }
+
+        return inventoryView;
     }
 
     /**
