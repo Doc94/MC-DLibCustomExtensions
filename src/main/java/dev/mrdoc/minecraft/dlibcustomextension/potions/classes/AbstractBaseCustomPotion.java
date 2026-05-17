@@ -2,6 +2,7 @@ package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import com.google.common.base.Preconditions;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
@@ -9,6 +10,7 @@ import io.papermc.paper.potion.PotionMix;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import lombok.Getter;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import net.kyori.adventure.key.Key;
@@ -16,7 +18,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -25,6 +26,7 @@ import org.bukkit.inventory.MenuType;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.view.BrewingStandView;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -58,9 +60,23 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      */
     private final RecipeChoice recipeInput;
     /**
+     * A list of example input items used for defining the recipe of a custom potion.
+     * This variable stores a collection of {@link ItemStack} instances representing possible
+     * inputs for the potion's brewing recipe.
+     * It serves as a reference for displaying or validating recipe configurations.
+     */
+    private final List<ItemStack> recipeInputExamples = new ArrayList<>();
+    /**
      * The ingredient added to the brewing recipe.
      */
     private final RecipeChoice recipeIngredient;
+    /**
+     * A collection of example ingredient items used for creating custom potion recipes.
+     * This list is used to register and display potential recipe ingredients
+     * in various components of the custom potion system, such as crafting displays
+     * or registration logic.
+     */
+    private final List<ItemStack> recipeIngredientExamples = new ArrayList<>();
     /**
      *  Gets the base Item used for recipe registration and validations.
      *  The item is final and should not be modified.
@@ -148,12 +164,54 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
     public abstract RecipeChoice createRecipeIngredient();
 
     /**
+     * Creates a {@link RecipeChoice} based on a predicate and example input items.
+     * This method is utilized to define a custom recipe input for a potion.
+     *
+     * @param stackPredicate the predicate to test {@link ItemStack} instances, determining whether they match the recipe criteria
+     * @param items          example {@link ItemStack} inputs to be added for reference or visualization
+     * @return a {@link RecipeChoice} object representing the choice created from the given predicate
+     */
+    public RecipeChoice createRecipeInputPredicateChoice(final Predicate<? super ItemStack> stackPredicate, ItemStack... items) {
+        this.recipeInputExamples.addAll(List.of(items));
+        return PotionMix.createPredicateChoice(stackPredicate);
+    }
+
+    /**
+     * Creates a {@link RecipeChoice} for the recipe ingredient based on a predicate and example input items.
+     * This method is used to define a custom ingredient for a potion recipe.
+     *
+     * @param stackPredicate the predicate to evaluate {@link ItemStack} instances, determining whether they match the recipe criteria
+     * @param items          example {@link ItemStack} inputs to be added for reference or visualization
+     * @return a {@link RecipeChoice} object representing the choice created from the provided predicate
+     */
+    public RecipeChoice createRecipeIngredientPredicateChoice(final Predicate<? super ItemStack> stackPredicate, ItemStack... items) {
+        this.recipeIngredientExamples.addAll(List.of(items));
+        return PotionMix.createPredicateChoice(stackPredicate);
+    }
+
+    /**
      * Creates the potion mix to be registered in the brewing system.
      *
      * @return the prepared potion mix
      */
     private PotionMix createPotionMix() {
         return new PotionMix(this.getNamespaceKey(), this.item, this.recipeInput, this.recipeIngredient);
+    }
+
+    public List<ItemStack> getRecipeInputExamples() {
+        if (this.recipeInputExamples.isEmpty()) {
+            return RecipeChoiceUtils.getRecipeChoiceItemStacks(this.getPotionMix().getInput());
+        }
+
+        return this.recipeInputExamples;
+    }
+
+    public List<ItemStack> getRecipeIngredientExamples() {
+        if (this.recipeIngredientExamples.isEmpty()) {
+            return RecipeChoiceUtils.getRecipeChoiceItemStacks(this.getPotionMix().getIngredient());
+        }
+
+        return this.recipeIngredientExamples;
     }
 
     /**
@@ -164,30 +222,48 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      */
     @Nullable
     public InventoryView createDisplayCraft(Player player) {
-        final ItemStack unknownItem = ItemType.STRUCTURE_VOID.createItemStack(itemMeta -> itemMeta.itemName(Component.text("???").decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)));
-
         Component titleInventoryView = Component.translatable("dlce.potions.recipe.display", this.getItem().displayName());
         BrewingStandView brewingStandView = MenuType.BREWING_STAND.create(player, titleInventoryView);
-        for (int basePos = 0; basePos < 3; basePos++) {
-            ItemStack inputItem = unknownItem.clone();
-            final RecipeChoice recipeInput = this.getPotionMix().getInput();
-            if (recipeInput instanceof RecipeChoice.ExactChoice exactChoice) {
-                inputItem = exactChoice.getChoices().getFirst();
-            } else if (recipeInput instanceof RecipeChoice.ItemTypeChoice itemTypeChoice) {
-                inputItem = Registry.ITEM.get(itemTypeChoice.itemTypes().iterator().next()).createItemStack();
-            } else if (recipeInput instanceof RecipeChoice.MaterialChoice materialChoice) {
-                inputItem = Objects.requireNonNull(materialChoice.getChoices().getFirst().asItemType()).createItemStack();
-            }
-            brewingStandView.setItem(basePos, inputItem);
-        }
 
-        ItemStack ingredientItem = unknownItem.clone();
-        if (this.getPotionMix().getIngredient() instanceof RecipeChoice.ExactChoice exactChoice) {
-            ingredientItem = exactChoice.getItemStack();
-        } else if (this.getPotionMix().getIngredient() instanceof RecipeChoice.MaterialChoice materialChoice) {
-            ingredientItem = materialChoice.getItemStack();
+        List<ItemStack> inputVariants = this.getRecipeInputExamples();
+        List<ItemStack> ingredientVariants = this.getRecipeIngredientExamples();
+
+        inputVariants.forEach(itemStack -> {
+            System.out.println("Input: " + itemStack.displayName());
+        });
+
+        ingredientVariants.forEach(itemStack -> {
+            System.out.println("Ingredient: " + itemStack.displayName());
+        });
+
+        if (!inputVariants.isEmpty() || !ingredientVariants.isEmpty()) {
+            new BukkitRunnable() {
+                int tick = 0;
+
+                @Override
+                public void run() {
+                    if (brewingStandView.getTopInventory().getViewers().isEmpty()) {
+                        LoggerUtils.debug("Player " + player.getName() + " closed the brewing view, remove animation for choices recipes");
+                        this.cancel();
+                        return;
+                    }
+
+                    if (!inputVariants.isEmpty()) {
+                        ItemStack inputItem = inputVariants.get((tick / 20) % inputVariants.size());
+                        for (int basePos = 0; basePos < 3; basePos++) {
+                            brewingStandView.setItem(basePos, inputItem);
+                        }
+                    }
+
+                    if (!ingredientVariants.isEmpty()) {
+                        ItemStack ingredientItem = ingredientVariants.get((tick / 20) % ingredientVariants.size());
+                        brewingStandView.setItem(3, ingredientItem);
+                    }
+
+                    tick += 20;
+                }
+            }.runTaskTimer(this.instance, 0L, 20L);
         }
-        brewingStandView.setItem(3, ingredientItem);
 
         return brewingStandView;
     }
