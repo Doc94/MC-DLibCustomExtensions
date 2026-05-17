@@ -8,7 +8,6 @@ import java.util.Set;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationStore;
-import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -40,7 +39,7 @@ public class TranslatesManager {
         this.translationStore = TranslationStore.messageFormat(Key.key("dlibcustomextensions:translates"));
 
         locales.forEach(locale -> {
-            ResourceBundle bundle = ResourceBundle.getBundle("dlibcustomextensions.lang.LangBundle", locale, UTF8ResourceBundleControl.utf8ResourceBundleControl());
+            ResourceBundle bundle = ResourceBundle.getBundle("dlibcustomextensions.lang.LangBundle", locale);
             this.translationStore.registerAll(locale, bundle, true);
             this.patchEnchantmentLevels(locale);
         });
