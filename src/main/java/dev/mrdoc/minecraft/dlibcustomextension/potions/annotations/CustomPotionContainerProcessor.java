@@ -1,11 +1,13 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions.annotations;
 
 import com.google.auto.service.AutoService;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCustomPotion;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
@@ -21,9 +23,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.StandardLocation;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCustomPotion;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An abstract annotation processor
@@ -39,9 +40,9 @@ public class CustomPotionContainerProcessor extends AbstractProcessor {
      */
     public static final String PATH = "META-INF/potions/" + CustomPotionContainer.ANNOTATION_PATH;
 
-    private Messager messager;
-    private Elements elements;
-    private Types types;
+    private @Nullable Messager messager;
+    private @Nullable Elements elements;
+    private @Nullable Types types;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -64,9 +65,9 @@ public class CustomPotionContainerProcessor extends AbstractProcessor {
             }
 
             // Verify class requirement
-            TypeElement baseItemType = this.elements.getTypeElement(AbstractBaseCustomPotion.class.getCanonicalName());
-            if (!this.types.isSubtype(typeElement.asType(), baseItemType.asType())) {
-                this.messager.printMessage(Diagnostic.Kind.ERROR, String.format("@CustomPotionContainer-annotated class %s need extends from AbstractCustomPotion", element));
+            TypeElement baseItemType = Objects.requireNonNull(this.elements).getTypeElement(AbstractBaseCustomPotion.class.getCanonicalName());
+            if (!Objects.requireNonNull(this.types).isSubtype(typeElement.asType(), baseItemType.asType())) {
+                Objects.requireNonNull(this.messager).printMessage(Diagnostic.Kind.ERROR, String.format("@CustomPotionContainer-annotated class %s need extends from AbstractCustomPotion", element));
                 continue;
             }
 
@@ -85,7 +86,7 @@ public class CustomPotionContainerProcessor extends AbstractProcessor {
     }
 
     @SuppressWarnings({"unused", "try"})
-    private void writeCommandFile(final @NonNull List<String> types) {
+    private void writeCommandFile(final List<String> types) {
         try (BufferedWriter writer = new BufferedWriter(this.processingEnv.getFiler().createResource(
                 StandardLocation.CLASS_OUTPUT,
                 "",

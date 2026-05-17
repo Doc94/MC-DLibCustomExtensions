@@ -9,11 +9,9 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationStore;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @ApiStatus.Internal
-@NullMarked
 public class TranslatesManager {
 
     private static @Nullable TranslatesManager INSTANCE;

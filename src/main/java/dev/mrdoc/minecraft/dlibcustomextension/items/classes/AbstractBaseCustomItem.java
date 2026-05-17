@@ -1,6 +1,8 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import com.google.common.base.Preconditions;
+import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -12,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.Getter;
-import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -33,7 +33,6 @@ import org.bukkit.inventory.SmithingTransformRecipe;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -43,7 +42,6 @@ import org.jspecify.annotations.Nullable;
  * visual components, and integration with the custom items manager.
  * </p>
  */
-@NullMarked
 public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
     /**
@@ -64,9 +62,8 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     /**
      * Gets the recipe associated with this custom item, if any.
      */
-    @Nullable
     @Getter
-    private final Recipe recipe;
+    private final @Nullable Recipe recipe;
     /**
      * The base item for recipes and validations.
      */
@@ -85,9 +82,8 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     /**
      * Gets the rarity of the custom item, if assigned.
      */
-    @Nullable
     @Getter
-    private final CustomItemRarity rarity;
+    private final @Nullable CustomItemRarity rarity;
     /**
      * Gets the set of inventory types where this item is permitted.
      */
@@ -185,8 +181,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      *
      * @return recipe to register
      */
-    @Nullable
-    public abstract Recipe createRecipe();
+    public abstract @Nullable Recipe createRecipe();
 
     /**
      * Creates a crafting view to display the recipe to the player.
@@ -194,8 +189,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @param player the player for whom the view is created
      * @return an inventory view representing the recipe, or {@code null} if no recipe exists
      */
-    @Nullable
-    public InventoryView createDisplayCraft(Player player) {
+    public @Nullable InventoryView createDisplayCraft(Player player) {
         Component titleInventoryView = Component.translatable("dlce.items.recipe.display", this.getItem().displayName());
         final Recipe recipe = this.getRecipe();
         if (recipe == null) return null;

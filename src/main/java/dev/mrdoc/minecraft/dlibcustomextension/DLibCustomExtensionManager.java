@@ -1,16 +1,19 @@
 package dev.mrdoc.minecraft.dlibcustomextension;
 
-import com.google.common.base.Preconditions;
-import io.papermc.paper.plugin.bootstrap.BootstrapContext;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import dev.mrdoc.minecraft.dlibcustomextension.enchantments.CustomEnchantmentManager;
 import dev.mrdoc.minecraft.dlibcustomextension.i18n.TranslatesManager;
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
+import io.papermc.paper.plugin.bootstrap.BootstrapContext;
+import java.util.Objects;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import net.kyori.adventure.key.KeyPattern;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Manager class for the DLibCustomExtensions library.
@@ -19,10 +22,11 @@ import org.bukkit.plugin.Plugin;
  * It follows the singleton pattern and provides utility methods to access the plugin instance and namespace.
  * </p>
  */
+@NullMarked
 @Getter
 public class DLibCustomExtensionManager {
 
-    private static DLibCustomExtensionManager INSTANCE;
+    private static @Nullable DLibCustomExtensionManager INSTANCE;
 
     /**
      * Gets the singleton instance of the manager.
@@ -30,7 +34,7 @@ public class DLibCustomExtensionManager {
      * @return the manager instance
      */
     public static DLibCustomExtensionManager getInstance() {
-        return INSTANCE;
+        return Objects.requireNonNull(INSTANCE);
     }
 
     /**
@@ -39,7 +43,7 @@ public class DLibCustomExtensionManager {
      * @return the plugin instance
      */
     public static Plugin getPluginInstance() {
-        return INSTANCE.getPlugin();
+        return Objects.requireNonNull(INSTANCE).getPlugin();
     }
 
     /**
@@ -48,7 +52,7 @@ public class DLibCustomExtensionManager {
      * @return the plugin name
      */
     public static String getPluginName() {
-        return INSTANCE.getInstanceName();
+        return Objects.requireNonNull(INSTANCE).getInstanceName();
     }
 
     /**
@@ -56,8 +60,8 @@ public class DLibCustomExtensionManager {
      *
      * @return the plugin namespace
      */
-    public static String getPluginNamespace() {
-        return INSTANCE.getInstanceName().toLowerCase();
+    public static @KeyPattern.Namespace String getPluginNamespace() {
+        return Objects.requireNonNull(INSTANCE).getInstanceName().toLowerCase();
     }
 
     /**
@@ -94,7 +98,7 @@ public class DLibCustomExtensionManager {
      * @return the class loader
      */
     public ClassLoader getClassLoader() {
-        return INSTANCE.getClass().getClassLoader();
+        return Objects.requireNonNull(INSTANCE).getClass().getClassLoader();
     }
 
     /**
@@ -118,7 +122,7 @@ public class DLibCustomExtensionManager {
      * @return the plugin name
      * @throws RuntimeException if no context is set
      */
-    public String getInstanceName() {
+    public @KeyPattern.Namespace String getInstanceName() {
         if (this.context instanceof ContextPlugin contextPlugin) {
             return contextPlugin.pluginInstance().getPluginMeta().getName();
         } else if (this.context instanceof ContextBoostrap contextBootstrap) {
@@ -131,7 +135,6 @@ public class DLibCustomExtensionManager {
      * For call in onEnable plugin step.
      */
     public void onEnable() {
-        Preconditions.checkState(this.context != null, "Context is null!");
         TranslatesManager.load();
         if (this.context.items()) {
             CustomItemsManager.load();
@@ -150,7 +153,6 @@ public class DLibCustomExtensionManager {
      * For call in boostrap plugin step.
      */
     public void onBoostrap() {
-        Preconditions.checkState(this.context != null, "Context is null!");
         if (this.context instanceof ContextBoostrap contextBootstrap) {
             TranslatesManager.load();
             if (contextBootstrap.enchantments()) {

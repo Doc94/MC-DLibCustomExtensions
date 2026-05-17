@@ -1,9 +1,9 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.commands;
 
-import java.util.Collection;
-import java.util.List;
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.commands.BaseCommand;
+import java.util.Collection;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;

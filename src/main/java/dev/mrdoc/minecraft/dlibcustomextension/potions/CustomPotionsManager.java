@@ -1,6 +1,14 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions;
 
+import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.annotations.CustomPotionContainer;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.annotations.CustomPotionContainerProcessor;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCustomPotion;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.DisplayPotionCustomCommand;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.GivePotionCustomCommand;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import java.io.File;
 import java.util.Arrays;
@@ -12,20 +20,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
-import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.GivePotionCustomCommand;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.annotations.CustomPotionContainer;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.annotations.CustomPotionContainerProcessor;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCustomPotion;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -35,28 +33,20 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
  * Handles registration, configuration management, and access for custom potions.
  */
 @ApiStatus.Internal
-@NullMarked
 public class CustomPotionsManager {
 
-    @Nullable
-    private static Plugin PLUGIN_INSTANCE;
-    @Nullable
-    private static NamespacedKey NAMESPACED_CUSTOM_POTION;
+    private static @Nullable NamespacedKey NAMESPACED_CUSTOM_POTION;
 
     private static final HashSet<AbstractCustomPotion> CUSTOM_POTIONS = new HashSet<>();
 
     // Config
     private static final String CONFIG_FILE_NAME = "config-custom-potions.yaml";
-    @Nullable
-    private static YamlConfigurationLoader CONFIG_LOADER;
-    @Nullable
-    private static CommentedConfigurationNode CONFIG_NODE;
-    @Nullable
-    private static CustomPotionConfig CONFIG;
+    private static @Nullable YamlConfigurationLoader CONFIG_LOADER;
+    private static @Nullable CommentedConfigurationNode CONFIG_NODE;
+    private static @Nullable CustomPotionConfig CONFIG;
 
     public static void load() {
-        PLUGIN_INSTANCE = DLibCustomExtensionManager.getPluginInstance();
-        NAMESPACED_CUSTOM_POTION = new NamespacedKey(PLUGIN_INSTANCE, "custom_potion");
+        NAMESPACED_CUSTOM_POTION = new NamespacedKey(DLibCustomExtensionManager.getPluginInstance(), "custom_potion");
         loadConfig();
         loadAllCustomPotions();
         registerAllRecipes();
@@ -76,7 +66,7 @@ public class CustomPotionsManager {
     @SneakyThrows
     private static void loadConfig() {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
-                .path(new File(PLUGIN_INSTANCE.getDataFolder(), CONFIG_FILE_NAME).toPath())
+                .path(new File(DLibCustomExtensionManager.getPluginInstance().getDataFolder(), CONFIG_FILE_NAME).toPath())
                 .build();
 
         CONFIG_NODE = CONFIG_LOADER.load(); // Load from a file
@@ -209,8 +199,7 @@ public class CustomPotionsManager {
      * @param item ItemStack
      * @return the internal key or null
      */
-    @Nullable
-    public static Key getInternalKey(@Nullable ItemStack item) {
+    public static @Nullable Key getInternalKey(@Nullable ItemStack item) {
         if (item == null) {
             return null;
         }

@@ -6,10 +6,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NullMarked;
 
 @ApiStatus.Internal
-@NullMarked
 public class AnnotationProcessorUtil {
 
     public static List<String> getClassesInPath(ClassLoader classLoader, String path) {

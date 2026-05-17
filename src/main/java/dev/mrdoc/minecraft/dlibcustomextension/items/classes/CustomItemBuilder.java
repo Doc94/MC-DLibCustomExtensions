@@ -1,19 +1,18 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
+import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
-import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.KeyPattern;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@NullMarked
 @Getter
 public class CustomItemBuilder {
 
@@ -35,8 +34,7 @@ public class CustomItemBuilder {
      * @return the display name
      */
     private final Component displayName;
-    @Nullable
-    private CustomItemRarity rarity = null;
+    private @Nullable CustomItemRarity rarity = null;
     /**
      * The special flag for the item.
      *
@@ -49,8 +47,7 @@ public class CustomItemBuilder {
      * @return {@code true} if auto-discover
      */
     private boolean autoDiscoverRecipe = true;
-    @Nullable
-    private Key itemModel = null;
+    private @Nullable Key itemModel = null;
     /**
      * The inventory types where the item is permitted.
      *
@@ -137,7 +134,7 @@ public class CustomItemBuilder {
      * @param itemModelKey the key
      * @return the builder
      */
-    public CustomItemBuilder itemModel(String itemModelKey) {
+    public CustomItemBuilder itemModel(@KeyPattern.Value String itemModelKey) {
         return this.itemModel(Key.key(DLibCustomExtensionManager.getPluginNamespace(), itemModelKey));
     }
 

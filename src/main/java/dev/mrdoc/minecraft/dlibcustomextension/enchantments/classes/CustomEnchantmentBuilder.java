@@ -18,13 +18,11 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Range;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Builder class
  */
-@NullMarked
 @Getter
 public class CustomEnchantmentBuilder {
 
@@ -119,8 +117,7 @@ public class CustomEnchantmentBuilder {
      *
      * @return entry tags
      */
-    @Nullable
-    private Set<TagEntry<ItemType>> tagPrimaryItems = Set.of();
+    private @Nullable Set<TagEntry<ItemType>> tagPrimaryItems = Set.of();
     /**
      * The tags for this enchantment
      *

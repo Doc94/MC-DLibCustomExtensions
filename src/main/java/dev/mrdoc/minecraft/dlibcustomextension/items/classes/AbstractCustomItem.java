@@ -1,8 +1,8 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,12 +15,10 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * Abstract class representing a custom item with listener capabilities.
  */
-@NullMarked
 public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomItem implements Listener {
 
     /**

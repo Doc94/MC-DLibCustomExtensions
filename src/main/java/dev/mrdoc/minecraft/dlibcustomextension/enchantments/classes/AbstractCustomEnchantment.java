@@ -1,5 +1,6 @@
 package dev.mrdoc.minecraft.dlibcustomextension.enchantments.classes;
 
+import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
@@ -18,7 +19,6 @@ import io.papermc.paper.tag.TagEntry;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import java.util.stream.Collectors;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Material;
@@ -27,12 +27,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
 import org.bukkit.plugin.Plugin;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * Basic class for implementation of custom enchantments
  */
-@NullMarked
 public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseCustomEnchantment implements Listener {
 
     /**

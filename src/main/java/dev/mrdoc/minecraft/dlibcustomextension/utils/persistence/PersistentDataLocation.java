@@ -6,9 +6,7 @@ import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
-import org.jspecify.annotations.NullMarked;
 
-@NullMarked
 public class PersistentDataLocation implements PersistentDataType<String, Location> {
 
     public static PersistentDataLocation LOCATION_CONTAINER = new PersistentDataLocation();

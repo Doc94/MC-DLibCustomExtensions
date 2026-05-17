@@ -1,6 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import com.google.common.base.Preconditions;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
@@ -13,7 +14,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 import lombok.Getter;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -28,7 +28,6 @@ import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.view.BrewingStandView;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -38,7 +37,6 @@ import org.jspecify.annotations.Nullable;
  * including utilities for registering/unregistering and displaying the recipe in a brewing stand.
  * </p>
  */
-@NullMarked
 public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPotion {
 
     /**

@@ -1,11 +1,11 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions.commands;
 
+import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;

@@ -1,12 +1,12 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.commands;
 
+import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;

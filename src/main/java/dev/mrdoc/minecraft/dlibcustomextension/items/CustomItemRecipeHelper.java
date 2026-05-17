@@ -1,12 +1,12 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items;
 
+import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import java.util.Objects;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.inventory.CraftingRecipe;
@@ -222,7 +222,7 @@ public class CustomItemRecipeHelper {
      * @param matrix         the matrix to reduce
      * @return a pair with the matrix result and the item result size
      */
-    static Pair<@Nullable ItemStack @Nullable [], Integer> reduceMatrix(final CraftingRecipe craftingRecipe, final ItemStack[] matrix) {
+    static Pair<@Nullable ItemStack @Nullable [], Integer> reduceMatrix(final CraftingRecipe craftingRecipe, final @Nullable ItemStack @Nullable [] matrix) {
         return reduceMatrix(craftingRecipe, matrix, false);
     }
 

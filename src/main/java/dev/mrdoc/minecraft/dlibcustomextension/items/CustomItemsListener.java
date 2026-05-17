@@ -1,10 +1,10 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items;
 
+import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -25,6 +25,7 @@ import org.bukkit.inventory.CraftingRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Listener for custom item events.
@@ -55,7 +56,7 @@ public class CustomItemsListener implements Listener {
 
             if (event.getBlock().getState() instanceof Crafter crafter) {
                 Inventory inventory = crafter.getSnapshotInventory();
-                ItemStack[] matrix = inventory.getContents().clone();
+                @Nullable ItemStack [] matrix = inventory.getContents().clone();
                 if (!(customItem.getRecipe() instanceof CraftingRecipe craftingRecipe)) {
                     event.setCancelled(true);
                     return;
@@ -107,8 +108,8 @@ public class CustomItemsListener implements Listener {
 
             event.setCancelled(true); // Necesito cancelar el evento porque sino va a procesar igualmente la matrix 1 vez
 
-            Pair<ItemStack[], Integer> resultCraft = CustomItemRecipeHelper.reduceMatrix(craftingRecipe, event.getInventory().getMatrix(), event.isShiftClick());
-            event.getInventory().setMatrix(resultCraft.getLeft()); // Reemplazamos matrix
+            Pair<@Nullable ItemStack @Nullable [], Integer> resultCraft = CustomItemRecipeHelper.reduceMatrix(craftingRecipe, event.getInventory().getMatrix(), event.isShiftClick());
+            event.getInventory().setMatrix(Objects.requireNonNull(resultCraft.getLeft())); // Reemplazamos matrix
 
             final ItemStack itemResult = customItem.getItemForPlayer(resultCraft.getRight());
 
@@ -163,7 +164,7 @@ public class CustomItemsListener implements Listener {
                 return;
             }
 
-            Pair<ItemStack[], Integer> resultCraft = CustomItemRecipeHelper.reduceMatrix(craftingRecipe, event.getInventory().getMatrix(), true);
+            Pair<@Nullable ItemStack @Nullable [], Integer> resultCraft = CustomItemRecipeHelper.reduceMatrix(craftingRecipe, event.getInventory().getMatrix(), true);
             Component messagePossibleCraftsComponent = Component.translatable("dlce.items.precraftitem.message.crafting_size_result", Component.text(resultCraft.getRight(), TextColor.fromHexString("#69b5ff"))).color(TextColor.fromHexString("#ff9a1c"));
             event.getViewers().forEach(viewer -> viewer.sendActionBar(messagePossibleCraftsComponent));
         } else {

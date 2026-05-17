@@ -1,5 +1,13 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items;
 
+import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import dev.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemContainer;
+import dev.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemContainerProcessor;
+import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
+import dev.mrdoc.minecraft.dlibcustomextension.items.commands.DisplayItemCustomCommand;
+import dev.mrdoc.minecraft.dlibcustomextension.items.commands.GiveItemCustomCommand;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import java.io.File;
 import java.util.Arrays;
@@ -11,22 +19,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
-import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
-import dev.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemContainer;
-import dev.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemContainerProcessor;
-import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
-import dev.mrdoc.minecraft.dlibcustomextension.items.commands.DisplayItemCustomCommand;
-import dev.mrdoc.minecraft.dlibcustomextension.items.commands.GiveItemCustomCommand;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.plugin.Plugin;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -36,35 +34,27 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
  * It provides methods for loading, managing, querying, and interacting with custom items.
  * The manager also handles custom item configuration, persistence, and registration.
  */
-@NullMarked
 public class CustomItemsManager {
 
-    @Nullable
-    private static Plugin PLUGIN_INSTANCE;
-    @Nullable
-    private static NamespacedKey NAMESPACED_CUSTOM_ITEM;
+    private static @Nullable NamespacedKey NAMESPACED_CUSTOM_ITEM;
     private static final HashSet<AbstractCustomItem> CUSTOM_ITEMS = new HashSet<>();
 
     // Config
     private static final String CONFIG_FILE_NAME = "config-custom-items.yaml";
-    @Nullable
-    private static YamlConfigurationLoader CONFIG_LOADER;
-    @Nullable
-    private static CommentedConfigurationNode CONFIG_NODE;
-    @Nullable
-    private static CustomItemConfig CONFIG;
+    private static @Nullable YamlConfigurationLoader CONFIG_LOADER;
+    private static @Nullable CommentedConfigurationNode CONFIG_NODE;
+    private static @Nullable CustomItemConfig CONFIG;
 
     /**
      * Loads and initializes the manager, its configuration, items, and events.
      */
     public static void load() {
-        PLUGIN_INSTANCE = DLibCustomExtensionManager.getPluginInstance();
-        NAMESPACED_CUSTOM_ITEM = new NamespacedKey(PLUGIN_INSTANCE, "custom_item");
+        NAMESPACED_CUSTOM_ITEM = new NamespacedKey(DLibCustomExtensionManager.getPluginInstance(), "custom_item");
         loadConfig();
         loadAllCustomItems();
         registerAllRecipes();
         registerAllCommands();
-        Bukkit.getPluginManager().registerEvents(new CustomItemsListener(), PLUGIN_INSTANCE);
+        Bukkit.getPluginManager().registerEvents(new CustomItemsListener(), DLibCustomExtensionManager.getPluginInstance());
     }
 
     /**
@@ -91,7 +81,7 @@ public class CustomItemsManager {
     @SneakyThrows
     private static void loadConfig() {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
-                .path(new File(PLUGIN_INSTANCE.getDataFolder(), CONFIG_FILE_NAME).toPath())
+                .path(new File(DLibCustomExtensionManager.getPluginInstance().getDataFolder(), CONFIG_FILE_NAME).toPath())
                 .build();
 
         CONFIG_NODE = CONFIG_LOADER.load(); // Load from file
@@ -251,8 +241,7 @@ public class CustomItemsManager {
      * @param item ItemStack
      * @return the internal name or empty
      */
-    @Nullable
-    public static Key getInternalKey(@Nullable ItemStack item) {
+    public static @Nullable Key getInternalKey(@Nullable ItemStack item) {
         if (item == null) {
             return null;
         }

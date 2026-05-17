@@ -19,9 +19,9 @@ import org.jspecify.annotations.Nullable;
 @Getter
 public class CommandManager {
 
-    @Nullable
     @Getter
-    public static CommandManager instance;
+    public static @Nullable CommandManager instance;
+
     private final AnnotationParser<Source> annotationParser;
     private final PaperCommandManager<Source> commandManager;
 

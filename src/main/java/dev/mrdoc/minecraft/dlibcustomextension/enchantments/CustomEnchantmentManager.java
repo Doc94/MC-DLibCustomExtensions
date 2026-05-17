@@ -1,5 +1,10 @@
 package dev.mrdoc.minecraft.dlibcustomextension.enchantments;
 
+import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import dev.mrdoc.minecraft.dlibcustomextension.enchantments.annotations.CustomEnchantmentContainerProcessor;
+import dev.mrdoc.minecraft.dlibcustomextension.enchantments.classes.AbstractCustomEnchantment;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import java.io.File;
 import java.util.HashMap;
@@ -9,16 +14,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.SneakyThrows;
-import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
-import dev.mrdoc.minecraft.dlibcustomextension.enchantments.annotations.CustomEnchantmentContainerProcessor;
-import dev.mrdoc.minecraft.dlibcustomextension.enchantments.classes.AbstractCustomEnchantment;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import net.kyori.adventure.key.Key;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -30,18 +29,14 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
  * during the bootstrap and enable phases of the plugin.
  * </p>
  */
-@NullMarked
 public class CustomEnchantmentManager {
     public static HashMap<Key, AbstractCustomEnchantment> CUSTOM_ENCHANTMENTS = new HashMap<>();
 
     // Config
     private static final String CONFIG_FILE_NAME = "config-custom-enchantments.yaml";
-    @Nullable
-    private static YamlConfigurationLoader CONFIG_LOADER;
-    @Nullable
-    private static CommentedConfigurationNode CONFIG_NODE;
-    @Nullable
-    private static CustomEnchantmentConfig CONFIG;
+    private static @Nullable YamlConfigurationLoader CONFIG_LOADER;
+    private static @Nullable CommentedConfigurationNode CONFIG_NODE;
+    private static @Nullable CustomEnchantmentConfig CONFIG;
 
     /**
      * Loads and initializes the manager and its configuration.

@@ -1,10 +1,10 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.annotations;
 
+import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 
 /**
  * Annotation for custom item class.

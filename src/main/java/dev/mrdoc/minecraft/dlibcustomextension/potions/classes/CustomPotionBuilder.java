@@ -1,10 +1,10 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
+import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
-import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.Plugin;
 

@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.inventory.ItemRarity;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -14,7 +13,6 @@ import org.jspecify.annotations.Nullable;
  * @param name name
  * @param vanillaRarity the vanilla rarity to be used
  */
-@NullMarked
 public record CustomItemRarity(
         TextColor color,
         String name,

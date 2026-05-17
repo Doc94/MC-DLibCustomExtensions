@@ -1,5 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.enchantments.classes;
 
+import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import dev.mrdoc.minecraft.dlibcustomextension.enchantments.CustomEnchantmentManager;
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry;
 import io.papermc.paper.registry.set.RegistryKeySet;
 import io.papermc.paper.registry.tag.TagKey;
@@ -9,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
-import dev.mrdoc.minecraft.dlibcustomextension.enchantments.CustomEnchantmentManager;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.enchantments.Enchantment;
@@ -18,12 +18,10 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * Class for implementation of custom enchantments
  */
-@NullMarked
 @Getter
 public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCustomEnchantment {
 
