@@ -1,6 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import com.google.common.base.Preconditions;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.RecipeChoiceUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
@@ -222,7 +223,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
                         if (slotChar == ' ' || !choiceMap.containsKey(slotChar)) continue;
 
                         int matrixIndex = ((row + rowOffset) * 3) + (col + colOffset);
-                        List<ItemStack> variants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(choiceMap.get(slotChar));
+                        List<ItemStack> variants = RecipeChoiceUtils.getRecipeChoiceItemStacks(choiceMap.get(slotChar));
                         if (!variants.isEmpty()) {
                             slots.put(matrixIndex + 1, variants);
                         }
@@ -235,7 +236,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
                 Map<Integer, List<ItemStack>> slots = new HashMap<>();
                 List<RecipeChoice> choices = shapelessRecipe.getChoiceList();
                 for (int i = 0; i < choices.size(); i++) {
-                    List<ItemStack> variants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(choices.get(i));
+                    List<ItemStack> variants = RecipeChoiceUtils.getRecipeChoiceItemStacks(choices.get(i));
                     if (!variants.isEmpty()) {
                         slots.put(i + 1, variants);
                     }
@@ -246,13 +247,13 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
                 inventoryView = MenuType.SMITHING.create(player, titleInventoryView);
                 Map<Integer, List<ItemStack>> slots = new HashMap<>();
 
-                List<ItemStack> templateVariants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(smithingTransformRecipe.getTemplate());
+                List<ItemStack> templateVariants = RecipeChoiceUtils.getRecipeChoiceItemStacks(smithingTransformRecipe.getTemplate());
                 if (!templateVariants.isEmpty()) slots.put(0, templateVariants);
 
-                List<ItemStack> baseVariants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(smithingTransformRecipe.getBase());
+                List<ItemStack> baseVariants = RecipeChoiceUtils.getRecipeChoiceItemStacks(smithingTransformRecipe.getBase());
                 if (!baseVariants.isEmpty()) slots.put(1, baseVariants);
 
-                List<ItemStack> additionVariants = CustomItemRecipeHelper.getRecipeChoiceItemStacks(smithingTransformRecipe.getAddition());
+                List<ItemStack> additionVariants = RecipeChoiceUtils.getRecipeChoiceItemStacks(smithingTransformRecipe.getAddition());
                 if (!additionVariants.isEmpty()) slots.put(2, additionVariants);
 
                 animatedSlots.add(slots);
