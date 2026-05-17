@@ -3,7 +3,9 @@ package dev.mrdoc.minecraft.dlibcustomextension.potions;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.DisplayPotionCustomCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.GivePotionCustomCommand;
+import dev.mrdoc.minecraft.dlibcustomextension.potions.annotations.CustomPotionContainer;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.annotations.CustomPotionContainerProcessor;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCustomPotion;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
@@ -114,16 +117,37 @@ public class CustomPotionsManager {
     }
 
     public static void loadAllCustomPotions() {
-        Set<Class<? extends AbstractCustomPotion>> reflectionCustomItems = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
+        Set<Class<? extends AbstractCustomPotion>> reflectionCustomPotions = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
 
-        reflectionCustomItems.forEach(aClass -> {
-            try {
-                AbstractCustomPotion baseItem = aClass.getConstructor().newInstance();
-                CUSTOM_POTIONS.add(baseItem);
-            } catch (Exception e) {
-                LoggerUtils.warn("Cannot load the custom potion " + aClass.getSimpleName() + ". Details: " + e.getMessage(), e);
+        Set<Class<? extends AbstractCustomPotion>> loadedClasses = new HashSet<>();
+        Set<Class<? extends AbstractCustomPotion>> failedClasses = new HashSet<>();
+
+        while (!reflectionCustomPotions.isEmpty()) {
+            Iterator<Class<? extends AbstractCustomPotion>> iterator = reflectionCustomPotions.iterator();
+
+            while (iterator.hasNext()) {
+                Class<? extends AbstractCustomPotion> potionClass = iterator.next();
+                CustomPotionContainer annotation = potionClass.getAnnotation(CustomPotionContainer.class);
+                Class<? extends AbstractCustomPotion>[] dependencies = annotation.depends();
+
+                boolean dependenciesLoaded = Arrays.stream(dependencies)
+                        .allMatch(dep -> loadedClasses.contains(dep) || (!annotation.strongDependency() && failedClasses.contains(dep)));
+
+                if (dependenciesLoaded) {
+                    try {
+                        AbstractCustomPotion customPotion = potionClass.getConstructor().newInstance();
+                        CUSTOM_POTIONS.add(customPotion);
+                        loadedClasses.add(potionClass);
+                        iterator.remove();
+                    } catch (Exception e) {
+                        LoggerUtils.warn("Cannot load [%s] potion custom".formatted(potionClass.getSimpleName()), e);
+                        failedClasses.add(potionClass);
+                        iterator.remove();
+                    }
+                }
             }
-        });
+        }
+
         LoggerUtils.info("Loaded " + CustomPotionsManager.CUSTOM_POTIONS.size() + " custom potions.");
     }
 
