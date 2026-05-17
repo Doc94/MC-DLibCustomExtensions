@@ -8,9 +8,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.incendo.cloud.annotation.specifier.Range;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Default;
 import org.incendo.cloud.annotations.Permission;
 import org.incendo.cloud.annotations.parser.Parser;
 import org.incendo.cloud.annotations.suggestion.Suggestions;
@@ -31,11 +33,10 @@ public class GivePotionCustomCommand extends BaseCommand {
         super(DLibCustomExtensionManager.getPluginInstance());
     }
 
-    @Command("givepotion <target> <item> [size]")
+    @Command("givepotion <target> <item> [amount]")
     @CommandDescription("Comando para dar items customs a un jugador")
     @Permission("dlibcustomextensions.potions.command.givecustomitem")
-    public void executeGiveItemCustom(Source sourceSender, @Argument("target") MultiplePlayerSelector playerTargetsArgument, @Argument(value = "item", parserName = "parser_itempotioncustom") ItemStack itemStack, @Argument("size") Integer size) {
-        int amount = (size != null) ? size : 1;
+    public void executeGiveItemCustom(Source sourceSender, @Argument("target") MultiplePlayerSelector playerTargetsArgument, @Argument(value = "item", parserName = "parser_itempotioncustom") ItemStack itemStack, @Argument("amount") @Default("1") @Range(min = "1") int amount) {
         itemStack.setAmount(amount);
 
         final Collection<Player> playersTargets = playerTargetsArgument.values();
