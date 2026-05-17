@@ -32,7 +32,7 @@ import org.jspecify.annotations.Nullable;
 @ApiStatus.Internal
 @AutoService(Processor.class)
 @SupportedAnnotationTypes(CustomPotionContainer.ANNOTATION_PATH)
-@SupportedSourceVersion(SourceVersion.RELEASE_21)
+@SupportedSourceVersion(SourceVersion.RELEASE_25)
 public class CustomPotionContainerProcessor extends AbstractProcessor {
 
     /**
