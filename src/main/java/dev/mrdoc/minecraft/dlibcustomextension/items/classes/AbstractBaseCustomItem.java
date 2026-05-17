@@ -1,7 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import com.google.common.base.Preconditions;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.RecipeChoiceUtils;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.Getter;
-import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemRecipeHelper;
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import net.kyori.adventure.key.Key;

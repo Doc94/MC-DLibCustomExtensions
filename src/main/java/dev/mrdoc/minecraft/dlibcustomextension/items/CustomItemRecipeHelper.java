@@ -1,6 +1,6 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items;
 
-import dev.mrdoc.minecraft.dlibcustomextension.utils.RecipeChoiceUtils;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import java.util.ArrayList;
 import java.util.Iterator;

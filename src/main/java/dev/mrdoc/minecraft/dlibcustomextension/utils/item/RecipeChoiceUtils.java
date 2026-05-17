@@ -1,4 +1,4 @@
-package dev.mrdoc.minecraft.dlibcustomextension.utils;
+package dev.mrdoc.minecraft.dlibcustomextension.utils.item;
 
 import java.util.ArrayList;
 import java.util.List;
