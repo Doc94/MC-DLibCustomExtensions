@@ -9,6 +9,7 @@ import io.papermc.paper.datacomponent.item.ItemLore;
 import io.papermc.paper.potion.PotionMix;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 import lombok.Getter;
@@ -99,14 +100,15 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @param displayName   the display name of the item (can be {@link Component#empty()})
      * @param descriptions  descriptive lines for the lore
      */
+    @SuppressWarnings("UnstableApiUsage")
     public AbstractBaseCustomPotion(Plugin plugin, String internalName, Component displayName, List<Component> descriptions) {
         this.instance = plugin;
         this.internalName = internalName;
 
         this.key = new NamespacedKey(this.instance, this.internalName);
 
-        this.item = createItem();
-        Preconditions.checkState(this.item != null, "The potion item for %s is null", internalName);
+        this.item = this.createItem();
+        Preconditions.checkState(Objects.nonNull(this.item), "The potion item for %s is null", internalName);
 
         this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomPotionsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER, this.key));
 
@@ -162,6 +164,59 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @return ingredient
      */
     public abstract RecipeChoice createRecipeIngredient();
+
+    /**
+     * Creates a {@link RecipeChoice} for a custom potion recipe input based on a specific class type.
+     * This method retrieves an instance of the custom potion associated with the provided class
+     * and delegates the recipe input creation to another method that uses the potion instance.
+     *
+     * @param <T>           the type of the custom potion, which extends {@link AbstractCustomPotion}
+     * @param baseItemClass the {@link Class} object representing the custom potion type used
+     *                      to fetch the potion instance
+     * @return a {@link RecipeChoice} representing the recipe input for the specified custom potion type
+     * @throws NoSuchElementException if no potion is found for the given class
+     */
+    public <T extends AbstractCustomPotion> RecipeChoice createRecipeInputPredicateChoice(Class<T> baseItemClass) {
+        return this.createRecipeInputPredicateChoice(CustomPotionsManager.getCustomPotion(baseItemClass).orElseThrow());
+    }
+
+    /**
+     * Creates a {@link RecipeChoice} for a custom potion's ingredient based on a specific class type.
+     * This method retrieves an instance of the custom potion associated with the provided class
+     * and delegates the recipe ingredient creation to another method that uses the potion instance.
+     *
+     * @param <T>           the type of the custom potion, which extends {@link AbstractCustomPotion}
+     * @param baseItemClass the {@link Class} object representing*/
+    public <T extends AbstractCustomPotion> RecipeChoice createRecipeIngredientPredicateChoice(Class<T> baseItemClass) {
+        return this.createRecipeIngredientPredicateChoice(CustomPotionsManager.getCustomPotion(baseItemClass).orElseThrow());
+    }
+
+    /**
+     * Creates a {@link RecipeChoice} for a potion using the provided predicate and example input items.
+     * This method utilizes the {@code isItem} predicate and an item obtained from the provided potion
+     * to define the custom recipe input.
+     *
+     * @param potion the {@link AbstractBaseCustomPotion} instance representing the custom potion
+     *               for which the recipe input is being created
+     * @return a {@link RecipeChoice} representing the choice created based on the potion's predicate
+     *         and example input item
+     */
+    public RecipeChoice createRecipeInputPredicateChoice(AbstractBaseCustomPotion potion) {
+        return this.createRecipeInputPredicateChoice(potion::isItem, potion.getItemForPlayer());
+    }
+
+    /**
+     * Creates a {@link RecipeChoice} for the recipe ingredient based on the custom potion's item validation predicate
+     * and its example item. This method allows for defining a recipe ingredient specifically tailored to the provided potion.
+     *
+     * @param potion the {@link AbstractBaseCustomPotion} instance representing the custom potion for which the recipe ingredient
+     *               is being created
+     * @return a {@link RecipeChoice} object representing the custom recipe ingredient defined by the potion's predicate
+     *         and example input item
+     */
+    public RecipeChoice createRecipeIngredientPredicateChoice(AbstractBaseCustomPotion potion) {
+        return this.createRecipeIngredientPredicateChoice(potion::isItem, potion.getItemForPlayer());
+    }
 
     /**
      * Creates a {@link RecipeChoice} based on a predicate and example input items.
@@ -220,21 +275,13 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @param player the player for whom the view is created
      * @return a brewing stand view, or {@code null} if it could not be created
      */
-    @Nullable
-    public InventoryView createDisplayCraft(Player player) {
+    @SuppressWarnings("UnstableApiUsage")
+    public @Nullable InventoryView createDisplayCraft(Player player) {
         Component titleInventoryView = Component.translatable("dlce.potions.recipe.display", this.getItem().displayName());
         BrewingStandView brewingStandView = MenuType.BREWING_STAND.create(player, titleInventoryView);
 
         List<ItemStack> inputVariants = this.getRecipeInputExamples();
         List<ItemStack> ingredientVariants = this.getRecipeIngredientExamples();
-
-        inputVariants.forEach(itemStack -> {
-            System.out.println("Input: " + itemStack.displayName());
-        });
-
-        ingredientVariants.forEach(itemStack -> {
-            System.out.println("Ingredient: " + itemStack.displayName());
-        });
 
         if (!inputVariants.isEmpty() || !ingredientVariants.isEmpty()) {
             new BukkitRunnable() {
