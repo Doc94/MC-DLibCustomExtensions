@@ -5,13 +5,11 @@ import lombok.SneakyThrows;
 import org.bukkit.plugin.Plugin;
 import org.incendo.cloud.annotations.processing.CommandContainer;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * Base Command with the basic register thing
  */
 @ApiStatus.Internal
-@NullMarked
 @Getter
 public class BaseCommand {
 
