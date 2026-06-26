@@ -43,6 +43,10 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     archiveClassifier.set("")
 }
 
+tasks.jar {
+    archiveClassifier.set("raw")
+}
+
 tasks.build {
     dependsOn(tasks.named("shadowJar"))
 }
@@ -111,7 +115,9 @@ publishing {
             version = projectVersion
             artifactId = projectArtifactName
 
-            from(components["java"])
+            from(components["shadow"])
+            artifact(tasks.named("sourcesJar"))
+            artifact(tasks.named("javadocJar"))
 
             versionMapping {
                 usage("java-api") {
