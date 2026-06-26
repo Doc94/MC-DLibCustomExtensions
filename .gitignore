@@ -44,3 +44,7 @@ bin/
 
 ### Agents ###
 .junie
+
+### Tests ###
+test-plugin/run
+/run/
