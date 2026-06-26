@@ -1,0 +1,5 @@
+name: TestPlugin
+version: 1.0.0
+main: dev.mrdoc.minecraft.test.Core
+bootstrapper: dev.mrdoc.minecraft.test.CoreBootstrap
+api-version: ${mcversion}
