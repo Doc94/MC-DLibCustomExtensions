@@ -91,14 +91,14 @@ tasks {
 }
 
 tasks.register('downloadDependencies') {
-    description 'Download all dependencies to the Gradle cache'
+    description = 'Download all dependencies to the Gradle cache'
     doLast {
-        configurations.findAll { it.canBeResolved }.files
+        configurations.matching { it.canBeResolved }.each { it.resolve() }
     }
 }
 
 tasks.register("publishJar") {
-    description 'Publish the JAR where need to go'
+    description = 'Publish the JAR where need to go'
 
     dependsOn publish
     mustRunAfter publish
