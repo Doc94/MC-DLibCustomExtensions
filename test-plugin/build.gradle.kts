@@ -11,7 +11,7 @@ dependencies {
     annotationProcessor(libs.incendo.cloud.annotations)
     annotationProcessor(project(":core"))
 
-    compileOnly("io.papermc.paper:paper-api:26.2.build.+")
+    compileOnly("io.papermc.paper:paper-api:26.2.rc.+")
 }
 
 val paperVersion = configurations.compileOnly.get().dependencies
