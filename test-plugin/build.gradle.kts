@@ -28,9 +28,15 @@ tasks {
     }
 
     processResources {
-        inputs.property("mcversion", mcVersion)
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        val props = mapOf(
+            "version" to project.version,
+            "mcversion" to mcVersion
+        )
+        inputs.properties(props)
+        filteringCharset = "UTF-8"
         filesMatching("paper-plugin.yml") {
-            expand("mcversion" to mcVersion)
+            expand(props)
         }
     }
 
