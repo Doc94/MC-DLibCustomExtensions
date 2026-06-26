@@ -1,10 +1,16 @@
 [versions]
+# Dependencies
 paper = "26.1.2.build.+"
 incendo-cloud = "2.0.0"
 incendo-cloud-paper = "2.0.0-beta.16"
 google-autoservice = "1.1.1"
 configurate = "4.2.0"
 romannumerals4j = "0.0.1"
+# Plugins
+lombok = "9.5.0"
+shadow = "9.4.3"
+jreleaser = "1.24.0"
+release = "3.1.0"
 
 [libraries]
 paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
@@ -17,3 +23,12 @@ romannumerals4j = { module = "com.github.fracpete:romannumerals4j", version.ref 
 
 [bundles]
 incendocloud = ["incendo-cloud-core", "incendo-cloud-annotations", "incendo-cloud-paper"]
+
+[plugins]
+java-library = { id = "java-library" }
+maven-publish = { id = "maven-publish" }
+signing = { id = "signing" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+jreleaser = { id = "org.jreleaser", version.ref = "jreleaser" }
+release = { id = "net.researchgate.release", version.ref = "release" }
