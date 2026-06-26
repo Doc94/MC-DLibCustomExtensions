@@ -35,9 +35,12 @@ tasks {
         )
         inputs.properties(props)
         filteringCharset = "UTF-8"
-        filesMatching("paper-plugin.yml") {
-            expand(props)
-        }
+        with(copySpec {
+            from("src/main/resources") {
+                include("paper-plugin.yml")
+                expand(props)
+            }
+        })
     }
 
     shadowJar {
