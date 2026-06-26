@@ -125,7 +125,7 @@ publishing {
             pom {
                 name.set(projectArtifactName)
                 description.set("A Minecraft library for custom things")
-                url.set("https://mrdoc.me/")
+                url.set("https://mrdoc.dev/")
 
                 licenses {
                     license {
