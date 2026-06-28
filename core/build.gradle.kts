@@ -1,3 +1,5 @@
+import net.researchgate.release.ReleaseExtension
+
 plugins {
     alias(libs.plugins.java.library)
     alias(libs.plugins.maven.publish)
@@ -97,12 +99,13 @@ tasks.register("publishJar") {
     }
 }
 
-release {
-    setProperty("preTagCommitMessage", "chore: Release version")
-    setProperty("tagCommitMessage", "chore: Release version")
-    setProperty("newVersionCommitMessage", "chore: Next development version")
-    setProperty("failOnSnapshotDependencies", false)
-    git {
+configure<ReleaseExtension> {
+    versionPropertyFile = "../gradle.properties"
+    preTagCommitMessage = "chore: Release version"
+    tagCommitMessage = "chore: Release version"
+    newVersionCommitMessage = "chore: Next development version"
+    failOnSnapshotDependencies = false
+    with(git) {
         requireBranch.set("")
         pushToRemote.set("")
     }
