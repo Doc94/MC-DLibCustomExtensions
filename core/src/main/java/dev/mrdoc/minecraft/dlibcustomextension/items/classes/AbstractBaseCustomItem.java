@@ -73,12 +73,12 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * Gets whether this item is considered special (e.g., has special visual effects or tags).
      */
     @Getter
-    private boolean special;
+    private final boolean special;
     /**
-     * Gets whether the recipe should be automatically discovered by the player.
+     * Gets whether the player should automatically discover the recipe.
      */
     @Getter
-    private boolean autoDiscoverRecipe;
+    private final boolean autoDiscoverRecipe;
     /**
      * Gets the rarity of the custom item, if assigned.
      */
@@ -127,8 +127,8 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
         ArrayList<Component> loreComponents = new ArrayList<>();
 
-        if (isSpecial) {
-            this.special = true;
+        this.special = isSpecial;
+        if (this.special) {
             loreComponents.add(Component.text("✦ ✦ ✦ ✦ ✦", TextColor.fromHexString("#ac3fff")).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
         }
 
