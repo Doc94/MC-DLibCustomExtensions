@@ -16,8 +16,10 @@ import java.util.Objects;
 import lombok.Getter;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ObjectComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.object.ObjectContents;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -70,6 +72,16 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     @Getter
     private final ItemStack item;
     /**
+     * The key for the item model.
+     */
+    @Getter
+    private final @Nullable Key itemModelKey;
+    /**
+     * The sprite component for the item model, if available.
+     */
+    @Getter
+    private final @Nullable ObjectComponent itemModelSprite;
+    /**
      * Gets whether this item is considered special (e.g., has special visual effects or tags).
      */
     @Getter
@@ -121,9 +133,14 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
         if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
         }
-        if (modelNameKey != null) {
+
+        this.itemModelKey = modelNameKey;
+        Key spriteKey = null;
+        if (this.itemModelKey != null) {
             this.item.setData(DataComponentTypes.ITEM_MODEL, modelNameKey);
+            spriteKey = Key.key(this.itemModelKey.namespace(), "item/".concat(this.itemModelKey.value()));
         }
+        this.itemModelSprite = (spriteKey != null) ? Component.object(ObjectContents.sprite(Key.key("items"), spriteKey)) : null;
 
         ArrayList<Component> loreComponents = new ArrayList<>();
 
