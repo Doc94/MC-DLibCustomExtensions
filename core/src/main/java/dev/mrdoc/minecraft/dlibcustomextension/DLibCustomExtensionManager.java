@@ -111,7 +111,7 @@ public class DLibCustomExtensionManager {
         if (this.context instanceof ContextPlugin contextPlugin) {
             return contextPlugin.pluginInstance();
         } else if (this.context instanceof ContextBoostrap contextBootstrap) {
-            return Bukkit.getPluginManager().getPlugin(contextBootstrap.bootstrapContext().getPluginMeta().getName());
+            return Objects.requireNonNull(Bukkit.getPluginManager().getPlugin(contextBootstrap.bootstrapContext().getPluginMeta().getName()));
         }
         throw new RuntimeException("No context set!");
     }
