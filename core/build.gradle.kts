@@ -39,6 +39,10 @@ java {
     }
 }
 
+tasks.named("sourcesJar") {
+    dependsOn(tasks.named("shadowJar"))
+}
+
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     relocate("org.incendo.cloud", "dev.mrdoc.minecraft.dlce.libs.org.incendo.cloud")
     relocate("com.github.fracpet", "dev.mrdoc.minecraft.dlce.libs.com.github.fracpet")
