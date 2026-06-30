@@ -1,6 +1,5 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
-import com.google.common.base.Preconditions;
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
@@ -125,8 +124,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
         this.key = new NamespacedKey(this.instance, this.internalName);
 
-        this.item = this.createItem();
-        Preconditions.checkState(this.item != null, "The item for %s is null", internalName);
+        this.item = Objects.requireNonNull(this.createItem(), "The ItemStack for %s is null".formatted(internalName));
 
         this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER, this.key));
 
