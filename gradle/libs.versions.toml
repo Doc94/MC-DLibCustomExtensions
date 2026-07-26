@@ -1,6 +1,6 @@
 [versions]
 # Dependencies
-paper = "26.1.2.build.+"
+paper = "26.2.build.84.+"
 incendo-cloud = "2.1.0"
 incendo-cloud-paper = "2.0.0"
 google-autoservice = "1.1.1"
