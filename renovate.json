@@ -11,6 +11,8 @@
     },
     {
       "matchPackageNames": ["io.papermc.paper:paper-api", "paper"],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.build\\.(?<patch>\\d+)(\\.\\+)?$",
+      "extractVersion": "^(?<version>\\d+\\.\\d+)\\.build\\.\\d+$",
       "automerge": false
     }
   ]
