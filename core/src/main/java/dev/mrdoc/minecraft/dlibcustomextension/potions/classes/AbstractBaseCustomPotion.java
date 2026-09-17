@@ -7,7 +7,6 @@ import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
-import io.papermc.paper.potion.PotionMix;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,6 +19,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.BrewingRecipe;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
@@ -85,10 +85,10 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
     @Getter
     private final ItemStack item;
     /**
-     * Gets the potion mix definition used by the Paper brewer.
+     * Gets the brewing recipe definition used by the brewer.
      */
     @Getter
-    private final PotionMix potionMix;
+    private final BrewingRecipe brewingRecipe;
 
     /**
      * Creates a new base custom potion.
@@ -130,7 +130,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
 
         this.recipeInput = this.createRecipeInput();
         this.recipeIngredient = this.createRecipeIngredient();
-        this.potionMix = this.createPotionMix();
+        this.brewingRecipe = this.createBrewingRecipe();
     }
 
     /**
@@ -226,7 +226,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      */
     public RecipeChoice createRecipeInputPredicateChoice(final Predicate<? super ItemStack> stackPredicate, ItemStack... items) {
         this.recipeInputExamples.addAll(List.of(items));
-        return PotionMix.createPredicateChoice(stackPredicate);
+        return RecipeChoice.predicateChoice(stackPredicate, this.recipeIngredientExamples.getFirst());
     }
 
     /**
@@ -239,21 +239,21 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      */
     public RecipeChoice createRecipeIngredientPredicateChoice(final Predicate<? super ItemStack> stackPredicate, ItemStack... items) {
         this.recipeIngredientExamples.addAll(List.of(items));
-        return PotionMix.createPredicateChoice(stackPredicate);
+        return RecipeChoice.predicateChoice(stackPredicate, this.recipeIngredientExamples.getFirst());
     }
 
     /**
-     * Creates the potion mix to be registered in the brewing system.
+     * Creates the brewing recipe to be registered in the brewing system.
      *
-     * @return the prepared potion mix
+     * @return the prepared brewing recipe
      */
-    private PotionMix createPotionMix() {
-        return new PotionMix(this.getNamespaceKey(), this.item, this.recipeInput, this.recipeIngredient);
+    private BrewingRecipe createBrewingRecipe() {
+        return new BrewingRecipe(this.getNamespaceKey(), this.item, this.recipeInput, this.recipeIngredient);
     }
 
     public List<ItemStack> getRecipeInputExamples() {
         if (this.recipeInputExamples.isEmpty()) {
-            return RecipeChoiceUtils.getRecipeChoiceItemStacks(this.getPotionMix().getInput());
+            return RecipeChoiceUtils.getRecipeChoiceItemStacks(this.getBrewingRecipe().getInput());
         }
 
         return this.recipeInputExamples;
@@ -261,7 +261,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
 
     public List<ItemStack> getRecipeIngredientExamples() {
         if (this.recipeIngredientExamples.isEmpty()) {
-            return RecipeChoiceUtils.getRecipeChoiceItemStacks(this.getPotionMix().getIngredient());
+            return RecipeChoiceUtils.getRecipeChoiceItemStacks(this.getBrewingRecipe().getIngredient());
         }
 
         return this.recipeIngredientExamples;
@@ -351,19 +351,19 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
     }
 
     /**
-     * Registers the potion mix into the Bukkit/Paper PotionBrewer.
+     * Registers the brewing recipe for the PotionBrewer.
      */
-    public void registerPotionMix() {
-        LoggerUtils.info("Adding PotionMix " + this.getKey());
-        Bukkit.getPotionBrewer().addPotionMix(this.getPotionMix());
+    public void registerBrewingRecipe() {
+        LoggerUtils.info("Adding BrewingRecipe " + this.getKey());
+        Bukkit.getServer().addRecipe(this.getBrewingRecipe());
     }
 
     /**
-     * Unregisters the potion mix from the PotionBrewer.
+     * Unregisters the brewing recipe from the PotionBrewer.
      */
-    public void unRegisterPotionMix() {
-        LoggerUtils.info("Removing PotionMix " + this.getKey());
-        Bukkit.getPotionBrewer().removePotionMix(this.getNamespaceKey());
+    public void unRegisterBrewingRecipe() {
+        LoggerUtils.info("Removing BrewingRecipe " + this.getKey());
+        Bukkit.getServer().removeRecipe(this.getBrewingRecipe().getKey());
     }
 
 }

@@ -144,16 +144,16 @@ public class CustomPotionsManager {
     public static void registerAllRecipes() {
         for (AbstractCustomPotion basePotion : CUSTOM_POTIONS) {
             try {
-                basePotion.registerPotionMix();
+                basePotion.registerBrewingRecipe();
             } catch (IllegalStateException | IllegalArgumentException ex) {
-                LoggerUtils.warn("Cannot create potion recipe [" + basePotion.getKey().asString() + "]: " + ex.getMessage());
+                LoggerUtils.warn("Cannot create brewing recipe [" + basePotion.getKey().asString() + "]: " + ex.getMessage());
             }
         }
     }
 
     public static void unregisterAllRecipes() {
         for (AbstractBaseCustomPotion basePotion : CUSTOM_POTIONS) {
-            basePotion.unRegisterPotionMix();
+            basePotion.unRegisterBrewingRecipe();
         }
     }
 
