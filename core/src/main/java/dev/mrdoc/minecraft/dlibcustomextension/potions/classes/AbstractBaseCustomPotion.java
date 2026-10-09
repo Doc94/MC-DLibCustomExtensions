@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import java.util.ArrayList;
@@ -108,7 +107,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         this.item = this.createItem();
         Preconditions.checkState(Objects.nonNull(this.item), "The potion item for %s is null", internalName);
 
-        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomPotionsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER, this.key));
+        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomPotionsManager.getPersistentDataKey(), this.key));
 
         if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName);
@@ -344,10 +343,10 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
         if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
             return false;
         }
-        if (!itemToCheck.getPersistentDataContainer().has(CustomPotionsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER)) {
+        if (!itemToCheck.getPersistentDataContainer().has(CustomPotionsManager.getPersistentDataKey())) {
             return false;
         }
-        return Objects.equals(itemToCheck.getPersistentDataContainer().get(CustomPotionsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER), this.getKey());
+        return Objects.equals(itemToCheck.getPersistentDataContainer().get(CustomPotionsManager.getPersistentDataKey()), this.getKey());
     }
 
     /**

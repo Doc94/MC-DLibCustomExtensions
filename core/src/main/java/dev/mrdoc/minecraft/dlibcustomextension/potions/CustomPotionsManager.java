@@ -9,7 +9,8 @@ import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.DisplayPotionCus
 import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.GivePotionCustomCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.KeyPersistentDataType;
+import io.papermc.paper.persistence.PersistentDataKey;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 @ApiStatus.Internal
 public class CustomPotionsManager {
 
-    private static @Nullable NamespacedKey NAMESPACED_CUSTOM_POTION;
+    private static @Nullable PersistentDataKey<Key> PERSISTENT_DATA_KEY_CUSTOM_POTION;
 
     private static final HashSet<AbstractCustomPotion> CUSTOM_POTIONS = new HashSet<>();
 
@@ -46,15 +47,16 @@ public class CustomPotionsManager {
     private static @Nullable CustomPotionConfig CONFIG;
 
     public static void load() {
-        NAMESPACED_CUSTOM_POTION = new NamespacedKey(DLibCustomExtensionManager.getPluginInstance(), "custom_potion");
+        NamespacedKey customPotionManagerKey = new NamespacedKey(DLibCustomExtensionManager.getPluginInstance(), "custom_potion");
+        PERSISTENT_DATA_KEY_CUSTOM_POTION = PersistentDataKey.of(customPotionManagerKey, KeyPersistentDataType.KEY_CONTAINER);
         loadConfig();
         loadAllCustomPotions();
         registerAllRecipes();
         registerCommands();
     }
 
-    public static NamespacedKey getNamespacedKey() {
-        return Objects.requireNonNull(NAMESPACED_CUSTOM_POTION);
+    public static PersistentDataKey<Key> getPersistentDataKey() {
+        return Objects.requireNonNull(PERSISTENT_DATA_KEY_CUSTOM_POTION);
     }
 
     @SneakyThrows
@@ -203,10 +205,10 @@ public class CustomPotionsManager {
         if (item == null) {
             return null;
         }
-        if (!item.getPersistentDataContainer().has(Objects.requireNonNull(NAMESPACED_CUSTOM_POTION))) {
+        if (!item.getPersistentDataContainer().has(Objects.requireNonNull(PERSISTENT_DATA_KEY_CUSTOM_POTION))) {
             return null;
         }
-        return item.getPersistentDataContainer().get(NAMESPACED_CUSTOM_POTION, PersistentDataKey.KEY_CONTAINER);
+        return item.getPersistentDataContainer().get(PERSISTENT_DATA_KEY_CUSTOM_POTION);
     }
 
     public static HashSet<NamespacedKey> getNamespacedKeys() {

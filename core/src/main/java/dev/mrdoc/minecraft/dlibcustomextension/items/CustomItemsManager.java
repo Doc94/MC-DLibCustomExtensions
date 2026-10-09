@@ -8,7 +8,8 @@ import dev.mrdoc.minecraft.dlibcustomextension.items.commands.DisplayItemCustomC
 import dev.mrdoc.minecraft.dlibcustomextension.items.commands.GiveItemCustomCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.KeyPersistentDataType;
+import io.papermc.paper.persistence.PersistentDataKey;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +37,8 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
  */
 public class CustomItemsManager {
 
-    private static @Nullable NamespacedKey NAMESPACED_CUSTOM_ITEM;
+    private static @Nullable PersistentDataKey<Key> PERSISTENT_DATA_KEY_CUSTOM_ITEM;
+
     private static final HashSet<AbstractCustomItem> CUSTOM_ITEMS = new HashSet<>();
 
     // Config
@@ -49,7 +51,8 @@ public class CustomItemsManager {
      * Loads and initializes the manager, its configuration, items, and events.
      */
     public static void load() {
-        NAMESPACED_CUSTOM_ITEM = new NamespacedKey(DLibCustomExtensionManager.getPluginInstance(), "custom_item");
+        NamespacedKey customItemManagerKey = new NamespacedKey(DLibCustomExtensionManager.getPluginInstance(), "custom_item");
+        PERSISTENT_DATA_KEY_CUSTOM_ITEM = PersistentDataKey.of(customItemManagerKey, KeyPersistentDataType.KEY_CONTAINER);
         loadConfig();
         loadAllCustomItems();
         registerAllRecipes();
@@ -58,12 +61,12 @@ public class CustomItemsManager {
     }
 
     /**
-     * Gets the namespace key used for register the item name in custom class.
+     * Gets the persistent data key used for registering the item name in the custom class.
      *
-     * @return the key
+     * @return the persistent data key for custom items
      */
-    public static NamespacedKey getNamespacedKey() {
-        return Objects.requireNonNull(NAMESPACED_CUSTOM_ITEM);
+    public static PersistentDataKey<Key> getPersistentDataKey() {
+        return Objects.requireNonNull(PERSISTENT_DATA_KEY_CUSTOM_ITEM);
     }
 
     /**
@@ -245,10 +248,10 @@ public class CustomItemsManager {
         if (item == null) {
             return null;
         }
-        if (!item.getPersistentDataContainer().has(Objects.requireNonNull(NAMESPACED_CUSTOM_ITEM))) {
+        if (!item.getPersistentDataContainer().has(Objects.requireNonNull(PERSISTENT_DATA_KEY_CUSTOM_ITEM))) {
             return null;
         }
-        return item.getPersistentDataContainer().get(NAMESPACED_CUSTOM_ITEM, PersistentDataKey.KEY_CONTAINER);
+        return item.getPersistentDataContainer().get(PERSISTENT_DATA_KEY_CUSTOM_ITEM);
     }
 
     /**

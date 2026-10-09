@@ -3,7 +3,6 @@ package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
-import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.PersistentDataKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import java.util.ArrayList;
@@ -126,7 +125,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
 
         this.item = Objects.requireNonNull(this.createItem(), "The ItemStack for %s is null".formatted(internalName));
 
-        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER, this.key));
+        this.item.editPersistentDataContainer(persistentDataContainer -> persistentDataContainer.set(CustomItemsManager.getPersistentDataKey(), this.key));
 
         if (!Component.empty().equals(displayName)) {
             this.item.setData(DataComponentTypes.ITEM_NAME, displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
@@ -370,9 +369,9 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
         if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
             return false;
         }
-        if (!itemToCheck.getPersistentDataContainer().has(CustomItemsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER)) {
+        if (!itemToCheck.getPersistentDataContainer().has(CustomItemsManager.getPersistentDataKey())) {
             return false;
         }
-        return Objects.equals(itemToCheck.getPersistentDataContainer().get(CustomItemsManager.getNamespacedKey(), PersistentDataKey.KEY_CONTAINER), this.getKey());
+        return Objects.equals(itemToCheck.getPersistentDataContainer().get(CustomItemsManager.getPersistentDataKey()), this.getKey());
     }
 }

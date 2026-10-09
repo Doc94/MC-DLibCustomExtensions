@@ -4,9 +4,9 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
 
-public class PersistentDataKey implements PersistentDataType<String, Key> {
+public class KeyPersistentDataType implements PersistentDataType<String, Key> {
 
-    public static PersistentDataKey KEY_CONTAINER = new PersistentDataKey();
+    public static KeyPersistentDataType KEY_CONTAINER = new KeyPersistentDataType();
 
     @Override
     public Class<String> getPrimitiveType() {
