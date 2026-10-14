@@ -225,7 +225,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      */
     public RecipeChoice createRecipeInputPredicateChoice(final Predicate<? super ItemStack> stackPredicate, ItemStack... items) {
         this.recipeInputExamples.addAll(List.of(items));
-        return RecipeChoice.predicateChoice(stackPredicate, this.recipeIngredientExamples.getFirst());
+        return RecipeChoice.predicateChoice(stackPredicate, this.recipeInputExamples.getFirst());
     }
 
     /**
