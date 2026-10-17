@@ -104,6 +104,7 @@ tasks.register("publishJar") {
 }
 
 configure<ReleaseExtension> {
+    versionPropertyFileEncoding.set("UTF-8")
     versionPropertyFile.set(rootProject.file("gradle.properties").absolutePath)
     preTagCommitMessage.set("chore: Release version")
     tagCommitMessage.set("chore: Release version")
