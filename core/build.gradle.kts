@@ -104,11 +104,11 @@ tasks.register("publishJar") {
 }
 
 configure<ReleaseExtension> {
-    versionPropertyFile = "../gradle.properties"
-    preTagCommitMessage = "chore: Release version"
-    tagCommitMessage = "chore: Release version"
-    newVersionCommitMessage = "chore: Next development version"
-    failOnSnapshotDependencies = false
+    versionPropertyFile.set(rootProject.file("gradle.properties").absolutePath)
+    preTagCommitMessage.set("chore: Release version")
+    tagCommitMessage.set("chore: Release version")
+    newVersionCommitMessage.set("chore: Next development version")
+    failOnSnapshotDependencies.set(false)
     with(git) {
         requireBranch.set("")
         pushToRemote.set("")
