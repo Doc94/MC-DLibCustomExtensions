@@ -1,5 +1,3 @@
-import net.researchgate.release.ReleaseExtension
-
 plugins {
     alias(libs.plugins.java.library)
     alias(libs.plugins.maven.publish)
@@ -7,7 +5,6 @@ plugins {
     alias(libs.plugins.lombok)
     alias(libs.plugins.shadow)
     alias(libs.plugins.jreleaser)
-    alias(libs.plugins.release)
 }
 
 group = "dev.mrdoc.minecraft"
@@ -100,19 +97,6 @@ tasks.register("publishJar") {
     if (isRelease) {
         dependsOn(tasks.named("jreleaserSign"), tasks.named("jreleaserDeploy"))
         mustRunAfter(tasks.named("jreleaserSign"))
-    }
-}
-
-configure<ReleaseExtension> {
-    versionPropertyFileEncoding.set("UTF-8")
-    versionPropertyFile.set(rootProject.file("gradle.properties").absolutePath)
-    preTagCommitMessage.set("chore: Release version")
-    tagCommitMessage.set("chore: Release version")
-    newVersionCommitMessage.set("chore: Next development version")
-    failOnSnapshotDependencies.set(false)
-    with(git) {
-        requireBranch.set("")
-        pushToRemote.set("")
     }
 }
 
