@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent;
 import org.bukkit.inventory.InventoryView;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
@@ -106,6 +107,14 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getViewers().stream().anyMatch(humanEntity -> humanEntity.getScoreboardTags().contains(TAG_INVENTORY_PREVIEW))) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onRecipeBookClick(PlayerRecipeBookClickEvent event) {
+        if (event.getPlayer().getScoreboardTags().contains(TAG_INVENTORY_PREVIEW)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.recipe_change_not_allowed").color(NamedTextColor.RED));
         }
     }
 
