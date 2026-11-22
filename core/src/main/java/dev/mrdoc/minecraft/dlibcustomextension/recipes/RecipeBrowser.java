@@ -69,11 +69,22 @@ public final class RecipeBrowser {
      * @return the dialog
      */
     public static Dialog createItemDialog(Predicate<AbstractCustomItem> filter) {
+        return createItemDialog(filter, SelectMode.DETAIL);
+    }
+
+    /**
+     * Creates, without opening it, a dialog with the enabled custom items that have a recipe and match the filter.
+     *
+     * @param filter additional filter for the listed items
+     * @param mode   what happens when an item is selected, unless the item defines its own mode
+     * @return the dialog
+     */
+    public static Dialog createItemDialog(Predicate<AbstractCustomItem> filter, SelectMode mode) {
         List<Entry> entries = CustomItemsManager.getCustomItems().stream()
                 .filter(item -> item.getRecipe() != null && item.isEnabled())
                 .filter(filter)
                 .sorted(Comparator.comparing(item -> item.getKey().asString()))
-                .map(item -> new Entry(item.getItem(), item.getCategory(), player -> RecipePreview.open(player, item)))
+                .map(item -> new Entry(item.getItem(), item.getCategory(), item.getListing(), resolve(item.getListing(), mode), player -> RecipePreview.open(player, item)))
                 .toList();
         return buildDialog(Component.translatable("dlce.recipes.browser.items.title"), entries);
     }
@@ -88,6 +99,16 @@ public final class RecipeBrowser {
     }
 
     /**
+     * Opens the item recipes dialog to a player using a select mode.
+     *
+     * @param player the player
+     * @param mode   what happens when an item is selected, unless the item defines its own mode
+     */
+    public static void openItemDialog(Player player, SelectMode mode) {
+        player.showDialog(createItemDialog(item -> true, mode));
+    }
+
+    /**
      * Opens the item recipes dialog to a player using a filter.
      *
      * @param player the player
@@ -95,6 +116,17 @@ public final class RecipeBrowser {
      */
     public static void openItemDialog(Player player, Predicate<AbstractCustomItem> filter) {
         player.showDialog(createItemDialog(filter));
+    }
+
+    /**
+     * Opens the item recipes dialog to a player using a filter and a select mode.
+     *
+     * @param player the player
+     * @param filter additional filter for the listed items
+     * @param mode   what happens when an item is selected, unless the item defines its own mode
+     */
+    public static void openItemDialog(Player player, Predicate<AbstractCustomItem> filter, SelectMode mode) {
+        player.showDialog(createItemDialog(filter, mode));
     }
 
     /**
@@ -113,11 +145,22 @@ public final class RecipeBrowser {
      * @return the dialog
      */
     public static Dialog createPotionDialog(Predicate<AbstractCustomPotion> filter) {
+        return createPotionDialog(filter, SelectMode.DETAIL);
+    }
+
+    /**
+     * Creates, without opening it, a dialog with the enabled custom potions that match the filter.
+     *
+     * @param filter additional filter for the listed potions
+     * @param mode   what happens when a potion is selected, unless the potion defines its own mode
+     * @return the dialog
+     */
+    public static Dialog createPotionDialog(Predicate<AbstractCustomPotion> filter, SelectMode mode) {
         List<Entry> entries = CustomPotionsManager.getCustomPotions().stream()
                 .filter(potion -> CustomPotionsManager.isItemEnable(potion.getKey().value()))
                 .filter(filter)
                 .sorted(Comparator.comparing(potion -> potion.getKey().asString()))
-                .map(potion -> new Entry(potion.getItem(), potion.getCategory(), player -> RecipePreview.open(player, potion)))
+                .map(potion -> new Entry(potion.getItem(), potion.getCategory(), potion.getListing(), resolve(potion.getListing(), mode), player -> RecipePreview.open(player, potion)))
                 .toList();
         return buildDialog(Component.translatable("dlce.recipes.browser.potions.title"), entries);
     }
@@ -132,6 +175,16 @@ public final class RecipeBrowser {
     }
 
     /**
+     * Opens the potion recipes dialog to a player using a select mode.
+     *
+     * @param player the player
+     * @param mode   what happens when a potion is selected, unless the potion defines its own mode
+     */
+    public static void openPotionDialog(Player player, SelectMode mode) {
+        player.showDialog(createPotionDialog(potion -> true, mode));
+    }
+
+    /**
      * Opens the potion recipes dialog to a player using a filter.
      *
      * @param player the player
@@ -141,7 +194,22 @@ public final class RecipeBrowser {
         player.showDialog(createPotionDialog(filter));
     }
 
-    private record Entry(ItemStack item, @Nullable RecipeCategory category, Consumer<Player> onSelect) {
+    /**
+     * Opens the potion recipes dialog to a player using a filter and a select mode.
+     *
+     * @param player the player
+     * @param filter additional filter for the listed potions
+     * @param mode   what happens when a potion is selected, unless the potion defines its own mode
+     */
+    public static void openPotionDialog(Player player, Predicate<AbstractCustomPotion> filter, SelectMode mode) {
+        player.showDialog(createPotionDialog(filter, mode));
+    }
+
+    private record Entry(ItemStack item, @Nullable RecipeCategory category, RecipeListing listing, SelectMode mode, Consumer<Player> onSelect) {
+    }
+
+    private static SelectMode resolve(RecipeListing listing, SelectMode browserMode) {
+        return listing.selectMode() != null ? listing.selectMode() : browserMode;
     }
 
     private static Dialog buildDialog(Component title, List<Entry> entries) {
@@ -253,21 +321,30 @@ public final class RecipeBrowser {
     private static ActionButton toButton(Entry entry, Supplier<Dialog> listSupplier) {
         DialogAction action = DialogAction.customClick((view, audience) -> {
             if (audience instanceof Player player) {
-                player.showDialog(createDetailDialog(entry, listSupplier));
+                if (entry.mode() == SelectMode.RECIPE) {
+                    openRecipe(entry, player);
+                } else {
+                    player.showDialog(createDetailDialog(entry, listSupplier));
+                }
             }
         }, CALLBACK_OPTIONS);
 
-        return ActionButton.builder(displayName(entry.item()))
+        return ActionButton.builder(entry.listing().decorate(displayName(entry.item())))
                 .width(BUTTON_WIDTH)
                 .action(action)
                 .build();
+    }
+
+    // Next tick so the dialog closing does not also close the opened preview
+    private static void openRecipe(Entry entry, Player player) {
+        Bukkit.getScheduler().runTask(DLibCustomExtensionManager.getPluginInstance(), () -> entry.onSelect().accept(player));
     }
 
     // Item bodies render the real item model, unlike button labels which can only use sprites
     private static Dialog createDetailDialog(Entry entry, Supplier<Dialog> listSupplier) {
         DialogBase base = DialogBase.builder(displayName(entry.item()))
                 .body(List.of(DialogBody.item(entry.item())
-                        .description(DialogBody.plainMessage(describe(entry.item()), DESCRIPTION_WIDTH))
+                        .description(DialogBody.plainMessage(describe(entry), DESCRIPTION_WIDTH))
                         .showDecorations(false)
                         .showTooltip(false)
                         .width(ITEM_SIZE)
@@ -279,8 +356,7 @@ public final class RecipeBrowser {
                 .width(BUTTON_WIDTH / 2)
                 .action(DialogAction.customClick((view, audience) -> {
                     if (audience instanceof Player player) {
-                        // Next tick so the dialog closing does not also close the opened preview
-                        Bukkit.getScheduler().runTask(DLibCustomExtensionManager.getPluginInstance(), () -> entry.onSelect().accept(player));
+                        openRecipe(entry, player);
                     }
                 }, CALLBACK_OPTIONS))
                 .build();
@@ -297,13 +373,16 @@ public final class RecipeBrowser {
         return Dialog.create(factory -> factory.empty().base(base).type(DialogType.confirmation(viewButton, backButton)));
     }
 
-    private static Component describe(ItemStack item) {
+    private static Component describe(Entry entry) {
+        ItemStack item = entry.item();
         Component description = displayName(item);
-        ItemLore lore = item.getData(DataComponentTypes.LORE);
-        if (lore != null) {
-            for (Component line : lore.lines()) {
-                description = description.appendNewline().append(line);
-            }
+        List<Component> lines = entry.listing().detail();
+        if (lines.isEmpty()) {
+            ItemLore lore = item.getData(DataComponentTypes.LORE);
+            lines = lore != null ? lore.lines() : List.of();
+        }
+        for (Component line : lines) {
+            description = description.appendNewline().append(line);
         }
         return description;
     }

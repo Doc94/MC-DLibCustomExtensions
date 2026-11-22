@@ -5,10 +5,12 @@ import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.CustomItemBuilder;
 import dev.mrdoc.minecraft.test.Core;
 import dev.mrdoc.minecraft.test.TestCategories;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -27,7 +29,12 @@ public class ItemTestBlock extends AbstractCustomItem {
 
     public ItemTestBlock() {
         super(CustomItemBuilder.create(Core.getInstance(), "test_block", Component.text("Test Block", TextColor.fromHexString("#c06bff")))
+                .inventoryTypes(InventoryType.WORKBENCH)
                 .category(TestCategories.BLOCKS)
+                .icon(Key.key("minecraft", "block/lodestone_side"))
+                .browserDescription(
+                        Component.text("Descripcion extendida solo para el navegador", NamedTextColor.GRAY),
+                        Component.text("Necesita 8 chiseled stone bricks y un netherite", NamedTextColor.GRAY))
                 .description(Component.text("Item de bloque para probar el navegador de recetas", NamedTextColor.WHITE))
         );
     }

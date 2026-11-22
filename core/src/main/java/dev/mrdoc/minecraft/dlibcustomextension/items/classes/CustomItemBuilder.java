@@ -2,6 +2,8 @@ package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategory;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeListing;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.SelectMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +44,12 @@ public class CustomItemBuilder {
      * @return the category, or {@code null} if uncategorized
      */
     private @Nullable RecipeCategory category = null;
+    /**
+     * How the item is presented in the recipe browser.
+     *
+     * @return the listing
+     */
+    private RecipeListing listing = RecipeListing.DEFAULT;
     /**
      * The special flag for the item.
      *
@@ -110,6 +118,51 @@ public class CustomItemBuilder {
      */
     public CustomItemBuilder category(@Nullable RecipeCategory category) {
         this.category = category;
+        return this;
+    }
+
+    /**
+     * Sets a sprite shown before the name in the recipe browser list.
+     *
+     * @param sprite the sprite key from the default atlas
+     * @return the updated instance of the CustomItemBuilder
+     */
+    public CustomItemBuilder icon(Key sprite) {
+        this.listing = this.listing.withIcon(sprite);
+        return this;
+    }
+
+    /**
+     * Sets a sprite from a specific atlas shown before the name in the recipe browser list.
+     *
+     * @param atlas  the atlas key
+     * @param sprite the sprite key
+     * @return the updated instance of the CustomItemBuilder
+     */
+    public CustomItemBuilder icon(Key atlas, Key sprite) {
+        this.listing = this.listing.withIcon(atlas, sprite);
+        return this;
+    }
+
+    /**
+     * Sets what happens when the item is selected in the recipe browser, overriding the mode of the browser.
+     *
+     * @param mode the select mode
+     * @return the updated instance of the CustomItemBuilder
+     */
+    public CustomItemBuilder selectMode(@Nullable SelectMode mode) {
+        this.listing = this.listing.withSelectMode(mode);
+        return this;
+    }
+
+    /**
+     * Sets the lines shown in the recipe browser detail dialog instead of the item lore.
+     *
+     * @param lines the lines
+     * @return the updated instance of the CustomItemBuilder
+     */
+    public CustomItemBuilder browserDescription(Component... lines) {
+        this.listing = this.listing.withDetail(lines);
         return this;
     }
 

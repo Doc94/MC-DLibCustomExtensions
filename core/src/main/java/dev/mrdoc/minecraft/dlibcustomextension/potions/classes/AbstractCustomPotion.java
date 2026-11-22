@@ -14,7 +14,7 @@ public abstract non-sealed class AbstractCustomPotion extends AbstractBaseCustom
      * @param customPotionBuilder the builder containing potion configuration
      */
     public AbstractCustomPotion(CustomPotionBuilder customPotionBuilder) {
-        super(customPotionBuilder.getPlugin(), customPotionBuilder.getInternalName(), customPotionBuilder.getDisplayName(), customPotionBuilder.getDescriptions(), customPotionBuilder.getCategory());
+        super(customPotionBuilder.getPlugin(), customPotionBuilder.getInternalName(), customPotionBuilder.getDisplayName(), customPotionBuilder.getDescriptions(), customPotionBuilder.getCategory(), customPotionBuilder.getListing());
         Bukkit.getServer().getPluginManager().registerEvents(this, customPotionBuilder.getPlugin());
         customPotionBuilder.getPlugin().getSLF4JLogger().info("Potion {} registered", this.getKey().toString());
     }

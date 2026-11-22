@@ -2,10 +2,13 @@ package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategory;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeListing;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.SelectMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.Nullable;
@@ -18,6 +21,7 @@ public class CustomPotionBuilder {
     private final Component displayName;
     private List<Component> descriptions = new ArrayList<>();
     private @Nullable RecipeCategory category = null;
+    private RecipeListing listing = RecipeListing.DEFAULT;
 
     private CustomPotionBuilder(String internalName, Component displayName) {
         this(DLibCustomExtensionManager.getPluginInstance(), internalName, displayName);
@@ -42,6 +46,51 @@ public class CustomPotionBuilder {
      */
     public CustomPotionBuilder category(@Nullable RecipeCategory category) {
         this.category = category;
+        return this;
+    }
+
+    /**
+     * Sets a sprite shown before the name in the recipe browser list.
+     *
+     * @param sprite the sprite key from the default atlas
+     * @return the updated builder
+     */
+    public CustomPotionBuilder icon(Key sprite) {
+        this.listing = this.listing.withIcon(sprite);
+        return this;
+    }
+
+    /**
+     * Sets a sprite from a specific atlas shown before the name in the recipe browser list.
+     *
+     * @param atlas  the atlas key
+     * @param sprite the sprite key
+     * @return the updated builder
+     */
+    public CustomPotionBuilder icon(Key atlas, Key sprite) {
+        this.listing = this.listing.withIcon(atlas, sprite);
+        return this;
+    }
+
+    /**
+     * Sets what happens when the potion is selected in the recipe browser, overriding the mode of the browser.
+     *
+     * @param mode the select mode
+     * @return the updated builder
+     */
+    public CustomPotionBuilder selectMode(@Nullable SelectMode mode) {
+        this.listing = this.listing.withSelectMode(mode);
+        return this;
+    }
+
+    /**
+     * Sets the lines shown in the recipe browser detail dialog instead of the potion lore.
+     *
+     * @param lines the lines
+     * @return the updated builder
+     */
+    public CustomPotionBuilder browserDescription(Component... lines) {
+        this.listing = this.listing.withDetail(lines);
         return this;
     }
 
