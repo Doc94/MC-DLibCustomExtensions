@@ -125,7 +125,7 @@ public class CustomEnchantmentBuilder {
      */
     private Set<TagKey<Enchantment>> tagEnchantments = Set.of();
 
-    private CustomEnchantmentBuilder(String internalName, Component displayName) {
+    private CustomEnchantmentBuilder(final String internalName, final Component displayName) {
         this.internalName = internalName;
         this.displayName = displayName;
     }
@@ -138,7 +138,7 @@ public class CustomEnchantmentBuilder {
      * @see <a href="https://minecraft.wiki/w/Enchanting">https://minecraft.wiki/w/Enchanting</a> for examplary weights.
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder weight(@Range(from = 1, to = 1024) int weight) {
+    public CustomEnchantmentBuilder weight(final @Range(from = 1, to = 1024) int weight) {
         this.weight = weight;
         return this;
     }
@@ -150,7 +150,7 @@ public class CustomEnchantmentBuilder {
      * @return this builder instance.
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder maxLevel(@Range(from = 1, to = 255) int maxLevel) {
+    public CustomEnchantmentBuilder maxLevel(final @Range(from = 1, to = 255) int maxLevel) {
         this.maxLevel = maxLevel;
         return this;
     }
@@ -166,7 +166,7 @@ public class CustomEnchantmentBuilder {
      * examplary costs.
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder minimumCost(EnchantmentRegistryEntry.EnchantmentCost minimumCost) {
+    public CustomEnchantmentBuilder minimumCost(final EnchantmentRegistryEntry.EnchantmentCost minimumCost) {
         this.minimumCost = minimumCost;
         return this;
     }
@@ -182,7 +182,7 @@ public class CustomEnchantmentBuilder {
      * examplary costs.
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder maximumCost(EnchantmentRegistryEntry.EnchantmentCost maximumCost) {
+    public CustomEnchantmentBuilder maximumCost(final EnchantmentRegistryEntry.EnchantmentCost maximumCost) {
         this.maximumCost = maximumCost;
         return this;
     }
@@ -199,7 +199,7 @@ public class CustomEnchantmentBuilder {
      * @see Enchantment#getAnvilCost()
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder anvilCost(@Range(from = 0, to = Integer.MAX_VALUE) int anvilCost) {
+    public CustomEnchantmentBuilder anvilCost(final @Range(from = 0, to = Integer.MAX_VALUE) int anvilCost) {
         this.anvilCost = anvilCost;
         return this;
     }
@@ -230,7 +230,7 @@ public class CustomEnchantmentBuilder {
      * @see Enchantment#getActiveSlotGroups()
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder activeSlots(Iterable<EquipmentSlotGroup> activeSlots) {
+    public CustomEnchantmentBuilder activeSlots(final Iterable<EquipmentSlotGroup> activeSlots) {
         this.activeSlots = Lists.newArrayList(activeSlots);
         return this;
     }
@@ -249,7 +249,7 @@ public class CustomEnchantmentBuilder {
      * @see io.papermc.paper.registry.event.RegistryComposeEvent#getOrCreateTag(TagKey)
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder exclusiveWith(RegistryKeySet<Enchantment> exclusiveWith) {
+    public CustomEnchantmentBuilder exclusiveWith(final RegistryKeySet<Enchantment> exclusiveWith) {
         this.exclusiveWith = exclusiveWith;
         return this;
     }
@@ -262,7 +262,7 @@ public class CustomEnchantmentBuilder {
      */
     @Contract(value = "_ -> this", mutates = "this")
     @SafeVarargs
-    public final CustomEnchantmentBuilder supportedItems(TagEntry<ItemType>... itemsValidForEnchantment) {
+    public final CustomEnchantmentBuilder supportedItems(final TagEntry<ItemType>... itemsValidForEnchantment) {
         return this.supportedItems(Set.of(itemsValidForEnchantment));
     }
 
@@ -273,7 +273,7 @@ public class CustomEnchantmentBuilder {
      * @return the builder
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder supportedItems(Set<TagEntry<ItemType>> itemsValidForEnchantment) {
+    public CustomEnchantmentBuilder supportedItems(final Set<TagEntry<ItemType>> itemsValidForEnchantment) {
         this.tagSupportedItems = itemsValidForEnchantment;
         return this;
     }
@@ -289,7 +289,7 @@ public class CustomEnchantmentBuilder {
      */
     @Contract(value = "_ -> this", mutates = "this")
     @SafeVarargs
-    public final CustomEnchantmentBuilder primaryItems(TagEntry<ItemType>... itemsValidNaturalForEnchantment) {
+    public final CustomEnchantmentBuilder primaryItems(final TagEntry<ItemType>... itemsValidNaturalForEnchantment) {
         return this.primaryItems(Set.of(itemsValidNaturalForEnchantment));
     }
 
@@ -303,7 +303,7 @@ public class CustomEnchantmentBuilder {
      * @see EnchantmentRegistryEntry.Builder#primaryItems()
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder primaryItems(Set<TagEntry<ItemType>> itemsValidNaturalForEnchantment) {
+    public CustomEnchantmentBuilder primaryItems(final Set<TagEntry<ItemType>> itemsValidNaturalForEnchantment) {
         this.tagPrimaryItems = itemsValidNaturalForEnchantment;
         return this;
     }
@@ -330,7 +330,7 @@ public class CustomEnchantmentBuilder {
      */
     @Contract(value = "_ -> this", mutates = "this")
     @SafeVarargs
-    public final CustomEnchantmentBuilder tags(TagKey<Enchantment>... enchantmentTags) {
+    public final CustomEnchantmentBuilder tags(final TagKey<Enchantment>... enchantmentTags) {
         return this.tags(Set.of(enchantmentTags));
     }
 
@@ -343,7 +343,7 @@ public class CustomEnchantmentBuilder {
      * @return the builder
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public CustomEnchantmentBuilder tags(Set<TagKey<Enchantment>> enchantmentTags) {
+    public CustomEnchantmentBuilder tags(final Set<TagKey<Enchantment>> enchantmentTags) {
         this.tagEnchantments = enchantmentTags;
         return this;
     }
@@ -355,7 +355,7 @@ public class CustomEnchantmentBuilder {
      * @return the builder
      */
     @Deprecated(forRemoval = true)
-    public static CustomEnchantmentBuilder create(String internalName) {
+    public static CustomEnchantmentBuilder create(final String internalName) {
         return new CustomEnchantmentBuilder(internalName, Component.text(internalName));
     }
 
@@ -365,7 +365,7 @@ public class CustomEnchantmentBuilder {
      * @param internalName the unique and internal name to be used
      * @return the builder
      */
-    public static CustomEnchantmentBuilder create(String internalName, Component displayName) {
+    public static CustomEnchantmentBuilder create(final String internalName, final Component displayName) {
         return new CustomEnchantmentBuilder(internalName, displayName);
     }
 }

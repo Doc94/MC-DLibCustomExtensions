@@ -113,7 +113,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @param listing       how the potion is presented in the recipe browser
      */
     @SuppressWarnings("UnstableApiUsage")
-    public AbstractBaseCustomPotion(Plugin plugin, String internalName, Component displayName, List<Component> descriptions, RecipeCategorySource categorySource, RecipeListing listing) {
+    public AbstractBaseCustomPotion(final Plugin plugin, final String internalName, final Component displayName, final List<Component> descriptions, final RecipeCategorySource categorySource, final RecipeListing listing) {
         this.category = categorySource.resolve(this.getClass());
         this.listing = listing;
         this.instance = plugin;
@@ -190,7 +190,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @return a {@link RecipeChoice} representing the recipe input for the specified custom potion type
      * @throws NoSuchElementException if no potion is found for the given class
      */
-    public <T extends AbstractCustomPotion> RecipeChoice createRecipeInputPredicateChoice(Class<T> baseItemClass) {
+    public <T extends AbstractCustomPotion> RecipeChoice createRecipeInputPredicateChoice(final Class<T> baseItemClass) {
         return this.createRecipeInputPredicateChoice(CustomPotionsManager.getCustomPotion(baseItemClass).orElseThrow());
     }
 
@@ -201,7 +201,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      *
      * @param <T>           the type of the custom potion, which extends {@link AbstractCustomPotion}
      * @param baseItemClass the {@link Class} object representing*/
-    public <T extends AbstractCustomPotion> RecipeChoice createRecipeIngredientPredicateChoice(Class<T> baseItemClass) {
+    public <T extends AbstractCustomPotion> RecipeChoice createRecipeIngredientPredicateChoice(final Class<T> baseItemClass) {
         return this.createRecipeIngredientPredicateChoice(CustomPotionsManager.getCustomPotion(baseItemClass).orElseThrow());
     }
 
@@ -215,7 +215,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @return a {@link RecipeChoice} representing the choice created based on the potion's predicate
      *         and example input item
      */
-    public RecipeChoice createRecipeInputPredicateChoice(AbstractBaseCustomPotion potion) {
+    public RecipeChoice createRecipeInputPredicateChoice(final AbstractBaseCustomPotion potion) {
         return this.createRecipeInputPredicateChoice(potion::isItem, potion.getItemForPlayer());
     }
 
@@ -228,7 +228,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @return a {@link RecipeChoice} object representing the custom recipe ingredient defined by the potion's predicate
      *         and example input item
      */
-    public RecipeChoice createRecipeIngredientPredicateChoice(AbstractBaseCustomPotion potion) {
+    public RecipeChoice createRecipeIngredientPredicateChoice(final AbstractBaseCustomPotion potion) {
         return this.createRecipeIngredientPredicateChoice(potion::isItem, potion.getItemForPlayer());
     }
 
@@ -240,7 +240,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @param items          example {@link ItemStack} inputs to be added for reference or visualization
      * @return a {@link RecipeChoice} object representing the choice created from the given predicate
      */
-    public RecipeChoice createRecipeInputPredicateChoice(final Predicate<? super ItemStack> stackPredicate, ItemStack... items) {
+    public RecipeChoice createRecipeInputPredicateChoice(final Predicate<? super ItemStack> stackPredicate, final ItemStack... items) {
         this.recipeInputExamples.addAll(List.of(items));
         return RecipeChoice.predicateChoice(stackPredicate, this.recipeInputExamples.getFirst());
     }
@@ -253,7 +253,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @param items          example {@link ItemStack} inputs to be added for reference or visualization
      * @return a {@link RecipeChoice} object representing the choice created from the provided predicate
      */
-    public RecipeChoice createRecipeIngredientPredicateChoice(final Predicate<? super ItemStack> stackPredicate, ItemStack... items) {
+    public RecipeChoice createRecipeIngredientPredicateChoice(final Predicate<? super ItemStack> stackPredicate, final ItemStack... items) {
         this.recipeIngredientExamples.addAll(List.of(items));
         return RecipeChoice.predicateChoice(stackPredicate, this.recipeIngredientExamples.getFirst());
     }
@@ -290,7 +290,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @return a brewing stand view, or {@code null} if it could not be created
      */
     @SuppressWarnings("UnstableApiUsage")
-    public @Nullable InventoryView createDisplayCraft(Player player) {
+    public @Nullable InventoryView createDisplayCraft(final Player player) {
         Component titleInventoryView = Component.translatable("dlce.potions.recipe.display", this.getItem().displayName());
         BrewingStandView brewingStandView = MenuType.BREWING_STAND.create(player, titleInventoryView);
 
@@ -344,7 +344,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @param quantity amount of item
      * @return item to give
      */
-    public ItemStack getItemForPlayer(int quantity) {
+    public ItemStack getItemForPlayer(final int quantity) {
         ItemStack itemStack = this.getItemForPlayer();
         itemStack.setAmount(quantity);
         return itemStack;
@@ -356,7 +356,7 @@ public abstract sealed class AbstractBaseCustomPotion permits AbstractCustomPoti
      * @param itemToCheck Item to validate
      * @return {@code true} if it matches the custom potion item
      */
-    public boolean isItem(@Nullable ItemStack itemToCheck) {
+    public boolean isItem(final @Nullable ItemStack itemToCheck) {
         if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
             return false;
         }

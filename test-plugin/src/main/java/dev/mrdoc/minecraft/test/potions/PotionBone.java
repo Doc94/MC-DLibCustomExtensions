@@ -28,7 +28,7 @@ public class PotionBone extends AbstractCustomPotion {
                 .build();
     }
 
-    protected static void applyPotionContents(ItemStack itemStack) {
+    protected static void applyPotionContents(final ItemStack itemStack) {
         itemStack.setData(DataComponentTypes.POTION_CONTENTS, POTION_CONTENTS);
     }
 

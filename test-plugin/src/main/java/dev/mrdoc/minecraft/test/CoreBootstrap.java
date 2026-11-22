@@ -10,7 +10,7 @@ public class CoreBootstrap implements PluginBootstrap {
 
     @SneakyThrows
     @Override
-    public void bootstrap(BootstrapContext context) {
+    public void bootstrap(final BootstrapContext context) {
         try {
             LoggerUtils.info("Loading DLIB boostrap for test plugin");
             DLibCustomExtensionManager.buildWithBoostrap(DLibCustomExtensionManager.ContextBoostrap.Builder.create(context).withEnchantments().withItems().withPotions().build());

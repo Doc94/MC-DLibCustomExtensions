@@ -16,7 +16,7 @@ public class BaseCommand {
     private final Plugin plugin;
 
     @SneakyThrows
-    public BaseCommand(Plugin plugin) {
+    public BaseCommand(final Plugin plugin) {
         this.plugin = plugin;
         CommandManager.load(plugin);
         if (!this.getClass().isAnnotationPresent(CommandContainer.class) && CommandManager.getInstance() != null) {

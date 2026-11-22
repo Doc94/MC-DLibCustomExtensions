@@ -17,7 +17,7 @@ public class LoggerUtils {
         return LoggerFactory.getLogger("DLibCustomExtensionLogger");
     }
 
-    public static void setDebug(boolean status) {
+    public static void setDebug(final boolean status) {
         DEBUG = status;
         debug("Set debug mode to %s".formatted(status));
     }
@@ -26,38 +26,38 @@ public class LoggerUtils {
         return DEBUG;
     }
 
-    public static void debug(String message) {
+    public static void debug(final String message) {
         if (!DEBUG) {
             return;
         }
         getLogger().info("[DEBUG] [{}] {}", getCallerClassSimpleName(), message);
     }
 
-    public static void info(JavaPlugin javaPlugin, Component message) {
+    public static void info(final JavaPlugin javaPlugin, final Component message) {
         javaPlugin.getComponentLogger().info(Component.text("[{}] {}"), getCallerClassSimpleName(), message);
     }
 
-    public static void info(String message) {
+    public static void info(final String message) {
         getLogger().info("[{}] {}", getCallerClassSimpleName(), message);
     }
 
-    public static void info(String message, Throwable throwable) {
+    public static void info(final String message, final Throwable throwable) {
         getLogger().info("[%s] %s".formatted(getCallerClassSimpleName(), message), throwable);
     }
 
-    public static void warn(String message) {
+    public static void warn(final String message) {
         getLogger().warn("[{}] {}", getCallerClassSimpleName(), message);
     }
 
-    public static void warn(String message, Throwable throwable) {
+    public static void warn(final String message, final Throwable throwable) {
         getLogger().warn("[%s] %s".formatted(getCallerClassSimpleName(), message), throwable);
     }
 
-    public static void error(String message) {
+    public static void error(final String message) {
         getLogger().error("[{}] {}", getCallerClassSimpleName(), message);
     }
 
-    public static void error(String message, Throwable throwable) {
+    public static void error(final String message, final Throwable throwable) {
         getLogger().error("[%s] %s".formatted(getCallerClassSimpleName(), message), throwable);
     }
 

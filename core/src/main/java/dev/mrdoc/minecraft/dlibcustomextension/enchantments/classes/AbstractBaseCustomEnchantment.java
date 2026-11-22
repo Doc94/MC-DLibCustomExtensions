@@ -143,7 +143,7 @@ public abstract sealed class AbstractBaseCustomEnchantment permits AbstractCusto
      * @param customEnchantmentBuilder the builder
      */
     @ApiStatus.Internal
-    public AbstractBaseCustomEnchantment(CustomEnchantmentBuilder customEnchantmentBuilder) {
+    public AbstractBaseCustomEnchantment(final CustomEnchantmentBuilder customEnchantmentBuilder) {
         String keyName = DLibCustomExtensionManager.getPluginNamespace().concat(":").concat(customEnchantmentBuilder.getInternalName());
         this.key = Key.key(keyName);
         this.name = customEnchantmentBuilder.getInternalName();

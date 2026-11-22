@@ -24,17 +24,17 @@ public class CustomPotionBuilder {
     private RecipeCategorySource categorySource = RecipeCategorySource.PACKAGE;
     private RecipeListing listing = RecipeListing.DEFAULT;
 
-    private CustomPotionBuilder(String internalName, Component displayName) {
+    private CustomPotionBuilder(final String internalName, final Component displayName) {
         this(DLibCustomExtensionManager.getPluginInstance(), internalName, displayName);
     }
 
-    private CustomPotionBuilder(Plugin plugin, String internalName, Component displayName) {
+    private CustomPotionBuilder(final Plugin plugin, final String internalName, final Component displayName) {
         this.plugin = plugin;
         this.internalName = internalName;
         this.displayName = displayName;
     }
 
-    public CustomPotionBuilder descriptions(Component... descriptions) {
+    public CustomPotionBuilder descriptions(final Component... descriptions) {
         this.descriptions = Arrays.asList(descriptions);
         return this;
     }
@@ -114,7 +114,7 @@ public class CustomPotionBuilder {
      * @param displayName the name to display
      * @return the builder
      */
-    public static CustomPotionBuilder create(String internalName, Component displayName) {
+    public static CustomPotionBuilder create(final String internalName, final Component displayName) {
         return new CustomPotionBuilder(internalName, displayName);
     }
 
@@ -126,7 +126,7 @@ public class CustomPotionBuilder {
      * @param displayName the name to display
      * @return the builder
      */
-    public static CustomPotionBuilder create(Plugin plugin, String internalName, Component displayName) {
+    public static CustomPotionBuilder create(final Plugin plugin, final String internalName, final Component displayName) {
         return new CustomPotionBuilder(plugin, internalName, displayName);
     }
 }

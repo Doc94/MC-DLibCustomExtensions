@@ -36,7 +36,7 @@ public class GiveItemCustomCommand extends BaseCommand {
     @Command("givecustom <target> <item> [amount]")
     @CommandDescription("Comando para dar items customs a un jugador")
     @Permission("cdlibcustomextensions.items.command.givecustomitem")
-    public void executeGiveItemCustom(Source sourceSender, @Argument("target") MultiplePlayerSelector playerTargetsArgument, @Argument(value = "item", parserName = "parser_itemcustom") ItemStack itemStack, @Argument("amount") @Default("1") @Range(min = "1") int amount) {
+    public void executeGiveItemCustom(final Source sourceSender, final @Argument("target") MultiplePlayerSelector playerTargetsArgument, final @Argument(value = "item", parserName = "parser_itemcustom") ItemStack itemStack, final @Argument("amount") @Default("1") @Range(min = "1") int amount) {
         itemStack.setAmount(amount);
 
         final Collection<Player> playersTargets = playerTargetsArgument.values();
@@ -59,12 +59,12 @@ public class GiveItemCustomCommand extends BaseCommand {
     }
 
     @Suggestions("suggest_itemcustom")
-    public List<String> suggestItemCustom(CommandContext<Source> ctx, String input) {
+    public List<String> suggestItemCustom(final CommandContext<Source> ctx, final String input) {
         return ItemCustomCommandHelper.suggestItemCustom(ctx, input);
     }
 
     @Parser(name = "parser_itemcustom", suggestions = "suggest_itemcustom")
-    public ItemStack parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
+    public ItemStack parserItemCustom(final CommandContext<Source> ctx, final CommandInput commandInput) {
         return ItemCustomCommandHelper.parserItemCustom(ctx, commandInput);
     }
 }

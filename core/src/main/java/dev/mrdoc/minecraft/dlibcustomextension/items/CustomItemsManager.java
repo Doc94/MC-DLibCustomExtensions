@@ -181,7 +181,7 @@ public class CustomItemsManager {
      * @param internalName custom item name
      * @return an Optional
      */
-    public static Optional<AbstractCustomItem> getCustomItem(@Nullable String internalName) {
+    public static Optional<AbstractCustomItem> getCustomItem(final @Nullable String internalName) {
         if (internalName == null || internalName.isEmpty()) {
             return Optional.empty();
         }
@@ -195,7 +195,7 @@ public class CustomItemsManager {
      * @return an optional with the instance
      * @param <T> class type
      */
-    public static <T extends AbstractCustomItem> Optional<T> getCustomItem(Class<T> baseItemClass) {
+    public static <T extends AbstractCustomItem> Optional<T> getCustomItem(final Class<T> baseItemClass) {
         return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getClass().equals(baseItemClass)).map(baseItemClass::cast).findFirst();
     }
 
@@ -205,7 +205,7 @@ public class CustomItemsManager {
      * @param itemStack the itemstack
      * @return an optional with the class
      */
-    public static Optional<AbstractCustomItem> getCustomItem(@Nullable ItemStack itemStack) {
+    public static Optional<AbstractCustomItem> getCustomItem(final @Nullable ItemStack itemStack) {
         if (itemStack == null || itemStack.isEmpty()) {
             return Optional.empty();
         }
@@ -225,7 +225,7 @@ public class CustomItemsManager {
      * @param internalName the internal name
      * @return {@code true} if item with this name is enabled
      */
-    public static boolean isItemEnable(String internalName) {
+    public static boolean isItemEnable(final String internalName) {
         if (CONFIG != null && !CONFIG.isEnabled()) {
             return true;
         }
@@ -238,7 +238,7 @@ public class CustomItemsManager {
      * @param item the itemstack
      * @return {@code true} if item is custom
      */
-    public static boolean isCustomItem(ItemStack item) {
+    public static boolean isCustomItem(final ItemStack item) {
         return CustomItemsManager.getInternalKey(item) != null;
     }
 
@@ -248,7 +248,7 @@ public class CustomItemsManager {
      * @param item ItemStack
      * @return the internal name or empty
      */
-    public static @Nullable Key getInternalKey(@Nullable ItemStack item) {
+    public static @Nullable Key getInternalKey(final @Nullable ItemStack item) {
         if (item == null) {
             return null;
         }
@@ -282,7 +282,7 @@ public class CustomItemsManager {
      * @param internalName custom item name
      * @return an Optional
      */
-    public static Optional<ItemStack> getItem(String internalName) {
+    public static Optional<ItemStack> getItem(final String internalName) {
         return CUSTOM_ITEMS.stream().filter(baseItem -> baseItem.getKey().value().equalsIgnoreCase(internalName)).map(AbstractCustomItem::getItemForPlayer).map(ItemStack::clone).findAny();
     }
 
@@ -292,7 +292,7 @@ public class CustomItemsManager {
      * @param baseItemClass custom item instance
      * @return an Optional
      */
-    public static <T extends AbstractCustomItem> Optional<ItemStack> getItem(Class<T> baseItemClass) {
+    public static <T extends AbstractCustomItem> Optional<ItemStack> getItem(final Class<T> baseItemClass) {
         return CustomItemsManager.getCustomItem(baseItemClass).map(AbstractCustomItem::getItemForPlayer).map(ItemStack::clone);
     }
 
@@ -302,7 +302,7 @@ public class CustomItemsManager {
      * @param recipe the recipe
      * @return {@code true} if a recipe is from a custom item
      */
-    public static boolean isRegisterRecipe(Recipe recipe) {
+    public static boolean isRegisterRecipe(final Recipe recipe) {
         return CUSTOM_ITEMS.stream().filter(abstractCustomItem -> abstractCustomItem.getRecipe() != null).anyMatch(baseRecipe -> baseRecipe.getRecipe().equals(recipe));
     }
 
@@ -311,7 +311,7 @@ public class CustomItemsManager {
      *
      * @param player player to handle
      */
-    public static void handleAvailableRecipes(Player player) {
+    public static void handleAvailableRecipes(final Player player) {
         for (AbstractCustomItem customItem : CUSTOM_ITEMS) {
             if (customItem.isEnabled()) {
                 if (customItem.isAutoDiscoverRecipe()) {

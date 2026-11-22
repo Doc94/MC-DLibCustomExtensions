@@ -19,12 +19,12 @@ public class KeyPersistentDataType implements PersistentDataType<String, Key> {
     }
 
     @Override
-    public String toPrimitive(Key complex, PersistentDataAdapterContext context) {
+    public String toPrimitive(final Key complex, final PersistentDataAdapterContext context) {
         return complex.asString();
     }
 
     @Override
-    public Key fromPrimitive(String primitive, PersistentDataAdapterContext context) {
+    public Key fromPrimitive(final String primitive, final PersistentDataAdapterContext context) {
         return Key.key(primitive);
     }
 

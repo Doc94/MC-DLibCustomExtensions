@@ -16,7 +16,7 @@ import org.incendo.cloud.paper.util.sender.Source;
 
 public class ItemCustomCommandHelper {
 
-    public static List<String> suggestItemCustom(CommandContext<Source> ctx, String input) {
+    public static List<String> suggestItemCustom(final CommandContext<Source> ctx, final String input) {
         List<String> completions = new ArrayList<>();
 
         StringUtil.copyPartialMatches(input, CustomItemsManager.getNamespacedKeys().stream().map(NamespacedKey::getKey).collect(Collectors.toList()), completions);
@@ -26,7 +26,7 @@ public class ItemCustomCommandHelper {
         return completions;
     }
 
-    public static ItemStack parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
+    public static ItemStack parserItemCustom(final CommandContext<Source> ctx, final CommandInput commandInput) {
         final String input = commandInput.readString();
 
         Optional<ItemStack> optionalItemStack = CustomItemsManager.getItem(input.toUpperCase());
@@ -34,7 +34,7 @@ public class ItemCustomCommandHelper {
         return optionalItemStack.orElseThrow(() -> new IllegalArgumentException("Custom Item ID \"%s\" invalid.".formatted(input)));
     }
 
-    static Class<? extends AbstractCustomItem> parserItemCustomClass(CommandContext<Source> ctx, CommandInput commandInput) {
+    static Class<? extends AbstractCustomItem> parserItemCustomClass(final CommandContext<Source> ctx, final CommandInput commandInput) {
         final String input = commandInput.readString();
 
         return CustomItemsManager.getCustomItem(input.toUpperCase()).map(AbstractCustomItem::getClass).orElseThrow(() -> new IllegalArgumentException("Custom Item ID \"%s\" invalid.".formatted(input)));

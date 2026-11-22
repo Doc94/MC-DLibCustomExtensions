@@ -33,13 +33,13 @@ import org.jspecify.annotations.Nullable;
 public class CustomItemsListener implements Listener {
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         CustomItemsManager.handleAvailableRecipes(player);
     }
 
     @EventHandler
-    public void onCrafterCraftItem(CrafterCraftEvent event) {
+    public void onCrafterCraftItem(final CrafterCraftEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -72,7 +72,7 @@ public class CustomItemsListener implements Listener {
     }
 
     @EventHandler
-    public void onCraftItem(CraftItemEvent event) {
+    public void onCraftItem(final CraftItemEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -131,7 +131,7 @@ public class CustomItemsListener implements Listener {
     }
 
     @EventHandler
-    public void preCraftItem(PrepareItemCraftEvent event) {
+    public void preCraftItem(final PrepareItemCraftEvent event) {
         if (event.getRecipe() == null) {
             return;
         }
@@ -180,7 +180,7 @@ public class CustomItemsListener implements Listener {
     }
 
     @EventHandler
-    public void onCrafterView(InventoryOpenEvent event) {
+    public void onCrafterView(final InventoryOpenEvent event) {
         if (!(event.getInventory() instanceof CrafterInventory crafterInventory)) {
             return;
         }

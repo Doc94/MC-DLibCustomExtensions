@@ -10,7 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class AnnotationProcessorUtil {
 
-    public static List<String> getClassesInPath(ClassLoader classLoader, String path) {
+    public static List<String> getClassesInPath(final ClassLoader classLoader, final String path) {
         final List<String> classNames;
         try (InputStream stream = classLoader.getResourceAsStream(path)) {
             if (stream == null) {

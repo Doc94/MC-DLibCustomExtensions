@@ -40,7 +40,7 @@ public class DisplayItemCustomCommand extends BaseCommand {
     @Command("displayitemcustom <item>")
     @CommandDescription("Comando para ver receta de un item custom")
     @Permission("dlibcustomextensions.items.command.displaycustom")
-    public void executeDisplayCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itemcustomclass") Class<? extends AbstractCustomItem> customItemClass) {
+    public void executeDisplayCustom(final PlayerSource playerSourceSender, final @Argument(value = "item", parserName = "parser_itemcustomclass") Class<? extends AbstractCustomItem> customItemClass) {
         CustomItemsManager.getCustomItem(customItemClass).ifPresentOrElse(
                 baseItem -> RecipePreview.open(playerSourceSender.source(), baseItem),
                 () -> playerSourceSender.source().sendMessage(Component.translatable("dlce.argument.item.notfound")));
@@ -54,7 +54,7 @@ public class DisplayItemCustomCommand extends BaseCommand {
     @Command("displayitemcustom")
     @CommandDescription("Comando para elegir y ver la receta de un item custom")
     @Permission("dlibcustomextensions.items.command.displaycustom")
-    public void executeBrowseCustom(PlayerSource playerSourceSender) {
+    public void executeBrowseCustom(final PlayerSource playerSourceSender) {
         RecipeBrowser.openItemDialog(playerSourceSender.source());
     }
 
@@ -66,7 +66,7 @@ public class DisplayItemCustomCommand extends BaseCommand {
      * @return a list of suggested custom item names
      */
     @Suggestions("suggest_itemcustom")
-    public List<String> suggestItemCustom(CommandContext<Source> ctx, String input) {
+    public List<String> suggestItemCustom(final CommandContext<Source> ctx, final String input) {
         return ItemCustomCommandHelper.suggestItemCustom(ctx, input);
     }
 
@@ -78,7 +78,7 @@ public class DisplayItemCustomCommand extends BaseCommand {
      * @return the parsed custom item class
      */
     @Parser(name = "parser_itemcustomclass", suggestions = "suggest_itemcustom")
-    public Class<? extends AbstractCustomItem> parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
+    public Class<? extends AbstractCustomItem> parserItemCustom(final CommandContext<Source> ctx, final CommandInput commandInput) {
         return ItemCustomCommandHelper.parserItemCustomClass(ctx, commandInput);
     }
 }

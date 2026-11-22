@@ -38,7 +38,7 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
      *
      * @param customEnchantmentBuilder the builder
      */
-    public AbstractCustomEnchantment(CustomEnchantmentBuilder customEnchantmentBuilder) {
+    public AbstractCustomEnchantment(final CustomEnchantmentBuilder customEnchantmentBuilder) {
         super(customEnchantmentBuilder);
     }
 
@@ -47,7 +47,7 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
      *
      * @param plugin a plugin instance
      */
-    public void registerListener(Plugin plugin) {
+    public void registerListener(final Plugin plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -101,7 +101,7 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
      * @param level the level of enchantment
      * @return an {@link ItemStack} of {@link ItemType#ENCHANTED_BOOK} with this enchantment.
      */
-    public ItemStack generateEnchantmentBook(int level) {
+    public ItemStack generateEnchantmentBook(final int level) {
         ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
         book.setData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments(Map.of(this.getEnchantment(), level)));
         return book;
@@ -131,7 +131,7 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
      * @param registryComposeEvent the event for register the enchantment
      * @return a consumer builder for EnchantmentRegistryEntry
      */
-    public Consumer<EnchantmentRegistryEntry.Builder> generateConsumerEREB(RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder> registryComposeEvent) {
+    public Consumer<EnchantmentRegistryEntry.Builder> generateConsumerEREB(final RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder> registryComposeEvent) {
         return builder -> {
             builder.description(this.getDisplayName());
             builder.weight(this.getWeight());
@@ -150,7 +150,7 @@ public abstract non-sealed class AbstractCustomEnchantment extends AbstractBaseC
         };
     }
 
-    public void registerEnchantment(BootstrapContext context) {
+    public void registerEnchantment(final BootstrapContext context) {
         context.getLifecycleManager()
                 .registerEventHandler(RegistryEvents.ENCHANTMENT.compose()
                         .newHandler(registryComposeEvent -> registryComposeEvent.registry()

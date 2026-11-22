@@ -26,7 +26,7 @@ public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomIt
      *
      * @param customItemBuilder the builder containing item configuration
      */
-    public AbstractCustomItem(CustomItemBuilder customItemBuilder) {
+    public AbstractCustomItem(final CustomItemBuilder customItemBuilder) {
         super(customItemBuilder.getPlugin(), customItemBuilder.getInternalName(), customItemBuilder.getDisplayName(), customItemBuilder.getRarity(), customItemBuilder.isSpecial(), customItemBuilder.isAutoDiscoverRecipe(), customItemBuilder.getItemModel(), customItemBuilder.getInventoryTypes(), customItemBuilder.getDescriptions(), customItemBuilder.getCategorySource(), customItemBuilder.getListing());
         Bukkit.getServer().getPluginManager().registerEvents(this, customItemBuilder.getPlugin());
         LoggerUtils.info("Item registered " + this.getKey());
@@ -93,7 +93,7 @@ public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomIt
     protected abstract void onItemReplace(PlayerDropItemEvent event, ItemStack itemReplace);
 
     @EventHandler
-    public void playerInteractEntity(PlayerInteractEntityEvent event) {
+    public void playerInteractEntity(final PlayerInteractEntityEvent event) {
         if (event.getHand().toString().contains("HAND")) {
             if (this.isItem(event.getPlayer().getInventory().getItemInMainHand())) {
                 this.onPlayerInteractEntity(event);
@@ -102,7 +102,7 @@ public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomIt
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void playerInteract(PlayerInteractEvent event) {
+    public void playerInteract(final PlayerInteractEvent event) {
         if (!event.getAction().equals(Action.PHYSICAL)) {
             if (event.getItem() != null && this.isItem(event.getItem())) {
                 this.onPlayerInteract(event);
@@ -111,14 +111,14 @@ public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomIt
     }
 
     @EventHandler
-    public void entityPickupItem(EntityPickupItemEvent event) {
+    public void entityPickupItem(final EntityPickupItemEvent event) {
         if (this.isItem(event.getItem().getItemStack())) {
             this.onEntityPickupItem(event);
         }
     }
 
     @EventHandler
-    public void playerDropItem(PlayerDropItemEvent event) {
+    public void playerDropItem(final PlayerDropItemEvent event) {
         if (this.isItem(event.getItemDrop().getItemStack())) {
             ItemStack itemReplace = event.getItemDrop().getItemStack();
             itemReplace.setData(DataComponentTypes.LORE, this.getItem().getDataOrDefault(DataComponentTypes.LORE, ItemLore.lore().build()));
@@ -140,7 +140,7 @@ public abstract non-sealed class AbstractCustomItem extends AbstractBaseCustomIt
     }
 
     @EventHandler
-    public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent event) {
+    public void onPlayerItemConsumeEvent(final PlayerItemConsumeEvent event) {
         ItemStack itemConsume = event.getItem();
 
         if (this.isItem(itemConsume)) {

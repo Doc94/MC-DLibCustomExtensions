@@ -36,7 +36,7 @@ public class GivePotionCustomCommand extends BaseCommand {
     @Command("givepotion <target> <item> [amount]")
     @CommandDescription("Comando para dar items customs a un jugador")
     @Permission("dlibcustomextensions.potions.command.givecustomitem")
-    public void executeGiveItemCustom(Source sourceSender, @Argument("target") MultiplePlayerSelector playerTargetsArgument, @Argument(value = "item", parserName = "parser_itempotioncustom") ItemStack itemStack, @Argument("amount") @Default("1") @Range(min = "1") int amount) {
+    public void executeGiveItemCustom(final Source sourceSender, final @Argument("target") MultiplePlayerSelector playerTargetsArgument, final @Argument(value = "item", parserName = "parser_itempotioncustom") ItemStack itemStack, final @Argument("amount") @Default("1") @Range(min = "1") int amount) {
         itemStack.setAmount(amount);
 
         final Collection<Player> playersTargets = playerTargetsArgument.values();
@@ -58,12 +58,12 @@ public class GivePotionCustomCommand extends BaseCommand {
     }
 
     @Suggestions("suggest_itempotioncustom")
-    public List<String> suggestItemCustom(CommandContext<Source> ctx, String input) {
+    public List<String> suggestItemCustom(final CommandContext<Source> ctx, final String input) {
         return PotionCustomCommandHelper.suggestItemCustom(ctx, input);
     }
 
     @Parser(name = "parser_itempotioncustom", suggestions = "suggest_itempotioncustom")
-    public ItemStack parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
+    public ItemStack parserItemCustom(final CommandContext<Source> ctx, final CommandInput commandInput) {
         return PotionCustomCommandHelper.parserItemCustom(ctx, commandInput);
     }
 

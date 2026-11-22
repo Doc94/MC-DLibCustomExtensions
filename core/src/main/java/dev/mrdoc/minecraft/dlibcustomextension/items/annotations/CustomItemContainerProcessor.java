@@ -45,7 +45,7 @@ public class CustomItemContainerProcessor extends AbstractProcessor {
     private @Nullable Types types;
 
     @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
+    public synchronized void init(final ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         this.messager = processingEnv.getMessager();
         this.elements = processingEnv.getElementUtils();
@@ -53,7 +53,7 @@ public class CustomItemContainerProcessor extends AbstractProcessor {
     }
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         List<String> listElements = new ArrayList<>();
         final Set<? extends Element> elementsAnnotated = roundEnv.getElementsAnnotatedWith(CustomItemContainer.class);
         if (elementsAnnotated.isEmpty()) {

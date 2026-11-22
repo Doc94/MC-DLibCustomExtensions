@@ -70,7 +70,7 @@ public class DLibCustomExtensionManager {
      * @param boostrapContext the bootstrap context to use
      * @return the initialized manager instance
      */
-    public static DLibCustomExtensionManager buildWithBoostrap(ContextBoostrap boostrapContext) {
+    public static DLibCustomExtensionManager buildWithBoostrap(final ContextBoostrap boostrapContext) {
         INSTANCE = new DLibCustomExtensionManager(boostrapContext);
         return INSTANCE;
     }
@@ -81,14 +81,14 @@ public class DLibCustomExtensionManager {
      * @param pluginContext the plugin context to use
      * @return the initialized manager instance
      */
-    public static DLibCustomExtensionManager buildWithEnable(ContextPlugin pluginContext) {
+    public static DLibCustomExtensionManager buildWithEnable(final ContextPlugin pluginContext) {
         INSTANCE = new DLibCustomExtensionManager(pluginContext);
         return INSTANCE;
     }
 
     private final Context context;
 
-    private DLibCustomExtensionManager(Context context) {
+    private DLibCustomExtensionManager(final Context context) {
         this.context = context;
     }
 
@@ -170,7 +170,7 @@ public class DLibCustomExtensionManager {
         private final boolean items;
         private final boolean potions;
 
-        public Context(BaseBuilder<?,?> builder) {
+        public Context(final BaseBuilder<?,?> builder) {
             this.classLoader = builder.classLoader;
             this.items = builder.items;
             this.potions = builder.potions;
@@ -202,7 +202,7 @@ public class DLibCustomExtensionManager {
     public static final class ContextPlugin extends Context {
         private final Plugin pluginInstance;
 
-        public ContextPlugin(ContextPlugin.Builder builder) {
+        public ContextPlugin(final ContextPlugin.Builder builder) {
             super(builder);
             this.pluginInstance = builder.pluginInstance;
         }
@@ -210,11 +210,11 @@ public class DLibCustomExtensionManager {
         public static class Builder extends BaseBuilder<Builder, ContextPlugin> {
             private final Plugin pluginInstance;
 
-            public static Builder create(Plugin pluginInstance) {
+            public static Builder create(final Plugin pluginInstance) {
                 return new Builder(pluginInstance);
             }
 
-            private Builder(Plugin pluginInstance) {
+            private Builder(final Plugin pluginInstance) {
                 this.pluginInstance = pluginInstance;
             }
 
@@ -237,7 +237,7 @@ public class DLibCustomExtensionManager {
 
         private final boolean enchantments;
 
-        public ContextBoostrap(ContextBoostrap.Builder builder) {
+        public ContextBoostrap(final ContextBoostrap.Builder builder) {
             super(builder);
             this.bootstrapContext = builder.bootstrapContext;
             this.enchantments = builder.enchantments;
@@ -247,11 +247,11 @@ public class DLibCustomExtensionManager {
             private final BootstrapContext bootstrapContext;
             private boolean enchantments = false;
 
-            public static Builder create(BootstrapContext bootstrapContext) {
+            public static Builder create(final BootstrapContext bootstrapContext) {
                 return new Builder(bootstrapContext);
             }
 
-            public Builder(BootstrapContext bootstrapContext) {
+            public Builder(final BootstrapContext bootstrapContext) {
                 this.bootstrapContext = bootstrapContext;
             }
 

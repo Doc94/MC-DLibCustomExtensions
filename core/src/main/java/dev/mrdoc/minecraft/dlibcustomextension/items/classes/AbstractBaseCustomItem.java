@@ -129,7 +129,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @param listing            how the item is presented in the recipe browser
      */
     @ApiStatus.Internal
-    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, final @Nullable Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions, RecipeCategorySource categorySource, RecipeListing listing) {
+    public AbstractBaseCustomItem(final Plugin instance, final String internalName, final Component displayName, final @Nullable CustomItemRarity rarity, final boolean isSpecial, final boolean autoDiscoverRecipe, final @Nullable Key modelNameKey, final List<InventoryType> inventoryTypes, final List<Component> descriptions, final RecipeCategorySource categorySource, final RecipeListing listing) {
         this.category = categorySource.resolve(this.getClass());
         this.listing = listing;
         this.inventoryTypes.addAll(inventoryTypes);
@@ -220,7 +220,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @param player the player for whom the view is created
      * @return an inventory view representing the recipe, or {@code null} if no recipe exists
      */
-    public @Nullable InventoryView createDisplayCraft(Player player) {
+    public @Nullable InventoryView createDisplayCraft(final Player player) {
         Component titleInventoryView = Component.translatable("dlce.items.recipe.display", this.getItem().displayName());
         final Recipe recipe = this.getRecipe();
         if (recipe == null) return null;
@@ -328,7 +328,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @param quantity amount of item
      * @return item to give
      */
-    public ItemStack getItemForPlayer(int quantity) {
+    public ItemStack getItemForPlayer(final int quantity) {
         ItemStack itemStack = this.getItemForPlayer();
         itemStack.setAmount(quantity);
         return itemStack;
@@ -339,7 +339,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      *
      * @param player the player who discovers the recipe
      */
-    public void discoverRecipe(Player player) {
+    public void discoverRecipe(final Player player) {
         if (this.recipe != null && !player.hasDiscoveredRecipe(this.getNamespacedKey())) {
             player.discoverRecipe(this.getNamespacedKey());
         }
@@ -350,7 +350,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      *
      * @param player the player who undiscovers the recipe
      */
-    public void undiscoverRecipe(Player player) {
+    public void undiscoverRecipe(final Player player) {
         if (this.recipe != null && player.hasDiscoveredRecipe(this.getNamespacedKey())) {
             player.undiscoverRecipe(this.getNamespacedKey());
         }
@@ -382,7 +382,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @param itemToCheck the item stack to validate
      * @return {@code true} if it matches, {@code false} otherwise
      */
-    public boolean isItem(@Nullable ItemStack itemToCheck) {
+    public boolean isItem(final @Nullable ItemStack itemToCheck) {
         if (itemToCheck == null || itemToCheck.isEmpty() || itemToCheck.getAmount() <= 0) {
             return false;
         }

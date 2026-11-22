@@ -43,7 +43,7 @@ public class CustomEnchantmentManager {
      *
      * @param context the bootstrap context
      */
-    public static void load(BootstrapContext context) {
+    public static void load(final BootstrapContext context) {
         loadConfig(context);
         loadAllCustomEnchantments(context);
     }
@@ -63,7 +63,7 @@ public class CustomEnchantmentManager {
      * @param context the bootstrap context
      */
     @SneakyThrows
-    private static void loadConfig(BootstrapContext context) {
+    private static void loadConfig(final BootstrapContext context) {
         CONFIG_LOADER = YamlConfigurationLoader.builder()
                 .path(new File(context.getDataDirectory().toFile(), CONFIG_FILE_NAME).toPath())
                 .build();
@@ -120,7 +120,7 @@ public class CustomEnchantmentManager {
      *
      * @param context the bootstrap context
      */
-    private static void loadAllCustomEnchantments(BootstrapContext context) {
+    private static void loadAllCustomEnchantments(final BootstrapContext context) {
         Set<Class<? extends AbstractCustomEnchantment>> reflectionCustomEnchantments = getClasses(DLibCustomExtensionManager.getInstance().getClassLoader());
 
         reflectionCustomEnchantments.forEach(aClass -> {
@@ -145,23 +145,23 @@ public class CustomEnchantmentManager {
      *
      * @param plugin the owning plugin instance
      */
-    public static void onEnable(Plugin plugin) {
+    public static void onEnable(final Plugin plugin) {
         CUSTOM_ENCHANTMENTS.forEach((key, abstractCustomEnchantment) -> abstractCustomEnchantment.registerListener(plugin));
     }
 
-    public static <T extends AbstractCustomEnchantment> Optional<T> getEnchantmentInstance(Class<T> clazz) {
+    public static <T extends AbstractCustomEnchantment> Optional<T> getEnchantmentInstance(final Class<T> clazz) {
         return CUSTOM_ENCHANTMENTS.values().stream().filter(abstractCustomEnchantment -> abstractCustomEnchantment.getClass().equals(clazz)).map(clazz::cast).findFirst();
     }
 
-    public static <T extends AbstractCustomEnchantment> Optional<Enchantment> getEnchantment(Class<T> clazz) {
+    public static <T extends AbstractCustomEnchantment> Optional<Enchantment> getEnchantment(final Class<T> clazz) {
         return CUSTOM_ENCHANTMENTS.values().stream().filter(abstractCustomEnchantment -> abstractCustomEnchantment.getClass().equals(clazz)).map(clazz::cast).map(AbstractCustomEnchantment::getEnchantment).findFirst();
     }
 
-    public static <T extends AbstractCustomEnchantment> Optional<ItemStack> getEnchantmentBook(Class<T> clazz, int level) {
+    public static <T extends AbstractCustomEnchantment> Optional<ItemStack> getEnchantmentBook(final Class<T> clazz, final int level) {
         return CUSTOM_ENCHANTMENTS.values().stream().filter(abstractCustomEnchantment -> abstractCustomEnchantment.getClass().equals(clazz)).map(clazz::cast).map(enchantmentInstance -> enchantmentInstance.generateEnchantmentBook(level)).findFirst();
     }
 
-    public static <T extends AbstractCustomEnchantment> Optional<ItemStack> getEnchantmentBook(Class<T> clazz) {
+    public static <T extends AbstractCustomEnchantment> Optional<ItemStack> getEnchantmentBook(final Class<T> clazz) {
         return CustomEnchantmentManager.getEnchantmentBook(clazz, 1);
     }
 
@@ -179,7 +179,7 @@ public class CustomEnchantmentManager {
         return CustomEnchantmentManager.getEnchantmentLevel(clazz, itemStack) > 0;
     }
 
-    public static boolean isEnchantmentEnabled(String internalName) {
+    public static boolean isEnchantmentEnabled(final String internalName) {
         if (CONFIG != null && !CONFIG.isEnabled()) {
             return true;
         }

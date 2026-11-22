@@ -133,7 +133,7 @@ public class CustomItemRecipeHelper {
      * @param recipeChoice the recipe choice to compare
      * @return {@code true} if is valid
      */
-    private static boolean validateIngredient(@Nullable ItemStack itemMatrix, @Nullable RecipeChoice recipeChoice) {
+    private static boolean validateIngredient(final @Nullable ItemStack itemMatrix, final @Nullable RecipeChoice recipeChoice) {
         if (recipeChoice == null) {
             return true; // Slot not required
         }
@@ -162,7 +162,7 @@ public class CustomItemRecipeHelper {
      * @return {@code true} if is valid
      */
     @SuppressWarnings("UnstableApiUsage")
-    private static boolean validateIngredient(@Nullable ItemStack itemMatrix, @Nullable ItemStack itemInRecipe) {
+    private static boolean validateIngredient(final @Nullable ItemStack itemMatrix, final @Nullable ItemStack itemInRecipe) {
         if (itemInRecipe == null || itemInRecipe.isEmpty()) {
             return true; // Slot not required
         }
@@ -201,7 +201,7 @@ public class CustomItemRecipeHelper {
      * @param recipeChoice the recipe choice
      * @return the amount
      */
-    private static int getRecipeChoiceAmount(@Nullable ItemStack itemMatrix, @Nullable RecipeChoice recipeChoice) {
+    private static int getRecipeChoiceAmount(final @Nullable ItemStack itemMatrix, final @Nullable RecipeChoice recipeChoice) {
         if (recipeChoice == null || itemMatrix == null || itemMatrix.isEmpty()) {
             return 0;
         }

@@ -14,7 +14,7 @@ import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.paper.util.sender.Source;
 
 public class PotionCustomCommandHelper {
-    static List<String> suggestItemCustom(CommandContext<Source> ctx, String input) {
+    static List<String> suggestItemCustom(final CommandContext<Source> ctx, final String input) {
         List<String> completions = new ArrayList<>();
 
         StringUtil.copyPartialMatches(input, CustomPotionsManager.getNamespacedKeys().stream().map(NamespacedKey::getKey).collect(Collectors.toList()), completions);
@@ -24,13 +24,13 @@ public class PotionCustomCommandHelper {
         return completions;
     }
 
-    static ItemStack parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
+    static ItemStack parserItemCustom(final CommandContext<Source> ctx, final CommandInput commandInput) {
         final String input = commandInput.readString();
 
         return CustomPotionsManager.getItem(input.toUpperCase()).orElseThrow(() -> new IllegalArgumentException("Item Potion ID \"%s\" invalid.".formatted(input)));
     }
 
-    static Class<? extends AbstractCustomPotion> parserItemCustomClass(CommandContext<Source> ctx, CommandInput commandInput) {
+    static Class<? extends AbstractCustomPotion> parserItemCustomClass(final CommandContext<Source> ctx, final CommandInput commandInput) {
         final String input = commandInput.readString();
 
         return CustomPotionsManager.getCustomPotion(input.toUpperCase()).map(AbstractCustomPotion::getClass).orElseThrow(() -> new IllegalArgumentException("Item Potion ID \"%s\" invalid.".formatted(input)));

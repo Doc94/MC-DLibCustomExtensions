@@ -26,7 +26,7 @@ public class CommandManager {
     private final PaperCommandManager<Source> commandManager;
 
     @SneakyThrows
-    public CommandManager(Plugin plugin) {
+    public CommandManager(final Plugin plugin) {
         this.commandManager = PaperCommandManager.builder(PaperSimpleSenderMapper.simpleSenderMapper())
                 .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
                 .buildOnEnable(plugin);
@@ -35,7 +35,7 @@ public class CommandManager {
     }
 
     @SneakyThrows
-    public CommandManager(BootstrapContext bootstrapContext) {
+    public CommandManager(final BootstrapContext bootstrapContext) {
         this.commandManager = PaperCommandManager.builder(PaperSimpleSenderMapper.simpleSenderMapper())
                 .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
                 .buildBootstrapped(bootstrapContext);
@@ -48,7 +48,7 @@ public class CommandManager {
      *
      * @param bootstrapContext paper bootstrapContext
      */
-    public static void load(BootstrapContext bootstrapContext) {
+    public static void load(final BootstrapContext bootstrapContext) {
         if (instance != null) {
             return;
         }
@@ -60,7 +60,7 @@ public class CommandManager {
      *
      * @param plugin bukkit plugin
      */
-    public static void load(Plugin plugin) {
+    public static void load(final Plugin plugin) {
         if (instance != null || !plugin.isEnabled()) {
             return;
         }

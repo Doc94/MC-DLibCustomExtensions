@@ -22,13 +22,13 @@ public class PersistentDataLocation implements PersistentDataType<String, Locati
     }
 
     @Override
-    public String toPrimitive(Location complex, PersistentDataAdapterContext context) {
+    public String toPrimitive(final Location complex, final PersistentDataAdapterContext context) {
         return new GsonBuilder().create().toJson(complex.serialize(), Map.class);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Location fromPrimitive(String primitive, PersistentDataAdapterContext context) {
+    public Location fromPrimitive(final String primitive, final PersistentDataAdapterContext context) {
         return Location.deserialize(new Gson().fromJson(primitive, Map.class));
     }
 }

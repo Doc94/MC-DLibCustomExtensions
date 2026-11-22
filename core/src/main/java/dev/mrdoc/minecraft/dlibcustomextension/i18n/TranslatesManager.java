@@ -37,7 +37,7 @@ public class TranslatesManager {
         this.translationStore = TranslationStore.messageFormat(Key.key("dlibcustomextensions:translates"));
 
         locales.forEach(locale -> {
-            ResourceBundle bundle = ResourceBundle.getBundle("dlibcustomextensions.lang.LangBundle", locale);
+            final ResourceBundle bundle = ResourceBundle.getBundle("dlibcustomextensions.lang.LangBundle", locale);
             this.translationStore.registerAll(locale, bundle, true);
             this.patchEnchantmentLevels(locale);
         });
@@ -45,8 +45,8 @@ public class TranslatesManager {
         GlobalTranslator.translator().addSource(this.translationStore);
     }
 
-    private void patchEnchantmentLevels(Locale locale) {
-        RomanNumeralFormat romanNumeralFormat = new RomanNumeralFormat();
+    private void patchEnchantmentLevels(final Locale locale) {
+        final RomanNumeralFormat romanNumeralFormat = new RomanNumeralFormat();
         for (int level = 1; level <= 100; level++) {
             this.translationStore.register("enchantment.level.".concat(Integer.toString(level)), locale, new MessageFormat(romanNumeralFormat.format(level)));
         }

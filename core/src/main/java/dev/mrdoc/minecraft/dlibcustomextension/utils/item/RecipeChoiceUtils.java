@@ -18,7 +18,7 @@ public class RecipeChoiceUtils {
      * @return a list of corresponding item stacks
      */
     @SuppressWarnings("UnstableApiUsage")
-    public static List<ItemStack> getRecipeChoiceItemStacks(@Nullable RecipeChoice recipeChoice) {
+    public static List<ItemStack> getRecipeChoiceItemStacks(final @Nullable RecipeChoice recipeChoice) {
         if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
             return exactChoice.getChoices();
         } else if (recipeChoice instanceof RecipeChoice.ItemTypeChoice itemTypeChoice) {

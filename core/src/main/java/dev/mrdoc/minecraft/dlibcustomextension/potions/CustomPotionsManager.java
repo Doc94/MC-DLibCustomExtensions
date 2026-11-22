@@ -183,7 +183,7 @@ public class CustomPotionsManager {
      * @param internalName Internal name
      * @return an Optional
      */
-    public static Optional<AbstractCustomPotion> getCustomPotion(String internalName) {
+    public static Optional<AbstractCustomPotion> getCustomPotion(final String internalName) {
         return CUSTOM_POTIONS.stream().filter(basePotion -> basePotion.getKey().value().equalsIgnoreCase(internalName) || basePotion.getKey().toString().equalsIgnoreCase(internalName)).findFirst();
     }
 
@@ -193,18 +193,18 @@ public class CustomPotionsManager {
      * @param baseItemClass the class of custom potion
      * @return an Optional
      */
-    public static <T extends AbstractCustomPotion> Optional<T> getCustomPotion(Class<T> baseItemClass) {
+    public static <T extends AbstractCustomPotion> Optional<T> getCustomPotion(final Class<T> baseItemClass) {
         return CUSTOM_POTIONS.stream().filter(baseItem -> baseItem.getClass().equals(baseItemClass)).map(baseItemClass::cast).findFirst();
     }
 
-    public static boolean isItemEnable(String internalName) {
+    public static boolean isItemEnable(final String internalName) {
         if (CONFIG != null && !CONFIG.isEnabled()) {
             return true;
         }
         return CONFIG != null && CONFIG.getNamePotions().stream().anyMatch(internalName::equalsIgnoreCase);
     }
 
-    public static boolean isCustomItem(ItemStack item) {
+    public static boolean isCustomItem(final ItemStack item) {
         return getInternalKey(item) != null;
     }
 
@@ -214,7 +214,7 @@ public class CustomPotionsManager {
      * @param item ItemStack
      * @return the internal key or null
      */
-    public static @Nullable Key getInternalKey(@Nullable ItemStack item) {
+    public static @Nullable Key getInternalKey(final @Nullable ItemStack item) {
         if (item == null) {
             return null;
         }
@@ -234,7 +234,7 @@ public class CustomPotionsManager {
      * @param baseItemClass custom potion instance
      * @return an Optional
      */
-    public static <T extends AbstractCustomPotion> Optional<ItemStack> getItem(Class<T> baseItemClass) {
+    public static <T extends AbstractCustomPotion> Optional<ItemStack> getItem(final Class<T> baseItemClass) {
         return CustomPotionsManager.getCustomPotion(baseItemClass).map(AbstractBaseCustomPotion::getItemForPlayer).map(ItemStack::clone);
     }
 
@@ -244,7 +244,7 @@ public class CustomPotionsManager {
      * @param internalName custom potion internal name
      * @return an Optional
      */
-    public static Optional<ItemStack> getItem(String internalName) {
+    public static Optional<ItemStack> getItem(final String internalName) {
         return CUSTOM_POTIONS.stream().filter(basePotion -> basePotion.getKey().value().equalsIgnoreCase(internalName) || basePotion.getKey().toString().equalsIgnoreCase(internalName)).map(AbstractBaseCustomPotion::getItemForPlayer).map(ItemStack::clone).findAny();
     }
 

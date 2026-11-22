@@ -37,7 +37,7 @@ public class DisplayPotionCustomCommand extends BaseCommand {
     @Command("displaypotioncustom <item>")
     @CommandDescription("Comando para ver receta de un item custom")
     @Permission("dlibcustomextensions.potions.command.displaycustom")
-    public void executeDisplayCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itempotioncustomclass") Class<? extends AbstractCustomPotion> customPotionClass) {
+    public void executeDisplayCustom(final PlayerSource playerSourceSender, final @Argument(value = "item", parserName = "parser_itempotioncustomclass") Class<? extends AbstractCustomPotion> customPotionClass) {
         CustomPotionsManager.getCustomPotion(customPotionClass).ifPresentOrElse(
                 basePotion -> RecipePreview.open(playerSourceSender.source(), basePotion),
                 () -> playerSourceSender.source().sendMessage(Component.translatable("dlce.argument.potion.notfound")));
@@ -46,17 +46,17 @@ public class DisplayPotionCustomCommand extends BaseCommand {
     @Command("displaypotioncustom")
     @CommandDescription("Comando para elegir y ver la receta de una potion custom")
     @Permission("dlibcustomextensions.potions.command.displaycustom")
-    public void executeBrowseCustom(PlayerSource playerSourceSender) {
+    public void executeBrowseCustom(final PlayerSource playerSourceSender) {
         RecipeBrowser.openPotionDialog(playerSourceSender.source());
     }
 
     @Suggestions("suggest_itempotioncustom")
-    public List<String> suggestCustom(CommandContext<Source> ctx, String input) {
+    public List<String> suggestCustom(final CommandContext<Source> ctx, final String input) {
         return PotionCustomCommandHelper.suggestItemCustom(ctx, input);
     }
 
     @Parser(name = "parser_itempotioncustomclass", suggestions = "suggest_itempotioncustom")
-    public Class<? extends AbstractCustomPotion> parserCustom(CommandContext<Source> ctx, CommandInput commandInput) {
+    public Class<? extends AbstractCustomPotion> parserCustom(final CommandContext<Source> ctx, final CommandInput commandInput) {
         return PotionCustomCommandHelper.parserItemCustomClass(ctx, commandInput);
     }
 }

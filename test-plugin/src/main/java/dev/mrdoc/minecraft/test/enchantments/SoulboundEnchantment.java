@@ -59,7 +59,7 @@ public class SoulboundEnchantment extends AbstractCustomEnchantment {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDeathListener(PlayerDeathEvent event) {
+    public void onDeathListener(final PlayerDeathEvent event) {
         final List<ItemStack> dropItems = event.getDrops();
         final List<ItemStack> soulboundItems = new ArrayList<>();
         final Player player = event.getEntity();
