@@ -1,0 +1,28 @@
+name: Check version target of PR
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+
+jobs:
+  snapshot-check:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: ☑️ Checkout
+        uses: actions/checkout@v7
+      - name: 🔎 Verify version is SNAPSHOT
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'release') }}
+        run: |
+          version=$(grep -E '^version=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
+          echo "Detected version: $version"
+          if [[ "$version" != *-SNAPSHOT ]]; then
+            echo "::error file=gradle.properties::Version '$version' is not a SNAPSHOT. Merging would republish the same release. Add the 'release' label if this PR is an intentional release."
+            exit 1
+          fi
