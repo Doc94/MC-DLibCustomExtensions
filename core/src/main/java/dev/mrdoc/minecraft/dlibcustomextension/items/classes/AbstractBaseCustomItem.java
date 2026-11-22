@@ -2,6 +2,7 @@ package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategory;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategorySource;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeListing;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
@@ -124,12 +125,12 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @param modelNameKey       the key for the item model
      * @param inventoryTypes     the permitted inventory types
      * @param descriptions       descriptive lines for the lore
-     * @param category           the recipe browser category, or {@code null}
+     * @param categorySource     how the recipe browser category is obtained
      * @param listing            how the item is presented in the recipe browser
      */
     @ApiStatus.Internal
-    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions, @Nullable RecipeCategory category, RecipeListing listing) {
-        this.category = category;
+    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions, RecipeCategorySource categorySource, RecipeListing listing) {
+        this.category = categorySource.resolve(this.getClass());
         this.listing = listing;
         this.inventoryTypes.addAll(inventoryTypes);
         this.instance = instance;

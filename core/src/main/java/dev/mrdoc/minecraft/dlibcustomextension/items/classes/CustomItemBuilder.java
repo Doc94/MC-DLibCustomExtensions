@@ -2,6 +2,7 @@ package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategory;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategorySource;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeListing;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.SelectMode;
 import java.util.ArrayList;
@@ -39,11 +40,11 @@ public class CustomItemBuilder {
     private final Component displayName;
     private @Nullable CustomItemRarity rarity = null;
     /**
-     * The category used to group the item in the recipe browser.
+     * How the category used to group the item in the recipe browser is obtained.
      *
-     * @return the category, or {@code null} if uncategorized
+     * @return the category source
      */
-    private @Nullable RecipeCategory category = null;
+    private RecipeCategorySource categorySource = RecipeCategorySource.PACKAGE;
     /**
      * How the item is presented in the recipe browser.
      *
@@ -111,13 +112,25 @@ public class CustomItemBuilder {
     }
 
     /**
-     * Sets the category used to group the item in the recipe browser.
+     * Sets the category used to group the item in the recipe browser, ignoring the one declared by the package.
      *
-     * @param category the category
+     * @param category the category, or {@code null} to use the one declared by the package
      * @return the updated instance of the CustomItemBuilder
      */
     public CustomItemBuilder category(@Nullable RecipeCategory category) {
-        this.category = category;
+        this.categorySource = category == null ? RecipeCategorySource.PACKAGE : RecipeCategorySource.of(category);
+        return this;
+    }
+
+    /**
+     * Sets a new category that is a child of the one declared by the package.
+     *
+     * @param key  the unique key of the category
+     * @param name the display name
+     * @return the updated instance of the CustomItemBuilder
+     */
+    public CustomItemBuilder categoryUnderPackage(Key key, Component name) {
+        this.categorySource = RecipeCategorySource.underPackage(key, name);
         return this;
     }
 

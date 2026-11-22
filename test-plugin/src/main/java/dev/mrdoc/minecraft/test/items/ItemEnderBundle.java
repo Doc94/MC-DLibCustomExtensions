@@ -4,7 +4,6 @@ import dev.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemConta
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.CustomItemBuilder;
 import dev.mrdoc.minecraft.test.Core;
-import dev.mrdoc.minecraft.test.TestCategories;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.SelectMode;
 import net.kyori.adventure.key.Key;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -32,7 +31,7 @@ public class ItemEnderBundle extends AbstractCustomItem {
         super(CustomItemBuilder.create(Core.getInstance(), "ender_bundle", Component.text("Ender Bundle", TextColor.fromHexString("#316364")))
                 .special()
                 .inventoryTypes(InventoryType.WORKBENCH)
-                .category(TestCategories.STORAGE)
+                .categoryUnderPackage(Key.key("dlcetest", "bags"), Component.text("Bags"))
                 .icon(Key.key("minecraft", "items"), Key.key("minecraft", "item/ender_eye"))
                 .selectMode(SelectMode.RECIPE)
                 .description(Component.text("Una bolsa con poderes del Ender", NamedTextColor.WHITE))

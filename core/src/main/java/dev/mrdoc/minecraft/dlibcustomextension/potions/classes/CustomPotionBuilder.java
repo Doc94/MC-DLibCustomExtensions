@@ -2,6 +2,7 @@ package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategory;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategorySource;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeListing;
 import dev.mrdoc.minecraft.dlibcustomextension.recipes.SelectMode;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class CustomPotionBuilder {
     private final String internalName;
     private final Component displayName;
     private List<Component> descriptions = new ArrayList<>();
-    private @Nullable RecipeCategory category = null;
+    private RecipeCategorySource categorySource = RecipeCategorySource.PACKAGE;
     private RecipeListing listing = RecipeListing.DEFAULT;
 
     private CustomPotionBuilder(String internalName, Component displayName) {
@@ -39,13 +40,25 @@ public class CustomPotionBuilder {
     }
 
     /**
-     * Sets the category used to group the potion in the recipe browser.
+     * Sets the category used to group the potion in the recipe browser, ignoring the one declared by the package.
      *
-     * @param category the category
+     * @param category the category, or {@code null} to use the one declared by the package
      * @return the updated builder
      */
     public CustomPotionBuilder category(@Nullable RecipeCategory category) {
-        this.category = category;
+        this.categorySource = category == null ? RecipeCategorySource.PACKAGE : RecipeCategorySource.of(category);
+        return this;
+    }
+
+    /**
+     * Sets a new category that is a child of the one declared by the package.
+     *
+     * @param key  the unique key of the category
+     * @param name the display name
+     * @return the updated builder
+     */
+    public CustomPotionBuilder categoryUnderPackage(Key key, Component name) {
+        this.categorySource = RecipeCategorySource.underPackage(key, name);
         return this;
     }
 
