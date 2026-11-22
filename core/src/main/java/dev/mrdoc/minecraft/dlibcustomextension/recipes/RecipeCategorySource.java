@@ -21,7 +21,7 @@ public interface RecipeCategorySource {
      * @param owner the class of the item or potion
      * @return the category, or {@code null} for none
      */
-    @Nullable RecipeCategory resolve(Class<?> owner);
+    @Nullable RecipeCategory resolve(final Class<?> owner);
 
     /**
      * Uses always the given category, ignoring the package.
@@ -29,7 +29,7 @@ public interface RecipeCategorySource {
      * @param category the category
      * @return the source
      */
-    static RecipeCategorySource of(RecipeCategory category) {
+    static RecipeCategorySource of(final RecipeCategory category) {
         return owner -> category;
     }
 
@@ -40,7 +40,7 @@ public interface RecipeCategorySource {
      * @param name the display name
      * @return the source
      */
-    static RecipeCategorySource underPackage(Key key, Component name) {
+    static RecipeCategorySource underPackage(final Key key, final Component name) {
         return owner -> new RecipeCategory(key, name, RecipeCategoryResolver.resolve(owner));
     }
 }

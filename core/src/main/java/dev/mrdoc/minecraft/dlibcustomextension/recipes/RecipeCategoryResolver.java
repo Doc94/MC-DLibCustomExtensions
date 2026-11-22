@@ -27,7 +27,7 @@ public final class RecipeCategoryResolver {
      * @param type the class
      * @return the category, or {@code null} if no package declares one
      */
-    public static @Nullable RecipeCategory resolve(Class<?> type) {
+    public static @Nullable RecipeCategory resolve(final Class<?> type) {
         ClassLoader loader = type.getClassLoader();
         if (loader == null) {
             return null;
@@ -35,7 +35,7 @@ public final class RecipeCategoryResolver {
         return resolve(loader, type.getPackageName());
     }
 
-    private static @Nullable RecipeCategory resolve(ClassLoader loader, String packageName) {
+    private static @Nullable RecipeCategory resolve(final ClassLoader loader, final String packageName) {
         if (packageName.isEmpty()) {
             return null;
         }
@@ -48,7 +48,7 @@ public final class RecipeCategoryResolver {
         return category;
     }
 
-    private static @Nullable RecipeCategory load(ClassLoader loader, String packageName) {
+    private static @Nullable RecipeCategory load(final ClassLoader loader, final String packageName) {
         int dot = packageName.lastIndexOf('.');
         RecipeCategory parent = resolve(loader, dot < 0 ? "" : packageName.substring(0, dot));
 
@@ -72,7 +72,7 @@ public final class RecipeCategoryResolver {
         }
     }
 
-    private static @Nullable RecipeCategoryOf readAnnotation(ClassLoader loader, String packageName) {
+    private static @Nullable RecipeCategoryOf readAnnotation(final ClassLoader loader, final String packageName) {
         try {
             return Class.forName(packageName + ".package-info", false, loader).getAnnotation(RecipeCategoryOf.class);
         } catch (ClassNotFoundException | LinkageError exception) {

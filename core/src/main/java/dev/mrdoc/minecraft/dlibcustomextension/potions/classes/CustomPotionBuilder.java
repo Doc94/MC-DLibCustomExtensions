@@ -45,7 +45,7 @@ public class CustomPotionBuilder {
      * @param category the category, or {@code null} to use the one declared by the package
      * @return the updated builder
      */
-    public CustomPotionBuilder category(@Nullable RecipeCategory category) {
+    public CustomPotionBuilder category(final @Nullable RecipeCategory category) {
         this.categorySource = category == null ? RecipeCategorySource.PACKAGE : RecipeCategorySource.of(category);
         return this;
     }
@@ -57,7 +57,7 @@ public class CustomPotionBuilder {
      * @param name the display name
      * @return the updated builder
      */
-    public CustomPotionBuilder categoryUnderPackage(Key key, Component name) {
+    public CustomPotionBuilder categoryUnderPackage(final Key key, final Component name) {
         this.categorySource = RecipeCategorySource.underPackage(key, name);
         return this;
     }
@@ -68,7 +68,7 @@ public class CustomPotionBuilder {
      * @param sprite the sprite key from the default atlas
      * @return the updated builder
      */
-    public CustomPotionBuilder icon(Key sprite) {
+    public CustomPotionBuilder icon(final Key sprite) {
         this.listing = this.listing.withIcon(sprite);
         return this;
     }
@@ -80,7 +80,7 @@ public class CustomPotionBuilder {
      * @param sprite the sprite key
      * @return the updated builder
      */
-    public CustomPotionBuilder icon(Key atlas, Key sprite) {
+    public CustomPotionBuilder icon(final Key atlas, final Key sprite) {
         this.listing = this.listing.withIcon(atlas, sprite);
         return this;
     }
@@ -91,7 +91,7 @@ public class CustomPotionBuilder {
      * @param mode the select mode
      * @return the updated builder
      */
-    public CustomPotionBuilder selectMode(@Nullable SelectMode mode) {
+    public CustomPotionBuilder selectMode(final @Nullable SelectMode mode) {
         this.listing = this.listing.withSelectMode(mode);
         return this;
     }
@@ -102,7 +102,7 @@ public class CustomPotionBuilder {
      * @param lines the lines
      * @return the updated builder
      */
-    public CustomPotionBuilder browserDescription(Component... lines) {
+    public CustomPotionBuilder browserDescription(final Component... lines) {
         this.listing = this.listing.withDetail(lines);
         return this;
     }

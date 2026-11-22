@@ -165,14 +165,14 @@ public class CustomEnchantmentManager {
         return CustomEnchantmentManager.getEnchantmentBook(clazz, 1);
     }
 
-    public static int getEnchantmentLevel(final Class<? extends AbstractCustomEnchantment> clazz, @Nullable final ItemStack itemStack) {
+    public static int getEnchantmentLevel(final Class<? extends AbstractCustomEnchantment> clazz, final @Nullable ItemStack itemStack) {
         if (itemStack == null || itemStack.isEmpty()) {
             return 0;
         }
         return CustomEnchantmentManager.getEnchantment(clazz).map(itemStack::getEnchantmentLevel).orElse(0);
     }
 
-    public static boolean hasEnchantment(final Class<? extends AbstractCustomEnchantment> clazz, @Nullable final ItemStack itemStack) {
+    public static boolean hasEnchantment(final Class<? extends AbstractCustomEnchantment> clazz, final @Nullable ItemStack itemStack) {
         if (itemStack == null || itemStack.isEmpty()) {
             return false;
         }

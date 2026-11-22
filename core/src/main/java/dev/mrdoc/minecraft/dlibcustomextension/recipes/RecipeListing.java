@@ -39,7 +39,7 @@ public record RecipeListing(@Nullable Key icon, @Nullable Key atlas, @Nullable S
      * @param sprite the sprite key
      * @return the new listing
      */
-    public RecipeListing withIcon(@Nullable Key sprite) {
+    public RecipeListing withIcon(final @Nullable Key sprite) {
         return new RecipeListing(sprite, null, selectMode, detail);
     }
 
@@ -50,7 +50,7 @@ public record RecipeListing(@Nullable Key icon, @Nullable Key atlas, @Nullable S
      * @param sprite the sprite key
      * @return the new listing
      */
-    public RecipeListing withIcon(Key atlas, Key sprite) {
+    public RecipeListing withIcon(final Key atlas, final Key sprite) {
         return new RecipeListing(sprite, atlas, selectMode, detail);
     }
 
@@ -60,7 +60,7 @@ public record RecipeListing(@Nullable Key icon, @Nullable Key atlas, @Nullable S
      * @param mode the mode, or {@code null} to use the one of the browser
      * @return the new listing
      */
-    public RecipeListing withSelectMode(@Nullable SelectMode mode) {
+    public RecipeListing withSelectMode(final @Nullable SelectMode mode) {
         return new RecipeListing(icon, atlas, mode, detail);
     }
 
@@ -70,7 +70,7 @@ public record RecipeListing(@Nullable Key icon, @Nullable Key atlas, @Nullable S
      * @param lines the lines
      * @return the new listing
      */
-    public RecipeListing withDetail(Component... lines) {
+    public RecipeListing withDetail(final Component... lines) {
         return new RecipeListing(icon, atlas, selectMode, Arrays.asList(lines));
     }
 
@@ -80,7 +80,7 @@ public record RecipeListing(@Nullable Key icon, @Nullable Key atlas, @Nullable S
      * @param name the name
      * @return the name with the icon
      */
-    public Component decorate(Component name) {
+    public Component decorate(final Component name) {
         if (icon == null) {
             return name;
         }

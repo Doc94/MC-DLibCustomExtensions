@@ -48,7 +48,7 @@ public final class RecipePreview implements Listener {
      * @param item   the custom item
      * @return {@code true} if the preview was opened
      */
-    public static boolean open(Player player, AbstractCustomItem item) {
+    public static boolean open(final Player player, final AbstractCustomItem item) {
         if (item.getRecipe() == null) {
             player.sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.recipe_not_found", item.getItem().displayName()).color(NamedTextColor.RED));
             return false;
@@ -69,7 +69,7 @@ public final class RecipePreview implements Listener {
      * @param potion the custom potion
      * @return {@code true} if the preview was opened
      */
-    public static boolean open(Player player, AbstractCustomPotion potion) {
+    public static boolean open(final Player player, final AbstractCustomPotion potion) {
         InventoryView view = potion.createDisplayCraft(player);
         if (view == null) {
             player.sendMessage(Component.translatable("dlce.commands.displaypotioncustom.failed.craft_inventory_invalid", potion.getItem().displayName()).color(NamedTextColor.RED));
@@ -79,19 +79,19 @@ public final class RecipePreview implements Listener {
         return true;
     }
 
-    private static void show(Player player, InventoryView view) {
+    private static void show(final Player player, final InventoryView view) {
         register();
         player.openInventory(view);
         // Added after opening because replacing a view fires the close event, which removes the tag
         player.getScoreboardTags().add(TAG_INVENTORY_PREVIEW);
     }
 
-    private static boolean isInPreview(HumanEntity entity) {
+    private static boolean isInPreview(final HumanEntity entity) {
         return entity.getScoreboardTags().contains(TAG_INVENTORY_PREVIEW);
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
+    public void onInventoryClose(final InventoryCloseEvent event) {
         if (isInPreview(event.getPlayer())) {
             event.getInventory().clear();
             event.getPlayer().getScoreboardTags().remove(TAG_INVENTORY_PREVIEW);
@@ -99,28 +99,28 @@ public final class RecipePreview implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(final InventoryClickEvent event) {
         if (event.getViewers().stream().anyMatch(RecipePreview::isInPreview)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onInventoryDrag(InventoryDragEvent event) {
+    public void onInventoryDrag(final InventoryDragEvent event) {
         if (event.getViewers().stream().anyMatch(RecipePreview::isInPreview)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onCraftItem(CraftItemEvent event) {
+    public void onCraftItem(final CraftItemEvent event) {
         if (event.getViewers().stream().anyMatch(RecipePreview::isInPreview)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onRecipeBookClick(PlayerRecipeBookClickEvent event) {
+    public void onRecipeBookClick(final PlayerRecipeBookClickEvent event) {
         if (isInPreview(event.getPlayer())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.recipe_change_not_allowed").color(NamedTextColor.RED));

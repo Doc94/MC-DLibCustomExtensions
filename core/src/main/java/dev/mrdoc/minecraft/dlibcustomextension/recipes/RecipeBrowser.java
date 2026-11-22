@@ -42,7 +42,7 @@ public final class RecipeBrowser {
 
     private static final int BUTTON_WIDTH = 200;
     private static final int COLUMNS = 2;
-    private static final int ITEM_SIZE = 64;
+    private static final int ITEM_SIZE = 32;
     private static final int DESCRIPTION_WIDTH = 200;
 
     private static final ClickCallback.Options CALLBACK_OPTIONS = ClickCallback.Options.builder()
@@ -68,7 +68,7 @@ public final class RecipeBrowser {
      * @param filter additional filter for the listed items
      * @return the dialog
      */
-    public static Dialog createItemDialog(Predicate<AbstractCustomItem> filter) {
+    public static Dialog createItemDialog(final Predicate<AbstractCustomItem> filter) {
         return createItemDialog(filter, SelectMode.DETAIL);
     }
 
@@ -79,7 +79,7 @@ public final class RecipeBrowser {
      * @param mode   what happens when an item is selected, unless the item defines its own mode
      * @return the dialog
      */
-    public static Dialog createItemDialog(Predicate<AbstractCustomItem> filter, SelectMode mode) {
+    public static Dialog createItemDialog(final Predicate<AbstractCustomItem> filter, final SelectMode mode) {
         List<Entry> entries = CustomItemsManager.getCustomItems().stream()
                 .filter(item -> item.getRecipe() != null && item.isEnabled())
                 .filter(filter)
@@ -94,7 +94,7 @@ public final class RecipeBrowser {
      *
      * @param player the player
      */
-    public static void openItemDialog(Player player) {
+    public static void openItemDialog(final Player player) {
         player.showDialog(createItemDialog());
     }
 
@@ -104,7 +104,7 @@ public final class RecipeBrowser {
      * @param player the player
      * @param mode   what happens when an item is selected, unless the item defines its own mode
      */
-    public static void openItemDialog(Player player, SelectMode mode) {
+    public static void openItemDialog(final Player player, final SelectMode mode) {
         player.showDialog(createItemDialog(item -> true, mode));
     }
 
@@ -114,7 +114,7 @@ public final class RecipeBrowser {
      * @param player the player
      * @param filter additional filter for the listed items
      */
-    public static void openItemDialog(Player player, Predicate<AbstractCustomItem> filter) {
+    public static void openItemDialog(final Player player, final Predicate<AbstractCustomItem> filter) {
         player.showDialog(createItemDialog(filter));
     }
 
@@ -125,7 +125,7 @@ public final class RecipeBrowser {
      * @param filter additional filter for the listed items
      * @param mode   what happens when an item is selected, unless the item defines its own mode
      */
-    public static void openItemDialog(Player player, Predicate<AbstractCustomItem> filter, SelectMode mode) {
+    public static void openItemDialog(final Player player, final Predicate<AbstractCustomItem> filter, final SelectMode mode) {
         player.showDialog(createItemDialog(filter, mode));
     }
 
@@ -144,7 +144,7 @@ public final class RecipeBrowser {
      * @param filter additional filter for the listed potions
      * @return the dialog
      */
-    public static Dialog createPotionDialog(Predicate<AbstractCustomPotion> filter) {
+    public static Dialog createPotionDialog(final Predicate<AbstractCustomPotion> filter) {
         return createPotionDialog(filter, SelectMode.DETAIL);
     }
 
@@ -155,7 +155,7 @@ public final class RecipeBrowser {
      * @param mode   what happens when a potion is selected, unless the potion defines its own mode
      * @return the dialog
      */
-    public static Dialog createPotionDialog(Predicate<AbstractCustomPotion> filter, SelectMode mode) {
+    public static Dialog createPotionDialog(final Predicate<AbstractCustomPotion> filter, final SelectMode mode) {
         List<Entry> entries = CustomPotionsManager.getCustomPotions().stream()
                 .filter(potion -> CustomPotionsManager.isItemEnable(potion.getKey().value()))
                 .filter(filter)
@@ -170,7 +170,7 @@ public final class RecipeBrowser {
      *
      * @param player the player
      */
-    public static void openPotionDialog(Player player) {
+    public static void openPotionDialog(final Player player) {
         player.showDialog(createPotionDialog());
     }
 
@@ -180,7 +180,7 @@ public final class RecipeBrowser {
      * @param player the player
      * @param mode   what happens when a potion is selected, unless the potion defines its own mode
      */
-    public static void openPotionDialog(Player player, SelectMode mode) {
+    public static void openPotionDialog(final Player player, final SelectMode mode) {
         player.showDialog(createPotionDialog(potion -> true, mode));
     }
 
@@ -190,7 +190,7 @@ public final class RecipeBrowser {
      * @param player the player
      * @param filter additional filter for the listed potions
      */
-    public static void openPotionDialog(Player player, Predicate<AbstractCustomPotion> filter) {
+    public static void openPotionDialog(final Player player, final Predicate<AbstractCustomPotion> filter) {
         player.showDialog(createPotionDialog(filter));
     }
 
@@ -201,24 +201,24 @@ public final class RecipeBrowser {
      * @param filter additional filter for the listed potions
      * @param mode   what happens when a potion is selected, unless the potion defines its own mode
      */
-    public static void openPotionDialog(Player player, Predicate<AbstractCustomPotion> filter, SelectMode mode) {
+    public static void openPotionDialog(final Player player, final Predicate<AbstractCustomPotion> filter, final SelectMode mode) {
         player.showDialog(createPotionDialog(filter, mode));
     }
 
     private record Entry(ItemStack item, @Nullable RecipeCategory category, RecipeListing listing, SelectMode mode, Consumer<Player> onSelect) {
     }
 
-    private static SelectMode resolve(RecipeListing listing, SelectMode browserMode) {
+    private static SelectMode resolve(final RecipeListing listing, final SelectMode browserMode) {
         return listing.selectMode() != null ? listing.selectMode() : browserMode;
     }
 
-    private static Dialog buildDialog(Component title, List<Entry> entries) {
+    private static Dialog buildDialog(final Component title, final List<Entry> entries) {
         warnConflictingCategories(entries);
         return createLevel(title, entries, null, null);
     }
 
     // Categories are matched by key, so two different definitions with the same key are reported
-    private static void warnConflictingCategories(List<Entry> entries) {
+    private static void warnConflictingCategories(final List<Entry> entries) {
         Map<Key, RecipeCategory> seen = new HashMap<>();
         for (Entry entry : entries) {
             if (entry.category() == null) {
@@ -233,7 +233,7 @@ public final class RecipeBrowser {
         }
     }
 
-    private static @Nullable Key parentKey(RecipeCategory category) {
+    private static @Nullable Key parentKey(final RecipeCategory category) {
         return category.parent() == null ? null : category.parent().key();
     }
 
@@ -243,7 +243,7 @@ public final class RecipeBrowser {
      * @param current the category to show, or {@code null} for the root
      * @param parent  creates the dialog of the previous level, or {@code null} for the root
      */
-    private static Dialog createLevel(Component rootTitle, List<Entry> entries, @Nullable RecipeCategory current, @Nullable Supplier<Dialog> parent) {
+    private static Dialog createLevel(final Component rootTitle, final List<Entry> entries, final @Nullable RecipeCategory current, final @Nullable Supplier<Dialog> parent) {
         Map<Key, RecipeCategory> children = new TreeMap<>(Comparator.comparing(Key::asString));
         List<Entry> direct = new ArrayList<>();
         for (Entry entry : entries) {
@@ -309,7 +309,7 @@ public final class RecipeBrowser {
                 .type(DialogType.multiAction(buttons).columns(COLUMNS).exitAction(exitButton).build()));
     }
 
-    private static int indexOfKey(List<RecipeCategory> path, Key key) {
+    private static int indexOfKey(final List<RecipeCategory> path, final Key key) {
         for (int i = 0; i < path.size(); i++) {
             if (path.get(i).key().equals(key)) {
                 return i;
@@ -318,7 +318,7 @@ public final class RecipeBrowser {
         return -1;
     }
 
-    private static ActionButton toButton(Entry entry, Supplier<Dialog> listSupplier) {
+    private static ActionButton toButton(final Entry entry, final Supplier<Dialog> listSupplier) {
         DialogAction action = DialogAction.customClick((view, audience) -> {
             if (audience instanceof Player player) {
                 if (entry.mode() == SelectMode.RECIPE) {
@@ -336,12 +336,12 @@ public final class RecipeBrowser {
     }
 
     // Next tick so the dialog closing does not also close the opened preview
-    private static void openRecipe(Entry entry, Player player) {
+    private static void openRecipe(final Entry entry, final Player player) {
         Bukkit.getScheduler().runTask(DLibCustomExtensionManager.getPluginInstance(), () -> entry.onSelect().accept(player));
     }
 
     // Item bodies render the real item model, unlike button labels which can only use sprites
-    private static Dialog createDetailDialog(Entry entry, Supplier<Dialog> listSupplier) {
+    private static Dialog createDetailDialog(final Entry entry, final Supplier<Dialog> listSupplier) {
         DialogBase base = DialogBase.builder(displayName(entry.item()))
                 .body(List.of(DialogBody.item(entry.item())
                         .description(DialogBody.plainMessage(describe(entry), DESCRIPTION_WIDTH))
@@ -373,7 +373,7 @@ public final class RecipeBrowser {
         return Dialog.create(factory -> factory.empty().base(base).type(DialogType.confirmation(viewButton, backButton)));
     }
 
-    private static Component describe(Entry entry) {
+    private static Component describe(final Entry entry) {
         ItemStack item = entry.item();
         Component description = displayName(item);
         List<Component> lines = entry.listing().detail();
@@ -387,7 +387,7 @@ public final class RecipeBrowser {
         return description;
     }
 
-    private static Component displayName(ItemStack item) {
+    private static Component displayName(final ItemStack item) {
         Component name = item.getData(DataComponentTypes.CUSTOM_NAME);
         if (name == null) {
             name = item.getData(DataComponentTypes.ITEM_NAME);

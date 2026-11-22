@@ -129,7 +129,7 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @param listing            how the item is presented in the recipe browser
      */
     @ApiStatus.Internal
-    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions, RecipeCategorySource categorySource, RecipeListing listing) {
+    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, final @Nullable Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions, RecipeCategorySource categorySource, RecipeListing listing) {
         this.category = categorySource.resolve(this.getClass());
         this.listing = listing;
         this.inventoryTypes.addAll(inventoryTypes);

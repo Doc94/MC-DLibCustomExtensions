@@ -59,7 +59,7 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
      * @param name   the display name
      * @param parent the parent category, or {@code null}
      */
-    public RecipeCategory(Key key, Component name, @Nullable RecipeCategory parent) {
+    public RecipeCategory(final Key key, final Component name, final @Nullable RecipeCategory parent) {
         this(key, name, parent, null, null);
     }
 
@@ -69,7 +69,7 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
      * @param sprite the sprite key, from the default atlas
      * @return the new category
      */
-    public RecipeCategory withIcon(Key sprite) {
+    public RecipeCategory withIcon(final Key sprite) {
         return new RecipeCategory(key, name, parent, sprite, null);
     }
 
@@ -80,7 +80,7 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
      * @param sprite the sprite key
      * @return the new category
      */
-    public RecipeCategory withIcon(Key atlas, Key sprite) {
+    public RecipeCategory withIcon(final Key atlas, final Key sprite) {
         return new RecipeCategory(key, name, parent, sprite, atlas);
     }
 
@@ -104,7 +104,7 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
      * @param name the display name
      * @return the category
      */
-    public static RecipeCategory of(Key key, Component name) {
+    public static RecipeCategory of(final Key key, final Component name) {
         return new RecipeCategory(key, name, null, null, null);
     }
 
@@ -115,7 +115,7 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
      * @param name the display name
      * @return the category
      */
-    public RecipeCategory child(Key key, Component name) {
+    public RecipeCategory child(final Key key, final Component name) {
         return new RecipeCategory(key, name, this, null, null);
     }
 
@@ -132,7 +132,7 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
         return path;
     }
 
-    private static String humanize(Key key) {
+    private static String humanize(final Key key) {
         StringBuilder builder = new StringBuilder();
         for (String word : key.value().split("[/_.-]+")) {
             if (word.isEmpty()) {
