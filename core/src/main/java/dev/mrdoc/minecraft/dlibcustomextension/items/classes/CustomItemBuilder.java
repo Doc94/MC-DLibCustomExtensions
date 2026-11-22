@@ -1,6 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,12 @@ public class CustomItemBuilder {
      */
     private final Component displayName;
     private @Nullable CustomItemRarity rarity = null;
+    /**
+     * The category used to group the item in the recipe browser.
+     *
+     * @return the category, or {@code null} if uncategorized
+     */
+    private @Nullable RecipeCategory category = null;
     /**
      * The special flag for the item.
      *
@@ -92,6 +99,17 @@ public class CustomItemBuilder {
      */
     public CustomItemBuilder rarity(CustomItemRarity rarity) {
         this.rarity = rarity;
+        return this;
+    }
+
+    /**
+     * Sets the category used to group the item in the recipe browser.
+     *
+     * @param category the category
+     * @return the updated instance of the CustomItemBuilder
+     */
+    public CustomItemBuilder category(@Nullable RecipeCategory category) {
+        this.category = category;
         return this;
     }
 

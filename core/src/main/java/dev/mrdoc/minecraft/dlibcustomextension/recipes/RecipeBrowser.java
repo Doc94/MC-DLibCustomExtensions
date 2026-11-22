@@ -5,6 +5,7 @@ import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
+import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import io.papermc.paper.dialog.Dialog;
@@ -14,16 +15,24 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Builds and opens dialogs that list the custom items or potions with a recipe.
@@ -64,9 +73,9 @@ public final class RecipeBrowser {
                 .filter(item -> item.getRecipe() != null && item.isEnabled())
                 .filter(filter)
                 .sorted(Comparator.comparing(item -> item.getKey().asString()))
-                .map(item -> new Entry(item.getItem(), player -> RecipePreview.open(player, item)))
+                .map(item -> new Entry(item.getItem(), item.getCategory(), player -> RecipePreview.open(player, item)))
                 .toList();
-        return buildDialog(Component.translatable("dlce.recipes.browser.items.title"), entries, () -> createItemDialog(filter));
+        return buildDialog(Component.translatable("dlce.recipes.browser.items.title"), entries);
     }
 
     /**
@@ -108,9 +117,9 @@ public final class RecipeBrowser {
                 .filter(potion -> CustomPotionsManager.isItemEnable(potion.getKey().value()))
                 .filter(filter)
                 .sorted(Comparator.comparing(potion -> potion.getKey().asString()))
-                .map(potion -> new Entry(potion.getItem(), player -> RecipePreview.open(player, potion)))
+                .map(potion -> new Entry(potion.getItem(), potion.getCategory(), player -> RecipePreview.open(player, potion)))
                 .toList();
-        return buildDialog(Component.translatable("dlce.recipes.browser.potions.title"), entries, () -> createPotionDialog(filter));
+        return buildDialog(Component.translatable("dlce.recipes.browser.potions.title"), entries);
     }
 
     /**
@@ -132,22 +141,113 @@ public final class RecipeBrowser {
         player.showDialog(createPotionDialog(filter));
     }
 
-    private record Entry(ItemStack item, Consumer<Player> onSelect) {
+    private record Entry(ItemStack item, @Nullable RecipeCategory category, Consumer<Player> onSelect) {
     }
 
-    private static Dialog buildDialog(Component title, List<Entry> entries, Supplier<Dialog> listSupplier) {
-        if (entries.isEmpty()) {
+    private static Dialog buildDialog(Component title, List<Entry> entries) {
+        warnConflictingCategories(entries);
+        return createLevel(title, entries, null, null);
+    }
+
+    // Categories are matched by key, so two different definitions with the same key are reported
+    private static void warnConflictingCategories(List<Entry> entries) {
+        Map<Key, RecipeCategory> seen = new HashMap<>();
+        for (Entry entry : entries) {
+            if (entry.category() == null) {
+                continue;
+            }
+            for (RecipeCategory category : entry.category().path()) {
+                RecipeCategory previous = seen.putIfAbsent(category.key(), category);
+                if (previous != null && !Objects.equals(parentKey(previous), parentKey(category))) {
+                    LoggerUtils.warn("Recipe category [%s] is defined with different parents, using the first one found".formatted(category.key().asString()));
+                }
+            }
+        }
+    }
+
+    private static @Nullable Key parentKey(RecipeCategory category) {
+        return category.parent() == null ? null : category.parent().key();
+    }
+
+    /**
+     * Creates the dialog for a category level: its sub categories first and then its own entries.
+     *
+     * @param current the category to show, or {@code null} for the root
+     * @param parent  creates the dialog of the previous level, or {@code null} for the root
+     */
+    private static Dialog createLevel(Component rootTitle, List<Entry> entries, @Nullable RecipeCategory current, @Nullable Supplier<Dialog> parent) {
+        Map<Key, RecipeCategory> children = new TreeMap<>(Comparator.comparing(Key::asString));
+        List<Entry> direct = new ArrayList<>();
+        for (Entry entry : entries) {
+            List<RecipeCategory> path = entry.category() == null ? List.of() : entry.category().path();
+            int index = -1;
+            if (current != null) {
+                index = indexOfKey(path, current.key());
+                if (index < 0) {
+                    continue;
+                }
+            }
+            if (index + 1 >= path.size()) {
+                direct.add(entry);
+            } else {
+                RecipeCategory child = path.get(index + 1);
+                children.putIfAbsent(child.key(), child);
+            }
+        }
+
+        Component title = rootTitle;
+        if (current != null) {
+            title = rootTitle.append(Component.text(" - ")).append(Component.join(JoinConfiguration.separator(Component.text(" > ")), current.path().stream().map(RecipeCategory::name).toList()));
+        }
+
+        if (children.isEmpty() && direct.isEmpty()) {
             DialogBase emptyBase = DialogBase.builder(title)
                     .body(List.of(DialogBody.plainMessage(Component.translatable("dlce.recipes.browser.empty"))))
                     .build();
             return Dialog.create(factory -> factory.empty().base(emptyBase).type(DialogType.notice()));
         }
 
-        List<ActionButton> buttons = entries.stream().map(entry -> toButton(entry, listSupplier)).toList();
-        ActionButton exitButton = ActionButton.builder(Component.translatable("dlce.recipes.browser.close")).build();
+        Supplier<Dialog> self = () -> createLevel(rootTitle, entries, current, parent);
+        List<ActionButton> buttons = new ArrayList<>();
+        for (RecipeCategory child : children.values()) {
+            long count = entries.stream().filter(entry -> entry.category() != null && indexOfKey(entry.category().path(), child.key()) >= 0).count();
+            DialogAction action = DialogAction.customClick((view, audience) -> {
+                if (audience instanceof Player player) {
+                    player.showDialog(createLevel(rootTitle, entries, child, self));
+                }
+            }, CALLBACK_OPTIONS);
+            buttons.add(ActionButton.builder(child.name().append(Component.text(" (" + count + ")")))
+                    .width(BUTTON_WIDTH)
+                    .action(action)
+                    .build());
+        }
+        direct.forEach(entry -> buttons.add(toButton(entry, self)));
+
+        ActionButton exitButton;
+        if (parent == null) {
+            exitButton = ActionButton.builder(Component.translatable("dlce.recipes.browser.close")).build();
+        } else {
+            exitButton = ActionButton.builder(Component.translatable("dlce.recipes.browser.back"))
+                    .action(DialogAction.customClick((view, audience) -> {
+                        if (audience instanceof Player player) {
+                            player.showDialog(parent.get());
+                        }
+                    }, CALLBACK_OPTIONS))
+                    .build();
+        }
+
         DialogBase dialogBase = DialogBase.builder(title).build();
         return Dialog.create(factory -> factory.empty().base(dialogBase)
                 .type(DialogType.multiAction(buttons).columns(COLUMNS).exitAction(exitButton).build()));
+    }
+
+    private static int indexOfKey(List<RecipeCategory> path, Key key) {
+        for (int i = 0; i < path.size(); i++) {
+            if (path.get(i).key().equals(key)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static ActionButton toButton(Entry entry, Supplier<Dialog> listSupplier) {

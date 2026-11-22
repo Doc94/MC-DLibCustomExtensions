@@ -1,6 +1,7 @@
 package dev.mrdoc.minecraft.dlibcustomextension.items.classes;
 
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategory;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.item.RecipeChoiceUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -95,6 +96,11 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
     @Getter
     private final @Nullable CustomItemRarity rarity;
     /**
+     * Gets the category used to group the item in the recipe browser, if assigned.
+     */
+    @Getter
+    private final @Nullable RecipeCategory category;
+    /**
      * Gets the set of inventory types where this item is permitted.
      */
     @Getter
@@ -112,9 +118,11 @@ public abstract sealed class AbstractBaseCustomItem permits AbstractCustomItem {
      * @param modelNameKey       the key for the item model
      * @param inventoryTypes     the permitted inventory types
      * @param descriptions       descriptive lines for the lore
+     * @param category           the recipe browser category, or {@code null}
      */
     @ApiStatus.Internal
-    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions) {
+    public AbstractBaseCustomItem(Plugin instance, String internalName, Component displayName, @Nullable CustomItemRarity rarity, boolean isSpecial, boolean autoDiscoverRecipe, @Nullable final Key modelNameKey, List<InventoryType> inventoryTypes, List<Component> descriptions, @Nullable RecipeCategory category) {
+        this.category = category;
         this.inventoryTypes.addAll(inventoryTypes);
         this.instance = instance;
         this.internalName = internalName;

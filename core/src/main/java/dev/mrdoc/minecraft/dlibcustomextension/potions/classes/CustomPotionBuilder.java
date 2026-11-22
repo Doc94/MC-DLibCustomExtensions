@@ -1,12 +1,14 @@
 package dev.mrdoc.minecraft.dlibcustomextension.potions.classes;
 
 import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeCategory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 public class CustomPotionBuilder {
@@ -15,6 +17,7 @@ public class CustomPotionBuilder {
     private final String internalName;
     private final Component displayName;
     private List<Component> descriptions = new ArrayList<>();
+    private @Nullable RecipeCategory category = null;
 
     private CustomPotionBuilder(String internalName, Component displayName) {
         this(DLibCustomExtensionManager.getPluginInstance(), internalName, displayName);
@@ -28,6 +31,17 @@ public class CustomPotionBuilder {
 
     public CustomPotionBuilder descriptions(Component... descriptions) {
         this.descriptions = Arrays.asList(descriptions);
+        return this;
+    }
+
+    /**
+     * Sets the category used to group the potion in the recipe browser.
+     *
+     * @param category the category
+     * @return the updated builder
+     */
+    public CustomPotionBuilder category(@Nullable RecipeCategory category) {
+        this.category = category;
         return this;
     }
 

@@ -4,6 +4,7 @@ import dev.mrdoc.minecraft.dlibcustomextension.potions.annotations.CustomPotionC
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.CustomPotionBuilder;
 import dev.mrdoc.minecraft.test.Core;
+import dev.mrdoc.minecraft.test.TestCategories;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.PotionContents;
 import net.kyori.adventure.text.Component;
@@ -38,7 +39,7 @@ public class PotionBone extends AbstractCustomPotion {
                         Core.getInstance(),
                         "resistance_bone",
                         Component.text("Resistance", TextColor.fromHexString("#444438"))
-                )
+                ).category(TestCategories.POTIONS)
         );
     }
 

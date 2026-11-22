@@ -4,6 +4,7 @@ import dev.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemConta
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.CustomItemBuilder;
 import dev.mrdoc.minecraft.test.Core;
+import dev.mrdoc.minecraft.test.TestCategories;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -29,6 +30,7 @@ public class ItemEnderBundle extends AbstractCustomItem {
         super(CustomItemBuilder.create(Core.getInstance(), "ender_bundle", Component.text("Ender Bundle", TextColor.fromHexString("#316364")))
                 .special()
                 .inventoryTypes(InventoryType.WORKBENCH)
+                .category(TestCategories.STORAGE)
                 .description(Component.text("Una bolsa con poderes del Ender", NamedTextColor.WHITE))
         );
     }
