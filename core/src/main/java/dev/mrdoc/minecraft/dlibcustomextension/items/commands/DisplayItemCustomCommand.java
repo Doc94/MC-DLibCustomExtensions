@@ -4,19 +4,10 @@ import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.commands.BaseCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.items.CustomItemsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeBrowser;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipePreview;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent;
-import org.bukkit.inventory.InventoryView;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -31,17 +22,13 @@ import org.incendo.cloud.paper.util.sender.Source;
 /**
  * Command for displaying the recipe of a custom item in a preview inventory.
  * <p>
- * This command allows players to see how to craft a specific custom item
- * and prevents interaction with the preview inventory.
+ * Without arguments it opens a dialog to pick the item, with an item it opens the preview directly.
  * </p>
  */
-public class DisplayItemCustomCommand extends BaseCommand implements Listener {
-
-    private final String TAG_INVENTORY_PREVIEW = "INVENTORY_PREVIEW_DISPLAY_ITEM";
+public class DisplayItemCustomCommand extends BaseCommand {
 
     public DisplayItemCustomCommand() {
         super(DLibCustomExtensionManager.getPluginInstance());
-        Bukkit.getPluginManager().registerEvents(this, DLibCustomExtensionManager.getPluginInstance());
     }
 
     /**
@@ -54,21 +41,21 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
     @CommandDescription("Comando para ver receta de un item custom")
     @Permission("dlibcustomextensions.items.command.displaycustom")
     public void executeDisplayCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itemcustomclass") Class<? extends AbstractCustomItem> customItemClass) {
-        Player senderPlayer = playerSourceSender.source();
-        CustomItemsManager.getCustomItem(customItemClass).ifPresentOrElse(baseItem -> {
-            if (baseItem.getRecipe() == null) {
-                senderPlayer.sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.recipe_not_found", baseItem.getItem().displayName()).color(NamedTextColor.RED));
-                return;
-            }
-            InventoryView baseItemInventoryView = baseItem.createDisplayCraft(senderPlayer);
-            if (baseItemInventoryView != null) {
-                senderPlayer.getScoreboardTags().add(TAG_INVENTORY_PREVIEW);
-                senderPlayer.openInventory(baseItemInventoryView);
-            } else {
-                senderPlayer.sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.craft_inventory_invalid", baseItem.getItem().displayName()).color(NamedTextColor.RED));
-            }
+        CustomItemsManager.getCustomItem(customItemClass).ifPresentOrElse(
+                baseItem -> RecipePreview.open(playerSourceSender.source(), baseItem),
+                () -> playerSourceSender.source().sendMessage(Component.translatable("dlce.argument.item.notfound")));
+    }
 
-        }, () -> senderPlayer.sendMessage(Component.translatable("dlce.argument.item.notfound")));
+    /**
+     * Opens a dialog to choose the custom item to display.
+     *
+     * @param playerSourceSender the player who executed the command
+     */
+    @Command("displayitemcustom")
+    @CommandDescription("Comando para elegir y ver la receta de un item custom")
+    @Permission("dlibcustomextensions.items.command.displaycustom")
+    public void executeBrowseCustom(PlayerSource playerSourceSender) {
+        RecipeBrowser.openItemDialog(playerSourceSender.source());
     }
 
     /**
@@ -93,35 +80,5 @@ public class DisplayItemCustomCommand extends BaseCommand implements Listener {
     @Parser(name = "parser_itemcustomclass", suggestions = "suggest_itemcustom")
     public Class<? extends AbstractCustomItem> parserItemCustom(CommandContext<Source> ctx, CommandInput commandInput) {
         return ItemCustomCommandHelper.parserItemCustomClass(ctx, commandInput);
-    }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (event.getPlayer().getScoreboardTags().contains(TAG_INVENTORY_PREVIEW)) {
-            event.getInventory().clear();
-            event.getPlayer().getScoreboardTags().remove(TAG_INVENTORY_PREVIEW);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getViewers().stream().anyMatch(humanEntity -> humanEntity.getScoreboardTags().contains(TAG_INVENTORY_PREVIEW))) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onRecipeBookClick(PlayerRecipeBookClickEvent event) {
-        if (event.getPlayer().getScoreboardTags().contains(TAG_INVENTORY_PREVIEW)) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(Component.translatable("dlce.commands.displayitemcustom.failed.recipe_change_not_allowed").color(NamedTextColor.RED));
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onCraftItem(CraftItemEvent event) {
-        if (event.getViewers().stream().anyMatch(humanEntity -> humanEntity.getScoreboardTags().contains(TAG_INVENTORY_PREVIEW))) {
-            event.setCancelled(true);
-        }
     }
 }

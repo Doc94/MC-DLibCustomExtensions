@@ -4,18 +4,10 @@ import dev.mrdoc.minecraft.dlibcustomextension.DLibCustomExtensionManager;
 import dev.mrdoc.minecraft.dlibcustomextension.commands.BaseCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.CustomPotionsManager;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipeBrowser;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipePreview;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.InventoryView;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -29,34 +21,33 @@ import org.incendo.cloud.paper.util.sender.Source;
 
 /**
  * Command for displaying the recipe of a custom potion.
+ * <p>
+ * Without arguments it opens a dialog to pick the potion, with a potion it opens the preview directly.
+ * </p>
  */
-public class DisplayPotionCustomCommand extends BaseCommand implements Listener {
-
-    private final String TAG_INVENTORY_PREVIEW = "INVENTORY_PREVIEW_DISPLAY_POTION";
+public class DisplayPotionCustomCommand extends BaseCommand {
 
     /**
      * Constructs a new DisplayPotionCustomCommand.
      */
     public DisplayPotionCustomCommand() {
         super(DLibCustomExtensionManager.getPluginInstance());
-        Bukkit.getPluginManager().registerEvents(this, DLibCustomExtensionManager.getPluginInstance());
     }
 
     @Command("displaypotioncustom <item>")
     @CommandDescription("Comando para ver receta de un item custom")
     @Permission("dlibcustomextensions.potions.command.displaycustom")
     public void executeDisplayCustom(PlayerSource playerSourceSender, @Argument(value = "item", parserName = "parser_itempotioncustomclass") Class<? extends AbstractCustomPotion> customPotionClass) {
-        Player senderPlayer = playerSourceSender.source();
-        CustomPotionsManager.getCustomPotion(customPotionClass).ifPresentOrElse(baseItem -> {
-            InventoryView baseItemInventoryView = baseItem.createDisplayCraft(senderPlayer);
-            if (baseItemInventoryView != null) {
-                senderPlayer.getScoreboardTags().add(TAG_INVENTORY_PREVIEW);
-                senderPlayer.openInventory(baseItemInventoryView);
-            } else {
-                senderPlayer.sendMessage(Component.translatable("dlce.commands.displaypotioncustom.failed.craft_inventory_invalid", baseItem.getItem().displayName()).color(NamedTextColor.RED));
-            }
+        CustomPotionsManager.getCustomPotion(customPotionClass).ifPresentOrElse(
+                basePotion -> RecipePreview.open(playerSourceSender.source(), basePotion),
+                () -> playerSourceSender.source().sendMessage(Component.translatable("dlce.argument.potion.notfound")));
+    }
 
-        }, () -> senderPlayer.sendMessage(Component.translatable("dlce.argument.potion.notfound")));
+    @Command("displaypotioncustom")
+    @CommandDescription("Comando para elegir y ver la receta de una potion custom")
+    @Permission("dlibcustomextensions.potions.command.displaycustom")
+    public void executeBrowseCustom(PlayerSource playerSourceSender) {
+        RecipeBrowser.openPotionDialog(playerSourceSender.source());
     }
 
     @Suggestions("suggest_itempotioncustom")
@@ -67,27 +58,5 @@ public class DisplayPotionCustomCommand extends BaseCommand implements Listener 
     @Parser(name = "parser_itempotioncustomclass", suggestions = "suggest_itempotioncustom")
     public Class<? extends AbstractCustomPotion> parserCustom(CommandContext<Source> ctx, CommandInput commandInput) {
         return PotionCustomCommandHelper.parserItemCustomClass(ctx, commandInput);
-    }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (event.getPlayer().getScoreboardTags().contains(TAG_INVENTORY_PREVIEW)) {
-            event.getInventory().clear();
-            event.getPlayer().getScoreboardTags().remove(TAG_INVENTORY_PREVIEW);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getViewers().stream().anyMatch(humanEntity -> humanEntity.getScoreboardTags().contains(TAG_INVENTORY_PREVIEW))) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onCraftItem(CraftItemEvent event) {
-        if (event.getViewers().stream().anyMatch(humanEntity -> humanEntity.getScoreboardTags().contains(TAG_INVENTORY_PREVIEW))) {
-            event.setCancelled(true);
-        }
     }
 }

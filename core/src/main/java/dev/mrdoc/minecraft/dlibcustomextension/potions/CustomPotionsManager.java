@@ -6,6 +6,7 @@ import dev.mrdoc.minecraft.dlibcustomextension.potions.annotations.CustomPotionC
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractBaseCustomPotion;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.classes.AbstractCustomPotion;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.DisplayPotionCustomCommand;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipePreview;
 import dev.mrdoc.minecraft.dlibcustomextension.potions.commands.GivePotionCustomCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
@@ -13,6 +14,8 @@ import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.KeyPersistentDa
 import io.papermc.paper.persistence.PersistentDataKey;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +56,16 @@ public class CustomPotionsManager {
         loadAllCustomPotions();
         registerAllRecipes();
         registerCommands();
+        RecipePreview.register();
+    }
+
+    /**
+     * Gets all the custom potions registered.
+     *
+     * @return an unmodifiable collection of custom potions
+     */
+    public static Collection<AbstractCustomPotion> getCustomPotions() {
+        return Collections.unmodifiableSet(CUSTOM_POTIONS);
     }
 
     public static PersistentDataKey<Key> getPersistentDataKey() {

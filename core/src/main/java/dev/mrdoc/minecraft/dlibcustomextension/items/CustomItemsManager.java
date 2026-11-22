@@ -5,6 +5,7 @@ import dev.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemConta
 import dev.mrdoc.minecraft.dlibcustomextension.items.annotations.CustomItemContainerProcessor;
 import dev.mrdoc.minecraft.dlibcustomextension.items.classes.AbstractCustomItem;
 import dev.mrdoc.minecraft.dlibcustomextension.items.commands.DisplayItemCustomCommand;
+import dev.mrdoc.minecraft.dlibcustomextension.recipes.RecipePreview;
 import dev.mrdoc.minecraft.dlibcustomextension.items.commands.GiveItemCustomCommand;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.AnnotationProcessorUtil;
 import dev.mrdoc.minecraft.dlibcustomextension.utils.LoggerUtils;
@@ -12,6 +13,8 @@ import dev.mrdoc.minecraft.dlibcustomextension.utils.persistence.KeyPersistentDa
 import io.papermc.paper.persistence.PersistentDataKey;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +60,7 @@ public class CustomItemsManager {
         loadAllCustomItems();
         registerAllRecipes();
         registerAllCommands();
+        RecipePreview.register();
         Bukkit.getPluginManager().registerEvents(new CustomItemsListener(), DLibCustomExtensionManager.getPluginInstance());
     }
 
@@ -252,6 +256,15 @@ public class CustomItemsManager {
             return null;
         }
         return item.getPersistentDataContainer().get(PERSISTENT_DATA_KEY_CUSTOM_ITEM);
+    }
+
+    /**
+     * Gets all the custom items registered.
+     *
+     * @return an unmodifiable collection of custom items
+     */
+    public static Collection<AbstractCustomItem> getCustomItems() {
+        return Collections.unmodifiableSet(CUSTOM_ITEMS);
     }
 
     /**
