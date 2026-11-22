@@ -7,6 +7,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.object.ObjectContents;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -20,8 +21,10 @@ import org.jspecify.annotations.Nullable;
  * @param key    the unique key of the category
  * @param name   the display name, a translatable component without translation uses a name generated from the key
  * @param parent the parent category, or {@code null} for a root category
+ * @param icon   the optional sprite shown before the name, not inherited by sub categories
+ * @param atlas  the atlas of the sprite, {@code null} for the default one
  */
-public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory parent) {
+public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory parent, @Nullable Key icon, @Nullable Key atlas) {
 
     /**
      * Maximum nesting depth of categories (a root category has depth 1).
@@ -50,6 +53,51 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
     }
 
     /**
+     * Creates a category without icon.
+     *
+     * @param key    the unique key
+     * @param name   the display name
+     * @param parent the parent category, or {@code null}
+     */
+    public RecipeCategory(Key key, Component name, @Nullable RecipeCategory parent) {
+        this(key, name, parent, null, null);
+    }
+
+    /**
+     * Creates a copy of this category with a sprite shown before the name.
+     *
+     * @param sprite the sprite key, from the default atlas
+     * @return the new category
+     */
+    public RecipeCategory withIcon(Key sprite) {
+        return new RecipeCategory(key, name, parent, sprite, null);
+    }
+
+    /**
+     * Creates a copy of this category with a sprite from a specific atlas shown before the name.
+     *
+     * @param atlas  the atlas key
+     * @param sprite the sprite key
+     * @return the new category
+     */
+    public RecipeCategory withIcon(Key atlas, Key sprite) {
+        return new RecipeCategory(key, name, parent, sprite, atlas);
+    }
+
+    /**
+     * Gets the name to display, with the icon before it when defined.
+     *
+     * @return the display component
+     */
+    public Component displayName() {
+        if (icon == null) {
+            return name;
+        }
+        ObjectContents sprite = atlas == null ? ObjectContents.sprite(icon) : ObjectContents.sprite(atlas, icon);
+        return Component.textOfChildren(Component.object(sprite), Component.space(), name);
+    }
+
+    /**
      * Creates a root category.
      *
      * @param key  the unique key
@@ -57,7 +105,7 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
      * @return the category
      */
     public static RecipeCategory of(Key key, Component name) {
-        return new RecipeCategory(key, name, null);
+        return new RecipeCategory(key, name, null, null, null);
     }
 
     /**
@@ -68,7 +116,7 @@ public record RecipeCategory(Key key, Component name, @Nullable RecipeCategory p
      * @return the category
      */
     public RecipeCategory child(Key key, Component name) {
-        return new RecipeCategory(key, name, this);
+        return new RecipeCategory(key, name, this, null, null);
     }
 
     /**

@@ -197,7 +197,7 @@ public final class RecipeBrowser {
 
         Component title = rootTitle;
         if (current != null) {
-            title = rootTitle.append(Component.text(" - ")).append(Component.join(JoinConfiguration.separator(Component.text(" > ")), current.path().stream().map(RecipeCategory::name).toList()));
+            title = rootTitle.append(Component.text(" - ")).append(Component.join(JoinConfiguration.separator(Component.text(" > ")), current.path().stream().map(RecipeCategory::displayName).toList()));
         }
 
         if (children.isEmpty() && direct.isEmpty()) {
@@ -216,7 +216,7 @@ public final class RecipeBrowser {
                     player.showDialog(createLevel(rootTitle, entries, child, self));
                 }
             }, CALLBACK_OPTIONS);
-            buttons.add(ActionButton.builder(child.name().append(Component.text(" (" + count + ")")))
+            buttons.add(ActionButton.builder(child.displayName().append(Component.text(" (" + count + ")")))
                     .width(BUTTON_WIDTH)
                     .action(action)
                     .build());
