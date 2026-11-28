@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -48,18 +49,24 @@ public final class RecipeCategoryResolver {
         return category;
     }
 
+    @SuppressWarnings("PatternValidation")
     private static @Nullable RecipeCategory load(final ClassLoader loader, final String packageName) {
         int dot = packageName.lastIndexOf('.');
         RecipeCategory parent = resolve(loader, dot < 0 ? "" : packageName.substring(0, dot));
 
-        RecipeCategoryOf annotation = readAnnotation(loader, packageName);
+        final RecipeCategoryOf annotation = readAnnotation(loader, packageName);
         if (annotation == null) {
             return parent;
         }
 
         try {
-            Key key = Key.key(annotation.key());
-            Component name = annotation.name().isBlank() ? Component.empty() : Component.translatable(annotation.name());
+            final Key key = Key.key(annotation.key());
+            Component name = Component.empty();
+            if (!annotation.displayName().isBlank()) {
+                name = MiniMessage.miniMessage().deserialize(annotation.displayName());
+            } else if (!annotation.name().isBlank()) {
+                name = Component.translatable(annotation.name());
+            }
             RecipeCategory category = new RecipeCategory(key, name, parent);
             if (!annotation.icon().isBlank()) {
                 Key sprite = Key.key(annotation.icon());
@@ -67,7 +74,7 @@ public final class RecipeCategoryResolver {
             }
             return category;
         } catch (RuntimeException exception) {
-            LoggerUtils.warn("Invalid @RecipeCategoryOf in package [%s]: %s".formatted(packageName, exception.getMessage()));
+            LoggerUtils.warn("Invalid category annotation in package [" + packageName + "]: " + exception.getMessage());
             return parent;
         }
     }
